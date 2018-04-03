@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.facebook.stetho.Stetho;
 
+import io.github.vladimirmi.localradio.di.AppModule;
+import io.github.vladimirmi.localradio.di.Scopes;
 import timber.log.Timber;
 import toothpick.Toothpick;
 import toothpick.configuration.Configuration;
@@ -32,5 +34,7 @@ public class App extends Application {
             FactoryRegistryLocator.setRootRegistry(new FactoryRegistry());
             MemberInjectorRegistryLocator.setRootRegistry(new MemberInjectorRegistry());
         }
+
+        Scopes.getAppScope().installModules(new AppModule(getApplicationContext()));
     }
 }
