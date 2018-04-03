@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio;
+package io.github.vladimirmi.localradio.presentation.main;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import io.github.vladimirmi.localradio.R;
 
 public class MainActivity extends AppCompatActivity {
 

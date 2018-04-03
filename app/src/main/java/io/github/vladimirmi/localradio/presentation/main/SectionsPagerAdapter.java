@@ -1,8 +1,10 @@
-package io.github.vladimirmi.localradio;
+package io.github.vladimirmi.localradio.presentation.main;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import io.github.vladimirmi.localradio.presentation.search.SearchFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
