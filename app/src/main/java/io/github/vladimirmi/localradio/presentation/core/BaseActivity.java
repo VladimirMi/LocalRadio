@@ -10,7 +10,7 @@ import butterknife.ButterKnife;
  * Created by Vladimir Mikhalev 02.03.2018.
  */
 
-public abstract class BaseActivity<P extends BasePresenter, V extends BaseView> extends AppCompatActivity {
+public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity {
 
     protected P mPresenter;
 
@@ -33,7 +33,7 @@ public abstract class BaseActivity<P extends BasePresenter, V extends BaseView> 
     public void onResume() {
         super.onResume();
         //noinspection unchecked
-        mPresenter.attachView((V) this);
+        mPresenter.attachView((BaseView) this);
     }
 
     @Override

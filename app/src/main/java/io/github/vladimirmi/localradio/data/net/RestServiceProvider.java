@@ -10,7 +10,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.converter.moshi.MoshiConverterFactory;
 
 /**
  * Provider for {@link RestService}.
@@ -21,8 +20,8 @@ public class RestServiceProvider {
     private RestServiceProvider() {
     }
 
-    public static RestService getService() {
-        return createRetrofit(createClient()).create(RestService.class);
+    public static RestService getService(Converter.Factory factory) {
+        return createRetrofit(createClient(), factory).create(RestService.class);
     }
 
     private static OkHttpClient createClient() {
@@ -36,17 +35,13 @@ public class RestServiceProvider {
                 .build();
     }
 
-    private static Retrofit createRetrofit(OkHttpClient okHttp) {
+    private static Retrofit createRetrofit(OkHttpClient okHttp, Converter.Factory factory) {
         return new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
-                .addConverterFactory(createConvertFactory())
+                .addConverterFactory(factory)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .client(okHttp)
                 .build();
-    }
-
-    private static Converter.Factory createConvertFactory() {
-        return MoshiConverterFactory.create();
     }
 
 //    private static Interceptor getApiKeyInterceptor() {

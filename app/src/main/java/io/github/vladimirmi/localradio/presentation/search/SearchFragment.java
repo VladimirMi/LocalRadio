@@ -1,9 +1,12 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
@@ -33,6 +36,15 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     protected void setupView(View view) {
+    }
 
+    @Override
+    public void setCountries(List<String> countries) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, countries);
+        countryEt.setAdapter(adapter);
+        countryEt.setOnClickListener(view -> {
+            countryEt.showDropDown();
+        });
     }
 }

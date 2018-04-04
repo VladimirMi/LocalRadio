@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 
 /**
@@ -10,7 +11,15 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 
 public class SearchPresenter extends BasePresenter<SearchView> {
 
+    SearchInteractor interactor;
+
     @Inject
-    public SearchPresenter() {
+    public SearchPresenter(SearchInteractor interactor) {
+        this.interactor = interactor;
+    }
+
+    @Override
+    protected void onAttach(SearchView view) {
+        view.setCountries(interactor.getCountriesName());
     }
 }
