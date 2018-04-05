@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import java.util.List;
 
+import io.github.vladimirmi.localradio.data.Country;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**
@@ -10,5 +11,5 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 public interface SearchView extends BaseView {
 
-    void setCountries(List<String> countries);
+    void setCountries(List<Country> countries);
 }

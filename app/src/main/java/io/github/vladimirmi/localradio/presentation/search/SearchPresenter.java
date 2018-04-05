@@ -20,6 +20,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     @Override
     protected void onAttach(SearchView view) {
-        view.setCountries(interactor.getCountriesName());
+        view.setCountries(interactor.getCountries());
     }
 }

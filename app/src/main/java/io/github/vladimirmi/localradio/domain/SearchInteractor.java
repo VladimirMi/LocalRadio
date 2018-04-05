@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.domain;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,12 +20,9 @@ public class SearchInteractor {
         this.locationRepository = locationRepository;
     }
 
-    public List<String> getCountriesName() {
+    public List<Country> getCountries() {
         List<Country> countries = locationRepository.getCountries();
-        List<String> names = new ArrayList<>(countries.size());
-        for (Country country : countries) {
-            names.add(country.getName());
-        }
-        return names;
+        countries.add(0, Country.any());
+        return countries;
     }
 }

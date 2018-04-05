@@ -2,10 +2,18 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
     >
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
+        />
 
     <TextView
         android:id="@+id/autodetectTv"
@@ -26,23 +34,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <AutoCompleteTextView
+    <io.github.vladimirmi.localradio.CustomAutoCompleteView
         android:id="@+id/countryEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:completionHint="Country"
         android:hint="Country"
+        android:inputType="textNoSuggestions|textCapSentences"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/autodetectTv"
         />
 
-    <AutoCompleteTextView
+    <io.github.vladimirmi.localradio.CustomAutoCompleteView
         android:id="@+id/cityEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:completionHint="City"
         android:hint="City"
+        android:inputType="textNoSuggestions|textCapSentences"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/countryEt"
