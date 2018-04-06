@@ -2,7 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import java.util.List;
 
-import io.github.vladimirmi.localradio.data.Country;
+import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**

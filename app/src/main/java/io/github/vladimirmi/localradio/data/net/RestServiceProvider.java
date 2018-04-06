@@ -5,8 +5,12 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.util.concurrent.TimeUnit;
 
+import io.github.vladimirmi.localradio.BuildConfig;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
@@ -20,15 +24,15 @@ public class RestServiceProvider {
     private RestServiceProvider() {
     }
 
-    public static RestService getService(Converter.Factory factory) {
-        return createRetrofit(createClient(), factory).create(RestService.class);
+    public static RestService getService(OkHttpClient client, Converter.Factory factory) {
+        return createRetrofit(client, factory).create(RestService.class);
     }
 
-    private static OkHttpClient createClient() {
+    public static OkHttpClient createClient() {
         return new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .addNetworkInterceptor(new StethoInterceptor())
-//                .addInterceptor(getApiKeyInterceptor())
+                .addInterceptor(getApiKeyInterceptor())
                 .connectTimeout(Api.CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(Api.READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(Api.WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
@@ -44,18 +48,19 @@ public class RestServiceProvider {
                 .build();
     }
 
-//    private static Interceptor getApiKeyInterceptor() {
-//        return chain -> {
-//            Request originalRequest = chain.request();
-//
-//            HttpUrl url = originalRequest.url().newBuilder()
-//                    .addQueryParameter("api_key", BuildConfig.API_KEY)
-//                    .build();
-//
-//            Request request = originalRequest.newBuilder()
-//                    .url(url)
-//                    .build();
-//            return chain.proceed(request);
-//        };
-//    }
+    private static Interceptor getApiKeyInterceptor() {
+        return chain -> {
+            Request originalRequest = chain.request();
+
+            HttpUrl url = originalRequest.url().newBuilder()
+                    .addQueryParameter("callback", "json")
+                    .addQueryParameter("partner_token", BuildConfig.PARTNER_TOKEN)
+                    .build();
+
+            Request request = originalRequest.newBuilder()
+                    .url(url)
+                    .build();
+            return chain.proceed(request);
+        };
+    }
 }

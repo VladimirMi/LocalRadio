@@ -11,7 +11,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.Country;
+import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.utils.CustomArrayAdapter;

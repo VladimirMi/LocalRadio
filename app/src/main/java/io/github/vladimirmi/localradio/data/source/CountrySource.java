@@ -14,7 +14,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.Country;
+import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.di.Scopes;
 
 /**

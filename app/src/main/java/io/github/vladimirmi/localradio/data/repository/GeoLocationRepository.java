@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.Country;
+import io.github.vladimirmi.localradio.data.entity.Country;
+import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CountrySource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
@@ -15,14 +16,17 @@ import io.github.vladimirmi.localradio.data.source.LocationSource;
 
 public class GeoLocationRepository {
 
-    private CountrySource countrySource;
-    private LocationSource locationSource;
-    private Preferences preferences;
+    private final RestService restService;
+    private final CountrySource countrySource;
+    private final LocationSource locationSource;
+    private final Preferences preferences;
 
     @Inject
-    public GeoLocationRepository(CountrySource countrySource,
+    public GeoLocationRepository(RestService restService,
+                                 CountrySource countrySource,
                                  LocationSource locationSource,
                                  Preferences preferences) {
+        this.restService = restService;
         this.countrySource = countrySource;
         this.locationSource = locationSource;
         this.preferences = preferences;
@@ -33,14 +37,23 @@ public class GeoLocationRepository {
     }
 
     public void saveAutodetect(boolean enabled) {
-        preferences.autodetectPref.put(enabled);
+        preferences.autodetect.put(enabled);
     }
 
     public boolean getAutodetect() {
-        return preferences.autodetectPref.get();
+        return preferences.autodetect.get();
     }
 
-    public String getLocationCountry() {
-        return "Empty";
+    public String getCountryCode() {
+        return preferences.countryCode.get();
+    }
+
+    public String getCity() {
+        return preferences.city.get();
+    }
+
+    public void saveCountryCodeCity(String country, String city) {
+        preferences.countryCode.put(country);
+        preferences.city.put(city);
     }
 }

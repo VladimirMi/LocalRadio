@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data;
+package io.github.vladimirmi.localradio.data.entity;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
