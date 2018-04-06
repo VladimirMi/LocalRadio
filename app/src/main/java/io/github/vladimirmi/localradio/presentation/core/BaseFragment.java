@@ -10,13 +10,14 @@ import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.reactivex.Observable;
 
 
 /**
  * Created by Vladimir Mikhalev 02.03.2018.
  */
 
-public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
+public abstract class BaseFragment<P extends BasePresenter> extends Fragment implements BaseView {
 
     protected P presenter;
     private Unbinder mUnbinder;
@@ -56,12 +57,18 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     public void onResume() {
         super.onResume();
         //noinspection unchecked
-        presenter.attachView((BaseView) this);
+        presenter.attachView(this);
     }
 
     @Override
     public void onPause() {
         presenter.detachView();
         super.onPause();
+    }
+
+    @SuppressWarnings("all")
+    @Override
+    public Observable<Boolean> resolvePermissions(String... permissions) {
+        return ((BaseActivity) getActivity()).resolvePermissions(permissions);
     }
 }

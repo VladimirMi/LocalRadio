@@ -7,6 +7,7 @@ import com.squareup.moshi.Moshi;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
+import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import toothpick.config.Module;
 
@@ -25,5 +26,6 @@ public class AppModule extends Module {
         bind(RestService.class).toInstance(RestServiceProvider.getService(MoshiConverterFactory.create(moshi)));
         bind(NetworkChecker.class).toInstance(new NetworkChecker(context));
 
+        bind(Preferences.class).toInstance(new Preferences(context));
     }
 }

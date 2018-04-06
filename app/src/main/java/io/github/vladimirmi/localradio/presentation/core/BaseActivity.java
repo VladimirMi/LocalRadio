@@ -4,13 +4,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.tbruyelle.rxpermissions2.RxPermissions;
+
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
 
 /**
  * Created by Vladimir Mikhalev 02.03.2018.
  */
 
-public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity {
+public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity implements BaseView {
 
     protected P mPresenter;
 
@@ -33,12 +36,17 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     public void onResume() {
         super.onResume();
         //noinspection unchecked
-        mPresenter.attachView((BaseView) this);
+        mPresenter.attachView(this);
     }
 
     @Override
     public void onPause() {
         mPresenter.detachView();
         super.onPause();
+    }
+
+    @Override
+    public Observable<Boolean> resolvePermissions(String... permissions) {
+        return new RxPermissions(this).request(permissions);
     }
 }

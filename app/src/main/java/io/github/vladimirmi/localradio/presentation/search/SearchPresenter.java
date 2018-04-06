@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     protected void onAttach(SearchView view) {
         countries = interactor.getCountries();
         view.setCountries(countries);
+        setupAutodetect(interactor.getAutodetect());
     }
 
     public void selectCountry(Country country) {
@@ -78,5 +81,28 @@ public class SearchPresenter extends BasePresenter<SearchView> {
             }
         }
         throw new IllegalStateException();
+    }
+
+    @SuppressLint("CheckResult")
+    public void setAutodetect(boolean autodetect) {
+        if (autodetect) {
+            view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    .subscribe(enabled -> {
+                        interactor.saveAutodetect(enabled);
+                        setupAutodetect(enabled);
+                    });
+        } else {
+            interactor.saveAutodetect(false);
+            setupAutodetect(false);
+        }
+    }
+
+    private void setupAutodetect(boolean enabled) {
+        if (view == null) return;
+        view.setAutodetect(enabled);
+        if (enabled) {
+            view.setCountry(interactor.getLocationCountry());
+            view.setCity(anyCountry.getCities());
+        }
     }
 }

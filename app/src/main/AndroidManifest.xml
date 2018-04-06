@@ -3,6 +3,8 @@
           package="io.github.vladimirmi.localradio">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:name=".App"
         android:allowBackup="true"

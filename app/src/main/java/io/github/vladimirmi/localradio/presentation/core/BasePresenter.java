@@ -9,7 +9,7 @@ import io.reactivex.disposables.CompositeDisposable;
 public abstract class BasePresenter<V extends BaseView> {
 
     protected V view;
-    protected final CompositeDisposable mCompDisp = new CompositeDisposable();
+    protected final CompositeDisposable compDisp = new CompositeDisposable();
 
     public final void attachView(V view) {
         this.view = view;
@@ -18,7 +18,7 @@ public abstract class BasePresenter<V extends BaseView> {
 
     public final void detachView() {
         onDetach();
-        mCompDisp.clear();
+        compDisp.clear();
         view = null;
     }
 

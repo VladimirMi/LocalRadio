@@ -23,4 +23,16 @@ public class SearchInteractor {
     public List<Country> getCountries() {
         return locationRepository.getCountries();
     }
+
+    public void saveAutodetect(boolean enabled) {
+        locationRepository.saveAutodetect(enabled);
+    }
+
+    public boolean getAutodetect() {
+        return locationRepository.getAutodetect();
+    }
+
+    public String getLocationCountry() {
+        return locationRepository.getLocationCountry();
+    }
 }

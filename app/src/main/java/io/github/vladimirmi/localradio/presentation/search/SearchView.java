@@ -18,4 +18,6 @@ public interface SearchView extends BaseView {
     void setCountry(String name);
 
     void setCity(List<String> cities);
+
+    void setAutodetect(Boolean enabled);
 }

@@ -40,6 +40,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     protected void setupView(View view) {
+        autodetectCb.setOnCheckedChangeListener((compoundButton, b) -> presenter.setAutodetect(b));
+
         countryEt.setOnItemClickListener((parent, v, position, id) -> {
             presenter.selectCountry((Country) parent.getItemAtPosition(position));
         });
@@ -89,5 +91,18 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         if (!cities.contains(cityEt.getText().toString())) {
             cityEt.setText(cities.get(0));
         }
+    }
+
+    @Override
+    public void setAutodetect(Boolean enabled) {
+        autodetectCb.setChecked(enabled);
+        enableView(countryEt, !enabled);
+        enableView(cityEt, !enabled);
+    }
+
+    private void enableView(TextView view, boolean enable) {
+        view.setEnabled(enable);
+        view.setFocusable(enable);
+        view.setFocusableInTouchMode(enable);
     }
 }
