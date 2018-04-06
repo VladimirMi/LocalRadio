@@ -11,16 +11,17 @@
     <View
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:focusableInTouchMode="true"
         android:focusable="true"
+        android:focusableInTouchMode="true"
         />
 
     <TextView
         android:id="@+id/autodetectTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:labelFor="@+id/autodetectCb"
         android:padding="4dp"
-        android:text="Automatic position detection"
+        android:text="@string/automatic_position_detection"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,26 +35,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <io.github.vladimirmi.localradio.CustomAutoCompleteView
+    <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
         android:id="@+id/countryEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:completionHint="Country"
-        android:hint="Country"
+        android:hint="@string/country"
         android:inputType="textNoSuggestions|textCapSentences"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/autodetectTv"
         />
 
-    <io.github.vladimirmi.localradio.CustomAutoCompleteView
+    <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
         android:id="@+id/cityEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:completionHint="City"
-        android:hint="City"
+        android:layout_marginTop="16dp"
+        android:hint="@string/city"
         android:inputType="textNoSuggestions|textCapSentences"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

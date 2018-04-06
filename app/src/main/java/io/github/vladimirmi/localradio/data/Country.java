@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.data;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.squareup.moshi.Json;
@@ -7,6 +8,8 @@ import com.squareup.moshi.Json;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+
+import io.github.vladimirmi.localradio.R;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -64,8 +67,9 @@ public class Country implements Comparable<Country> {
         return name.hashCode();
     }
 
-    // TODO: 4/5/18 strings to resources
-    public static Country any() {
-        return new Country("XX", Collections.singletonList("Any"), "Any");
+    public static Country any(Context context) {
+        String anyCountry = context.getString(R.string.any_country);
+        String anyCity = context.getString(R.string.any_city);
+        return new Country("XX", Collections.singletonList(anyCity), anyCountry);
     }
 }

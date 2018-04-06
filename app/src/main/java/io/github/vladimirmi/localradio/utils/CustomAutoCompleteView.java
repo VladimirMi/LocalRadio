@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio;
+package io.github.vladimirmi.localradio.utils;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 
 public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
 
-    private boolean isPopupDissmissed = true;
+    private boolean isPopupDismissed = true;
 
     public CustomAutoCompleteView(Context context) {
         this(context, null);
@@ -24,19 +24,19 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
         super(context, attrs, defStyleAttr);
 
         this.setOnClickListener(v -> {
-            if (isPopupDissmissed) showPopup();
+            if (isPopupDismissed) showPopup();
         });
 
         this.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) showPopup();
         });
 
-        setOnDismissListener(() -> postDelayed(() -> isPopupDissmissed = true, 100));
+        setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
     }
 
     private void showPopup() {
         showDropDown();
-        isPopupDissmissed = false;
+        isPopupDismissed = false;
     }
 
     @Override

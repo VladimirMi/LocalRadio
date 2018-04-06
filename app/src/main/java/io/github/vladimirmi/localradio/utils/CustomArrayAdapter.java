@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio;
+package io.github.vladimirmi.localradio.utils;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

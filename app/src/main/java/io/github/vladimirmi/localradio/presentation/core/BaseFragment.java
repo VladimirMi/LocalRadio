@@ -18,7 +18,7 @@ import butterknife.Unbinder;
 
 public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
 
-    protected P mPresenter;
+    protected P presenter;
     private Unbinder mUnbinder;
 
     protected abstract int getLayout();
@@ -28,7 +28,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter = providePresenter();
+        presenter = providePresenter();
     }
 
     @Nullable
@@ -56,12 +56,12 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment {
     public void onResume() {
         super.onResume();
         //noinspection unchecked
-        mPresenter.attachView((BaseView) this);
+        presenter.attachView((BaseView) this);
     }
 
     @Override
     public void onPause() {
-        mPresenter.detachView();
+        presenter.detachView();
         super.onPause();
     }
 }

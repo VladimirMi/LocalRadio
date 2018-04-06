@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.di;
 
+import android.content.Context;
+
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -16,5 +18,9 @@ public class Scopes {
 
     public static Scope getAppScope() {
         return Toothpick.openScope(APP_SCOPE);
+    }
+
+    public static Context appContext() {
+        return getAppScope().getInstance(Context.class);
     }
 }

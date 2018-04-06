@@ -21,8 +21,6 @@ public class SearchInteractor {
     }
 
     public List<Country> getCountries() {
-        List<Country> countries = locationRepository.getCountries();
-        countries.add(0, Country.any());
-        return countries;
+        return locationRepository.getCountries();
     }
 }

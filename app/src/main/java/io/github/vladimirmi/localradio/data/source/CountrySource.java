@@ -9,7 +9,6 @@ import com.squareup.moshi.Types;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,8 +44,7 @@ public class CountrySource {
             JsonAdapter<List<Country>> adapter =
                     moshi.adapter(Types.newParameterizedType(List.class, Country.class));
             countries = adapter.fromJson(sb.toString());
-
-            Collections.sort(countries);
+            countries.add(0, Country.any(context));
 
         } catch (IOException e) {
             e.printStackTrace();
