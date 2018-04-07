@@ -22,7 +22,7 @@ public class SessionCallback extends MediaSessionCompat.Callback {
 
     @Override
     public void onPause() {
-        callback.onPauseCommand();
+        callback.onPauseCommand(60000); //default stop delay 1 min
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SessionCallback extends MediaSessionCompat.Callback {
 
         void onPlayCommand();
 
-        void onPauseCommand();
+        void onPauseCommand(long stopDelay);
 
         void onStopCommand();
 

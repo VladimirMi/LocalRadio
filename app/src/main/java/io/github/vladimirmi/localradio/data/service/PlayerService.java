@@ -18,7 +18,6 @@ import io.github.vladimirmi.localradio.R;
  * Created by Vladimir Mikhalev 07.04.2018.
  */
 
-
 public class PlayerService extends MediaBrowserServiceCompat implements SessionCallback.Interface {
 
     private MediaSessionCompat session;
@@ -28,6 +27,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     | PlaybackStateCompat.ACTION_STOP
                     | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
                     | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS).build();
+
+    private Playback playback;
 
     private boolean serviceStarted = false;
 
@@ -39,8 +40,9 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         session.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         session.setPlaybackState(playbackState);
-
         setSessionToken(session.getSessionToken());
+
+        playback = new Playback(this, playerCallback);
     }
 
     @Nullable
@@ -70,7 +72,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     @Override
-    public void onPauseCommand() {
+    public void onPauseCommand(long stopDelay) {
 
     }
 
@@ -90,4 +92,9 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     //endregion
+
+    private PlayerCallback playerCallback = new PlayerCallback() {
+
+
+    };
 }
