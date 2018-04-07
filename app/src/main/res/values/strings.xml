@@ -10,4 +10,6 @@
     <string name="automatic_position_detection">Automatic position detection</string>
     <string name="any_country">Any country</string>
     <string name="any_city">Any city</string>
+    <string name="station_image">Station image</string>
+    <string name="favorite_icon">favorite_icon</string>
 </resources>

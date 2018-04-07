@@ -21,7 +21,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public class SearchPresenter extends BasePresenter<SearchView> {
 
     private SearchInteractor interactor;
-    private List<Country> countries;
     private Country anyCountry = Country.any(Scopes.appContext());
     private String anyCity = anyCountry.getCities().get(0);
 
@@ -32,8 +31,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     @Override
     protected void onAttach(SearchView view) {
-        countries = interactor.getCountries();
-        view.setCountries(countries);
+        view.setCountries(interactor.getCountries());
         view.setAutodetect(interactor.getAutodetect());
 
         view.setCountry(interactor.getCountry());

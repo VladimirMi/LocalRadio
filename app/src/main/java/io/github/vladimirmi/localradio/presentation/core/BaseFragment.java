@@ -40,11 +40,6 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
         return view;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        setupView(view);
-    }
-
     protected abstract void setupView(View view);
 
     @Override
@@ -58,6 +53,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
         super.onResume();
         //noinspection unchecked
         presenter.attachView(this);
+        setupView(getView());
     }
 
     @Override

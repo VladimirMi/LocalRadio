@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import io.github.vladimirmi.localradio.presentation.search.SearchFragment;
+import io.github.vladimirmi.localradio.presentation.stations.StationsFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -18,7 +19,16 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return new SearchFragment();
+        switch (position) {
+            case 0:
+                return new Fragment();
+            case 1:
+                return new StationsFragment();
+            case 2:
+                return new SearchFragment();
+            default:
+                throw new IllegalStateException();
+        }
     }
 
     @Override
