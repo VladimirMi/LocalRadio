@@ -74,4 +74,8 @@ public class PlayerCallback implements Player.EventListener {
     public void onSeekProcessed() {
 
     }
+
+    public void onMetadata(Metadata metadata) {
+
+    }
 }

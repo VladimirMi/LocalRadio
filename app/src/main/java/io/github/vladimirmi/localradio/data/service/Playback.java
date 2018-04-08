@@ -20,11 +20,11 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DefaultAllocator;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import io.github.vladimirmi.localradio.BuildConfig;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.data.source.IcyDataSourceFactory;
 
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 
@@ -117,7 +117,8 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
 
     private void preparePlayer(Uri uri) {
         String userAgent = Util.getUserAgent(service, service.getString(R.string.app_name));
-        ExtractorMediaSource mediaSource = new ExtractorMediaSource.Factory(new DefaultHttpDataSourceFactory(userAgent))
+        IcyDataSourceFactory dataSourceFactory = new IcyDataSourceFactory(userAgent, callback);
+        ExtractorMediaSource mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(uri);
 
         player.prepare(mediaSource);
