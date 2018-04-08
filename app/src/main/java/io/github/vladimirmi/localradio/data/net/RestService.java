@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.data.net;
 
+import io.github.vladimirmi.localradio.data.entity.StationUrlResult;
 import io.github.vladimirmi.localradio.data.entity.StationsResult;
 import io.reactivex.Single;
 import retrofit2.http.GET;
@@ -19,6 +20,9 @@ public interface RestService {
     Single<StationsResult> getStationsByIp(@Query("ip") String ip);
 
     @GET("darstations.php")
-    Single<StationsResult> getStationsByLocation(@Query("countryCode") String country,
+    Single<StationsResult> getStationsByLocation(@Query("country") String countryCode,
                                                  @Query("city") String city);
+
+    @GET("uberstationurl.php")
+    Single<StationUrlResult> getStationUrl(@Query("station_id") int stationId);
 }

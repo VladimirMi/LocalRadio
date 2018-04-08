@@ -8,7 +8,7 @@ import com.squareup.moshi.Json;
 
 public class Station {
 
-    @Json(name = "station_id") private String id;
+    @Json(name = "station_id") private int id;
     @Json(name = "callsign") private String callsign;
     @Json(name = "band") private String band;
     @Json(name = "ubergenre") private String genre;
@@ -24,6 +24,7 @@ public class Station {
     @Json(name = "email") private String email;
     @Json(name = "dial") private String dial;
     @Json(name = "slogan") private String slogan;
+    @Json(name = "url") private String url;
 
     public String getBand() {
         return band;
@@ -81,11 +82,19 @@ public class Station {
         return dial;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
     public String getSlogan() {
         return slogan;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

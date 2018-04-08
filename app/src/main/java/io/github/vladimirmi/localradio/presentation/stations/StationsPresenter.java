@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.stations;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -21,8 +22,12 @@ public class StationsPresenter extends BasePresenter<StationsView> {
 
     @Override
     protected void onAttach(StationsView view) {
-        compDisp.add(interactor.getStations()
+        compDisp.add(interactor.getStationsObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::setStations));
+    }
+
+    public void select(Station station) {
+        interactor.setCurrentStation(station).subscribe();
     }
 }

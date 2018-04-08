@@ -16,7 +16,8 @@ import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
  * Created by Vladimir Mikhalev 06.04.2018.
  */
 
-public class StationsFragment extends BaseFragment<StationsPresenter> implements StationsView {
+public class StationsFragment extends BaseFragment<StationsPresenter>
+        implements StationsView, StationsAdapter.onStationListener {
 
     private StationsAdapter stationsAdapter;
 
@@ -38,12 +39,22 @@ public class StationsFragment extends BaseFragment<StationsPresenter> implements
         DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),
                 layoutManager.getOrientation());
         stationList.addItemDecoration(itemDecoration);
-        stationsAdapter = new StationsAdapter();
+        stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
     }
 
     @Override
     public void setStations(List<Station> stations) {
         stationsAdapter.setStations(stations);
+    }
+
+    @Override
+    public void onStationClick(Station station) {
+        presenter.select(station);
+    }
+
+    @Override
+    public void onStationLongClick(Station station) {
+
     }
 }

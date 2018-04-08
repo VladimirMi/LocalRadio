@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
 
 /**
@@ -21,7 +22,19 @@ public class StationsInteractor {
         this.stationsRepository = stationsRepository;
     }
 
-    public Observable<List<Station>> getStations() {
+    public Observable<List<Station>> getStationsObs() {
         return stationsRepository.getStations();
+    }
+
+    public Observable<Station> getCurrentStationObs() {
+        return stationsRepository.getCurrentStation();
+    }
+
+    public Station getCurrentStation() {
+        return stationsRepository.getCurrentStation().getValue();
+    }
+
+    public Completable setCurrentStation(Station station) {
+        return stationsRepository.setCurrentStation(station);
     }
 }

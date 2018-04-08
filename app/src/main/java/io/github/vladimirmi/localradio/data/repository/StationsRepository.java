@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.data.repository;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -28,6 +29,7 @@ public class StationsRepository {
     private final NetworkChecker networkChecker;
 
     private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
+    private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
 
     @Inject
     public StationsRepository(RestService restService,
@@ -54,7 +56,7 @@ public class StationsRepository {
         if (preferences.autodetect.get()) {
             result = locationSource.getLastLocation()
                     .flatMap(location -> restService
-                            .getStationsByCoordinates(location.getLatitude(), location.getLongitude())
+                            .getStationsByCoordinates(round(location.getLatitude()), round(location.getLongitude()))
                             .flatMap(stationsResult -> {
                                 if (!stationsResult.isSuccess()) {
                                     return restService.getStationsByIp(networkChecker.getIp());
@@ -69,10 +71,48 @@ public class StationsRepository {
                     });
 
         } else {
-            result = restService.getStationsByLocation(preferences.countryCode.get(), preferences.city.get())
-                    .map(StationsResult::getStations);
+            String countryCode = preferences.countryCode.get();
+            if (countryCode.isEmpty()) {
+                result = Single.just(Collections.emptyList());
+            } else {
+                result = restService.getStationsByLocation(countryCode, preferences.city.get())
+                        .map(StationsResult::getStations);
+            }
         }
         return result.doOnSuccess(this.stations)
                 .toCompletable();
+    }
+
+    public BehaviorRelay<Station> getCurrentStation() {
+        return currentStation;
+    }
+
+    public Completable setCurrentStation(Station station) {
+        Completable ensureHaveUrl;
+
+        if (station.getUrl() == null) {
+            ensureHaveUrl = restService.getStationUrl(station.getId())
+                    .filter(stationUrlResult -> stationUrlResult.isSuccess() && !stationUrlResult.getResult().isEmpty())
+                    .map(stationUrlResult -> stationUrlResult.getResult().get(0))
+                    .doOnSuccess(stationWithUrl -> {
+                        List<Station> newList = stations.getValue();
+                        for (Station newStation : newList) {
+                            if (newStation.getId() == stationWithUrl.getId()) {
+                                newStation.setUrl(stationWithUrl.getUrl());
+                                currentStation.accept(newStation);
+                                stations.accept(newList);
+                                break;
+                            }
+                        }
+                    }).ignoreElement();
+        } else {
+            ensureHaveUrl = Completable.fromAction(() -> currentStation.accept(station));
+        }
+
+        return ensureHaveUrl;
+    }
+
+    private double round(double x) {
+        return Math.round(x * 100.0) / 100.0;
     }
 }

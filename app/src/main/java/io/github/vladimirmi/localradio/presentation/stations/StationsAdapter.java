@@ -25,6 +25,11 @@ import io.github.vladimirmi.localradio.data.entity.Station;
 public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.StationVH> {
 
     private List<Station> stations;
+    private final onStationListener listener;
+
+    public StationsAdapter(onStationListener listener) {
+        this.listener = listener;
+    }
 
     public void setStations(List<Station> stations) {
         this.stations = stations;
@@ -40,7 +45,9 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position) {
-        holder.bind(stations.get(position));
+        Station station = stations.get(position);
+        holder.bind(station);
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
     }
 
     @Override
@@ -79,5 +86,12 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
                     .error(R.drawable.ic_radio)
                     .into(imageIv);
         }
+    }
+
+    interface onStationListener {
+
+        void onStationClick(Station station);
+
+        void onStationLongClick(Station station);
     }
 }
