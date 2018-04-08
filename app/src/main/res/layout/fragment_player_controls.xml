@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryDark"
+    >
+
+    <ImageView
+        android:id="@+id/iconIv"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/desc_station_icon"
+        android:src="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <Button
+        android:id="@+id/previous"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/ic_skip_previous"
+        android:contentDescription="@string/desc_skip_previous_button"
+        app:layout_constraintBottom_toBottomOf="@+id/play_pause"
+        app:layout_constraintEnd_toStartOf="@+id/play_pause"
+        app:layout_constraintTop_toTopOf="@+id/play_pause"
+        />
+
+    <Button
+        android:id="@+id/play_pause"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="@drawable/ic_play"
+        android:contentDescription="@string/desc_play_pause_button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/metadata"
+        />
+
+    <Button
+        android:id="@+id/next"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ic_skip_next"
+        android:contentDescription="@string/desc_skip_next_button"
+        app:layout_constraintBottom_toBottomOf="@+id/play_pause"
+        app:layout_constraintStart_toEndOf="@+id/play_pause"
+        app:layout_constraintTop_toTopOf="@+id/play_pause"
+        />
+
+    <Button
+        android:id="@+id/favorite"
+        android:layout_width="48dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/ic_star"
+        android:contentDescription="@string/desc_favorite"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/play_pause"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/play_pause"
+        />
+
+    <TextView
+        android:id="@+id/metadata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:text="Festus vigils ducunt ad gemna."
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
+        app:layout_constraintStart_toEndOf="@+id/iconIv"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+</android.support.constraint.ConstraintLayout>

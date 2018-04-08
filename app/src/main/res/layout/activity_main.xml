@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
     >
 
@@ -21,7 +22,6 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_weight="1"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/app_name"
             >
@@ -35,35 +35,48 @@
             >
 
             <android.support.design.widget.TabItem
-                android:id="@+id/tabItem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Favorite"
+                android:text="@string/favorite"
                 />
 
             <android.support.design.widget.TabItem
-                android:id="@+id/tabItem2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Stations"
+                android:text="@string/stations"
                 />
 
             <android.support.design.widget.TabItem
-                android:id="@+id/tabItem3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Search"
+                android:text="@string/search"
                 />
 
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <io.github.vladimirmi.localradio.utils.NonSwipeableViewPager
-        android:id="@+id/container"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        >
+
+        <io.github.vladimirmi.localradio.utils.NonSwipeableViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            />
+
+        <fragment
+            android:id="@+id/playerControlsFr"
+            android:name="io.github.vladimirmi.localradio.presentation.playercontrol.PlayerControlFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_player_controls"
+            />
+    </LinearLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

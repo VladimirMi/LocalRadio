@@ -3,8 +3,6 @@ package io.github.vladimirmi.localradio.presentation.main;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
@@ -14,7 +12,7 @@ public class MainActivity extends BaseActivity<MainPresenter> {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.tabs) TabLayout tabs;
-    @BindView(R.id.container) ViewPager viewPager;
+    @BindView(R.id.viewPager) ViewPager viewPager;
 
     @Override
     protected int getLayout() {
@@ -36,21 +34,4 @@ public class MainActivity extends BaseActivity<MainPresenter> {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        //noinspection SimplifiableIfStatement
-        if (item.getItemId() == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
 }

@@ -4,22 +4,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="88dp"
+    android:layout_height="72dp"
     >
 
     <ImageView
         android:id="@+id/imageIv"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
+        android:contentDescription="@string/desc_station_icon"
         android:src="@drawable/ic_radio"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/station_image"
         />
 
     <TextView
@@ -28,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:fontFamily="sans-serif-condensed"
         android:maxLines="1"
@@ -62,7 +59,7 @@
         android:src="@drawable/ic_star"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/favorite_icon"
+        android:contentDescription="@string/desc_favorite"
         />
 
     <TextView
