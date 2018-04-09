@@ -37,4 +37,12 @@ public class StationsInteractor {
     public Completable setCurrentStation(Station station) {
         return stationsRepository.setCurrentStation(station);
     }
+
+    public Completable previousStation() {
+        return Completable.complete();
+    }
+
+    public Completable nextStation() {
+        return Completable.complete();
+    }
 }

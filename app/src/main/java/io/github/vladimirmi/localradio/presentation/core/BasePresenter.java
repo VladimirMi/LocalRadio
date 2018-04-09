@@ -26,6 +26,5 @@ public abstract class BasePresenter<V extends BaseView> {
     }
 
     protected void onDetach() {
-        //no-op
     }
 }

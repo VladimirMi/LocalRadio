@@ -20,7 +20,7 @@ import io.reactivex.Observable;
 public abstract class BaseFragment<P extends BasePresenter> extends Fragment implements BaseView {
 
     protected P presenter;
-    private Unbinder mUnbinder;
+    private Unbinder unbinder;
 
     protected abstract int getLayout();
 
@@ -36,7 +36,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(getLayout(), container, false);
-        mUnbinder = ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
@@ -45,7 +45,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mUnbinder.unbind();
+        unbinder.unbind();
     }
 
     @Override

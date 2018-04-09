@@ -6,9 +6,10 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
 
-public class MainActivity extends BaseActivity<MainPresenter> {
+public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.tabs) TabLayout tabs;
@@ -21,7 +22,7 @@ public class MainActivity extends BaseActivity<MainPresenter> {
 
     @Override
     protected MainPresenter providePresenter() {
-        return new MainPresenter();
+        return Scopes.getAppScope().getInstance(MainPresenter.class);
     }
 
     @Override

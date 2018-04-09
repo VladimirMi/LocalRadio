@@ -122,7 +122,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onPlayCommand() {
-        stopTask.cancel();
+        if (stopTask != null) stopTask.cancel();
         startService();
         if (isPaused() && currentStationId == playingStationId) {
             playback.resume();

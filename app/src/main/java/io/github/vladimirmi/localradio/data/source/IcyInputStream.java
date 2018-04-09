@@ -24,6 +24,7 @@ public class IcyInputStream extends FilterInputStream {
     public IcyInputStream(InputStream in, int window, PlayerCallback playerCallback) {
         super(in);
         this.window = window;
+        bytesBeforeMetadata = window;
         this.playerCallback = playerCallback;
     }
 
@@ -50,13 +51,14 @@ public class IcyInputStream extends FilterInputStream {
             buffer = new byte[size];
         }
         ensureFill(buffer, 0, size);
-        int actulaSize = size;
+        int actualSize = 0;
         for (int i = 0; i < size; i++) {
             if (buffer[i] == 0) {
-                actulaSize = i;
+                actualSize = i;
+                break;
             }
         }
-        String meta = new String(buffer, 0, actulaSize);
+        String meta = new String(buffer, 0, actualSize);
         playerCallback.onMetadata(Metadata.create(meta));
     }
 
@@ -64,7 +66,7 @@ public class IcyInputStream extends FilterInputStream {
     private int ensureFill(byte[] buffer, int offset, int size) throws IOException {
         int read = super.read(buffer, offset, size);
 
-        if (read != -1 && buffer.length - read > 0) {
+        if (read != -1 && size - read > 0) {
             return read + ensureFill(buffer, offset + read, size - read);
         } else {
             return read;

@@ -102,7 +102,7 @@ public class StringUtils {
         boolean startFound = false;
 
         while (start <= end) {
-            int index = startFound ? start : end;
+            int index = startFound ? end : start;
             boolean match = predicate.apply(chars[index]);
 
             if (!startFound) {
