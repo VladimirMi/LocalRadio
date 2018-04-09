@@ -57,9 +57,11 @@ public class Metadata {
     }
 
     public static Metadata create(MediaMetadataCompat meta) {
+        CharSequence subtitle = meta.getDescription().getSubtitle();
+        CharSequence title = meta.getDescription().getTitle();
         return new Metadata(
-                meta.getDescription().getSubtitle().toString(),
-                meta.getDescription().getTitle().toString()
+                subtitle == null ? "" : subtitle.toString(),
+                title == null ? "" : title.toString()
         );
     }
 

@@ -34,8 +34,8 @@ import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 
 public class Playback implements AudioManager.OnAudioFocusChangeListener {
 
-    public static final float VOLUME_DUCK = 0.2f;
-    public static final float VOLUME_NORMAL = 1.0f;
+    private static final float VOLUME_DUCK = 0.2f;
+    private static final float VOLUME_NORMAL = 1.0f;
 
     private final PlayerService service;
     private final PlayerCallback callback;
@@ -77,13 +77,17 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     public void stop() {
         playAgainOnFocus = false;
         playAgainOnHeadset = false;
-        player.stop();
+        if (player != null) {
+            player.stop();
+        }
     }
 
     public void releasePlayer() {
-        player.removeListener(callback);
-        player.release();
-        player = null;
+        if (player != null) {
+            player.removeListener(callback);
+            player.release();
+            player = null;
+        }
     }
 
     @Override

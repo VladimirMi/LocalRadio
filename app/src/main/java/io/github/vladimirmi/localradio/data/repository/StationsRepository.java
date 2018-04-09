@@ -16,6 +16,7 @@ import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -68,6 +69,10 @@ public class StationsRepository {
                     .doOnSuccess(stations -> {
                         preferences.countryCode.put(stations.get(0).getCountryCode());
                         preferences.city.put("");
+                    })
+                    .onErrorReturn(throwable -> {
+                        Timber.w(throwable);
+                        return Collections.emptyList();
                     });
 
         } else {
@@ -75,7 +80,7 @@ public class StationsRepository {
             if (countryCode.isEmpty()) {
                 result = Single.just(Collections.emptyList());
             } else {
-                result = restService.getStationsByLocation(countryCode, preferences.city.get())
+                result = restService.getStationsByLocation(countryCode, preferences.city.get(), 1)
                         .map(StationsResult::getStations);
             }
         }
@@ -88,6 +93,7 @@ public class StationsRepository {
     }
 
     public Completable setCurrentStation(Station station) {
+        preferences.currentStation.put(station.getId());
         Completable ensureHaveUrl;
 
         if (station.getUrl() == null) {

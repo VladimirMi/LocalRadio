@@ -21,7 +21,8 @@ public interface RestService {
 
     @GET("darstations.php")
     Single<StationsResult> getStationsByLocation(@Query("country") String countryCode,
-                                                 @Query("city") String city);
+                                                 @Query("city") String city,
+                                                 @Query("exact") int exact);
 
     @GET("uberstationurl.php")
     Single<StationUrlResult> getStationUrl(@Query("station_id") int stationId);
