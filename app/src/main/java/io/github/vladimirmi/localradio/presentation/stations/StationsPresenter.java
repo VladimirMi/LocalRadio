@@ -25,9 +25,13 @@ public class StationsPresenter extends BasePresenter<StationsView> {
         compDisp.add(interactor.getStationsObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::setStations));
+
+        compDisp.add(interactor.getCurrentStationObs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::selectStation));
     }
 
     public void select(Station station) {
-        interactor.setCurrentStation(station).subscribe();
+        compDisp.add(interactor.setCurrentStation(station).subscribe());
     }
 }

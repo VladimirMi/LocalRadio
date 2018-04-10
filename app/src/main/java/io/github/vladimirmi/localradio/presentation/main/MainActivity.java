@@ -35,4 +35,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
     }
+
+    @Override
+    public void showStations() {
+        viewPager.setCurrentItem(1);
+    }
+
+    @Override
+    public void showSearch() {
+        viewPager.setCurrentItem(2);
+    }
 }

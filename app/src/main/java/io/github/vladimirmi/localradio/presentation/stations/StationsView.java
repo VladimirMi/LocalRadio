@@ -12,4 +12,6 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
 public interface StationsView extends BaseView {
 
     void setStations(List<Station> stations);
+
+    void selectStation(Station station);
 }

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp"
     >
 
@@ -15,11 +16,13 @@
         android:focusableInTouchMode="true"
         />
 
-    <TextView
-        android:id="@+id/autodetectTv"
-        android:layout_width="wrap_content"
+
+    <CheckedTextView
+        android:id="@+id/autodetectCb"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:labelFor="@+id/autodetectCb"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:checked="true"
         android:padding="4dp"
         android:text="@string/automatic_position_detection"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
@@ -27,36 +30,55 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <CheckBox
-        android:id="@+id/autodetectCb"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBaseline_toBaselineOf="@id/autodetectTv"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-
-    <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
-        android:id="@+id/countryEt"
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:hint="@string/country"
-        android:inputType="textNoSuggestions|textCapSentences"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/autodetectTv"
-        />
+        android:columnCount="2"
+        >
 
-    <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
-        android:id="@+id/cityEt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/city"
-        android:inputType="textNoSuggestions|textCapSentences"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countryEt"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="8dp"
+            android:padding="4dp"
+            android:text="Country:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textSize="16sp"
+            />
 
-</android.support.constraint.ConstraintLayout>
+        <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+            android:id="@+id/countryEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/country"
+            android:inputType="textNoSuggestions|textCapSentences"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/autodetectCb"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:text="City:"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textSize="16sp"
+            />
+
+
+        <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+            android:id="@+id/cityEt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/city"
+            android:inputType="textNoSuggestions|textCapSentences"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/countryEt"
+            />
+    </GridLayout>
+
+
+</LinearLayout>

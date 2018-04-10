@@ -11,6 +11,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -45,7 +46,15 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     @Override
     public void setStations(List<Station> stations) {
-        stationsAdapter.setStations(stations);
+        stationsAdapter.submitList(stations);
+    }
+
+    @Override
+    public void selectStation(Station station) {
+        Timber.e("selectStation with id %s", station.getId());
+        stationsAdapter.select(station);
+        int stationPosition = stationsAdapter.getPositionById(station.getId());
+        ((RecyclerView) getView()).smoothScrollToPosition(stationPosition);
     }
 
     @Override

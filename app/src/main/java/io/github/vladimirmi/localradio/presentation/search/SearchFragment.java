@@ -4,7 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -23,8 +23,7 @@ import io.github.vladimirmi.localradio.utils.CustomAutoCompleteView;
 
 public class SearchFragment extends BaseFragment<SearchPresenter> implements SearchView {
 
-    @BindView(R.id.autodetectTv) TextView autodetectTv;
-    @BindView(R.id.autodetectCb) CheckBox autodetectCb;
+    @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
 
@@ -40,7 +39,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     protected void setupView(View view) {
-        autodetectCb.setOnCheckedChangeListener((compoundButton, b) -> presenter.setAutodetect(b));
+        autodetectCb.setOnClickListener(v -> presenter.setAutodetect(!autodetectCb.isChecked()));
 
         countryEt.setOnItemClickListener((parent, v, position, id) -> {
             presenter.selectCountry((Country) parent.getItemAtPosition(position));

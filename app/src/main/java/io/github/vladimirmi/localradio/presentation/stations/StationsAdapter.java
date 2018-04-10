@@ -1,6 +1,9 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.recyclerview.extensions.ListAdapter;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +25,33 @@ import io.github.vladimirmi.localradio.data.entity.Station;
  * Created by Vladimir Mikhalev 06.04.2018.
  */
 
-public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.StationVH> {
+public class StationsAdapter extends ListAdapter<Station, StationsAdapter.StationVH> {
 
-    private List<Station> stations;
     private final onStationListener listener;
+    private Station selectedStation;
+    private List<Station> stations;
+
+    private static final DiffUtil.ItemCallback CALLBACK = new DiffUtil.ItemCallback<Station>() {
+        @Override
+        public boolean areItemsTheSame(Station oldItem, Station newItem) {
+            return oldItem.getId() == newItem.getId();
+        }
+
+        @Override
+        public boolean areContentsTheSame(Station oldItem, Station newItem) {
+            return true;
+        }
+    };
 
     public StationsAdapter(onStationListener listener) {
+        super(CALLBACK);
         this.listener = listener;
     }
 
-    public void setStations(List<Station> stations) {
-        this.stations = stations;
-        notifyDataSetChanged();
+    @Override
+    public void submitList(List<Station> list) {
+        stations = list;
+        super.submitList(list);
     }
 
     @NonNull
@@ -45,14 +63,25 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position) {
-        Station station = stations.get(position);
+        Station station = getItem(position);
         holder.bind(station);
+        holder.select(selectedStation != null && selectedStation.getId() == station.getId());
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
     }
 
-    @Override
-    public int getItemCount() {
-        return stations == null ? 0 : stations.size();
+    public void select(Station station) {
+        int oldSelectedPos = stations.indexOf(selectedStation);
+        int newSelectedPos = stations.indexOf(station);
+        selectedStation = station;
+        notifyItemChanged(oldSelectedPos);
+        notifyItemChanged(newSelectedPos);
+    }
+
+    public int getPositionById(int stationId) {
+        for (int i = 0; i < stations.size(); i++) {
+            if (stations.get(i).getId() == stationId) return i;
+        }
+        return 0;
     }
 
     static class StationVH extends RecyclerView.ViewHolder {
@@ -85,6 +114,16 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .error(R.drawable.ic_radio)
                     .into(imageIv);
+        }
+
+        public void select(boolean select) {
+            final int color;
+            if (select) {
+                color = ContextCompat.getColor(itemView.getContext(), R.color.selected);
+            } else {
+                color = ContextCompat.getColor(itemView.getContext(), android.R.color.transparent);
+            }
+            itemView.setBackgroundColor(color);
         }
     }
 

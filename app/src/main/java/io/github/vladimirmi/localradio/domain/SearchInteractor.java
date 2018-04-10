@@ -39,15 +39,15 @@ public class SearchInteractor {
 
     public Completable saveAutodetect(boolean enabled) {
         locationRepository.saveAutodetect(enabled);
-        if (enabled) {
-            return performSearching();
-        } else {
-            return Completable.complete();
-        }
+        return stationsRepository.refreshStations();
     }
 
-    public boolean getAutodetect() {
-        return locationRepository.getAutodetect();
+    public boolean isAutodetect() {
+        return locationRepository.isAutodetect();
+    }
+
+    public boolean isDone() {
+        return isAutodetect() || !getCountry().isEmpty();
     }
 
     public String getCountry() {
@@ -64,7 +64,7 @@ public class SearchInteractor {
 
     public Completable search(String countryName, String cityName) {
         saveCountryCodeCity(countryName, cityName);
-        return performSearching();
+        return stationsRepository.refreshStations();
     }
 
     private void saveCountryCodeCity(String countryName, String cityName) {
@@ -75,10 +75,6 @@ public class SearchInteractor {
             }
         }
         locationRepository.saveCountryCodeCity(countryCode, cityName);
-    }
-
-    private Completable performSearching() {
-        return stationsRepository.refreshStations();
     }
 
     @NonNull

@@ -29,8 +29,8 @@ public class StationsRepository {
     private final Preferences preferences;
     private final NetworkChecker networkChecker;
 
-    private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
-    private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
+    private final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
+    private final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
 
     @Inject
     public StationsRepository(RestService restService,
@@ -41,51 +41,31 @@ public class StationsRepository {
         this.locationSource = locationSource;
         this.preferences = preferences;
         this.networkChecker = networkChecker;
+
+        refreshStations().subscribe();
     }
 
     public Observable<List<Station>> getStations() {
-        if (stations.hasValue()) {
-            return stations;
-        } else {
-            return refreshStations().andThen(stations);
-        }
+        return stations;
     }
 
     public Completable refreshStations() {
         Single<List<Station>> result;
 
         if (preferences.autodetect.get()) {
-            result = locationSource.getLastLocation()
-                    .flatMap(location -> restService
-                            .getStationsByCoordinates(round(location.getLatitude()), round(location.getLongitude()))
-                            .flatMap(stationsResult -> {
-                                if (!stationsResult.isSuccess()) {
-                                    return restService.getStationsByIp(networkChecker.getIp());
-                                } else {
-                                    return Single.just(stationsResult);
-                                }
-                            }))
-                    .map(StationsResult::getStations)
-                    .doOnSuccess(stations -> {
-                        preferences.countryCode.put(stations.get(0).getCountryCode());
-                        preferences.city.put("");
-                    })
-                    .onErrorReturn(throwable -> {
-                        Timber.w(throwable);
-                        return Collections.emptyList();
-                    });
-
+            result = searchStationsAuto();
         } else {
-            String countryCode = preferences.countryCode.get();
-            if (countryCode.isEmpty()) {
-                result = Single.just(Collections.emptyList());
-            } else {
-                result = restService.getStationsByLocation(countryCode, preferences.city.get(), 1)
-                        .map(StationsResult::getStations);
-            }
+            result = searchStationsManual();
         }
-        return result.doOnSuccess(this.stations)
-                .toCompletable();
+        return result
+                .onErrorReturn(throwable -> {
+                    Timber.w(throwable);
+                    return Collections.emptyList();
+                })
+                .flatMapCompletable(stations -> {
+                    this.stations.accept(stations);
+                    return updateCurrentStation(stations);
+                });
     }
 
     public BehaviorRelay<Station> getCurrentStation() {
@@ -96,7 +76,7 @@ public class StationsRepository {
         preferences.currentStation.put(station.getId());
         Completable ensureHaveUrl;
 
-        if (station.getUrl() == null) {
+        if (!station.isNullStation() && station.getUrl() == null) {
             ensureHaveUrl = restService.getStationUrl(station.getId())
                     .filter(stationUrlResult -> stationUrlResult.isSuccess() && !stationUrlResult.getResult().isEmpty())
                     .map(stationUrlResult -> stationUrlResult.getResult().get(0))
@@ -116,6 +96,55 @@ public class StationsRepository {
         }
 
         return ensureHaveUrl;
+    }
+
+    private Single<List<Station>> searchStationsAuto() {
+        return locationSource.getLastLocation()
+                .flatMap(location -> restService
+                        .getStationsByCoordinates(round(location.getLatitude()), round(location.getLongitude()))
+                        .flatMap(stationsResult -> {
+                            if (!stationsResult.isSuccess()) {
+                                return restService.getStationsByIp(networkChecker.getIp());
+                            } else {
+                                return Single.just(stationsResult);
+                            }
+                        }))
+                .map(StationsResult::getStations)
+                .doOnSuccess(stations -> {
+                    preferences.countryCode.put(stations.get(0).getCountryCode());
+                    preferences.city.put("");
+                });
+    }
+
+    private Single<List<Station>> searchStationsManual() {
+        Single<List<Station>> result;
+        String countryCode = preferences.countryCode.get();
+        if (countryCode.isEmpty()) {
+            result = Single.just(Collections.emptyList());
+        } else {
+            result = restService.getStationsByLocation(countryCode, preferences.city.get(), 1)
+                    .map(StationsResult::getStations);
+        }
+        return result;
+    }
+
+    private Completable updateCurrentStation(List<Station> stations) {
+        Station newCurrentStation = null;
+        for (Station station : stations) {
+            if (station.getId() == preferences.currentStation.get()) {
+                newCurrentStation = station;
+            }
+        }
+
+        if (newCurrentStation == null || !stations.contains(newCurrentStation)) {
+            if (stations.isEmpty()) {
+                newCurrentStation = Station.nullStation();
+            } else {
+                newCurrentStation = stations.get(0);
+                preferences.currentStation.put(newCurrentStation.getId());
+            }
+        }
+        return setCurrentStation(newCurrentStation);
     }
 
     private double round(double x) {

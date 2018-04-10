@@ -32,7 +32,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     @Override
     protected void onAttach(SearchView view) {
         view.setCountries(interactor.getCountries());
-        view.setAutodetect(interactor.getAutodetect());
+        view.setAutodetect(interactor.isAutodetect());
 
         view.setCountry(interactor.getCountry());
         view.setCity(Collections.singletonList(interactor.getCity()));
@@ -56,17 +56,13 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     @SuppressLint("CheckResult")
     public void setAutodetect(boolean autodetect) {
-        if (autodetect) {
-            view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    .doOnNext(enabled -> {
-                        if (view != null) view.setAutodetect(enabled);
-                    })
-                    .flatMapCompletable(interactor::saveAutodetect)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(() -> view.setCountry(interactor.getCountry()));
-        } else {
-            interactor.saveAutodetect(false);
-            view.setAutodetect(false);
-        }
+        view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+                .map(enabled -> enabled && autodetect)
+                .doOnNext(enabled -> {
+                    if (view != null) view.setAutodetect(enabled);
+                })
+                .flatMapCompletable(interactor::saveAutodetect)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> view.setCountry(interactor.getCountry()));
     }
 }

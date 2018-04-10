@@ -8,4 +8,7 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 public interface MainView extends BaseView {
 
+    void showStations();
+
+    void showSearch();
 }
