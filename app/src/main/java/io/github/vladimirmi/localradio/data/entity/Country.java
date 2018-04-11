@@ -67,9 +67,10 @@ public class Country implements Comparable<Country> {
         return name.hashCode();
     }
 
+
     public static Country any(Context context) {
         String anyCountry = context.getString(R.string.any_country);
         String anyCity = context.getString(R.string.any_city);
-        return new Country("XX", Collections.singletonList(anyCity), anyCountry);
+        return new Country("", Collections.singletonList(anyCity), anyCountry);
     }
 }

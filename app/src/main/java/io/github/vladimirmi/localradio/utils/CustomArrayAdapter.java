@@ -77,7 +77,8 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
                 }
             }
 
-            if (prefix == null || prefix.length() == 0) {
+            if (prefix == null || prefix.length() == 0
+                    || prefix.toString().equalsIgnoreCase(defaultValue.toString())) {
                 final ArrayList<T> list;
                 synchronized (lock) {
                     list = new ArrayList<>(originalValues);

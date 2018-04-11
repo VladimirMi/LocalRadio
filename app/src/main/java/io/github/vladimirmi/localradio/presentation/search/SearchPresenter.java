@@ -9,9 +9,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Country;
+import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.utils.RxUtils.ErrorCompletableObserver;
+import io.github.vladimirmi.localradio.utils.RxUtils.ErrorObservableObserver;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
@@ -20,38 +24,53 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class SearchPresenter extends BasePresenter<SearchView> {
 
-    private SearchInteractor interactor;
-    private Country anyCountry = Country.any(Scopes.appContext());
-    private String anyCity = anyCountry.getCities().get(0);
+    private final SearchInteractor searchInteractor;
+    private final StationsInteractor stationsInteractor;
+    private final Country anyCountry = Country.any(Scopes.appContext());
+    private final String anyCity = anyCountry.getCities().get(0);
 
     @Inject
-    public SearchPresenter(SearchInteractor interactor) {
-        this.interactor = interactor;
+    public SearchPresenter(SearchInteractor searchInteractor,
+                           StationsInteractor stationsInteractor) {
+        this.searchInteractor = searchInteractor;
+        this.stationsInteractor = stationsInteractor;
     }
 
     @Override
     protected void onAttach(SearchView view) {
-        view.setCountries(interactor.getCountries());
-        view.setAutodetect(interactor.isAutodetect());
+        view.setCountries(searchInteractor.getCountries());
+        view.setAutodetect(searchInteractor.isAutodetect());
+        view.setNewSearch(!searchInteractor.isDone());
 
-        view.setCountry(interactor.getCountry());
-        view.setCity(Collections.singletonList(interactor.getCity()));
+        view.setCountryName(searchInteractor.getCountryName());
+        view.setCity(searchInteractor.getCity());
+
+        compDisp.add(stationsInteractor.getStationsObs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new ErrorObservableObserver<List<Station>>(view) {
+                    @Override
+                    public void onNext(List<Station> stations) {
+                        view.setSearchResult(searchInteractor.isDone() ? stations.size() : -1);
+                    }
+                }));
     }
 
     public void selectCountry(Country country) {
-        List<String> cities = interactor.findCities(Collections.singletonList(country));
+        List<String> cities = searchInteractor.findCities(Collections.singletonList(country));
         view.setCities(cities);
-        view.setCity(cities);
+        view.setCity(cities.get(0));
+        view.setCountryName(country.getName());
     }
 
     public void selectCountries(List<Country> countries) {
-        view.setCities(interactor.findCities(countries));
+        view.setCities(searchInteractor.findCities(countries));
     }
 
     public void selectCity(String city) {
         if (!city.equals(anyCity)) {
-            view.setCountry(interactor.findCountry(city).getName());
+            view.setCountryName(searchInteractor.findCountry(city).getName());
         }
+        view.setCity(city);
     }
 
     @SuppressLint("CheckResult")
@@ -61,8 +80,44 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .doOnNext(enabled -> {
                     if (view != null) view.setAutodetect(enabled);
                 })
-                .flatMapCompletable(interactor::saveAutodetect)
+                .firstOrError()
+                .flatMapCompletable(searchInteractor::saveAutodetect)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> view.setCountry(interactor.getCountry()));
+                .subscribeWith(new ErrorCompletableObserver(view) {
+                    @Override
+                    public void onComplete() {
+                        view.setCountryName(searchInteractor.getCountryName());
+                        view.setCity(searchInteractor.getCity());
+                    }
+                });
+    }
+
+    public void performSearch(String country, String city) {
+        if (country.isEmpty() || country.equals(anyCountry.getName())) {
+            country = searchInteractor.findCountry(city).getName();
+            view.setCountryName(country);
+        }
+        compDisp.add(searchInteractor.search(country, city)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new ErrorCompletableObserver(view) {
+                    @Override
+                    public void onComplete() {
+                        view.setNewSearch(false);
+                    }
+                }));
+    }
+
+    public void refreshSearch() {
+        compDisp.add(searchInteractor.performSearch()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new ErrorCompletableObserver(view) {
+                    @Override
+                    public void onComplete() {
+                    }
+                }));
+    }
+
+    public void newSearch() {
+        view.setNewSearch(true);
     }
 }

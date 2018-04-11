@@ -1,9 +1,9 @@
 package io.github.vladimirmi.localradio.utils;
 
 
-import android.arch.core.util.Function;
-
 import java.util.Arrays;
+
+import io.reactivex.functions.Function;
 
 /**
  * Created by Vladimir Mikhalev 07.04.2018.
@@ -103,7 +103,12 @@ public class StringUtils {
 
         while (start <= end) {
             int index = startFound ? end : start;
-            boolean match = predicate.apply(chars[index]);
+            boolean match = false;
+            try {
+                match = predicate.apply(chars[index]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             if (!startFound) {
                 if (!match) {

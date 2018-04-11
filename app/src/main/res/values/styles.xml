@@ -13,4 +13,20 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="CustomText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="AccentButton" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <item name="android:textColor">@color/sel_color_text</item>
+    </style>
+
+    <style name="GreyButton" parent="Base.Widget.AppCompat.Button">
+        <item name="colorButtonNormal">@color/colorPrimary</item>
+        <item name="android:textColor">@color/sel_color_text</item>
+    </style>
+
 </resources>

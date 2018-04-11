@@ -2,10 +2,13 @@ package io.github.vladimirmi.localradio.presentation.core;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 
@@ -15,7 +18,8 @@ import io.reactivex.Observable;
 
 public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity implements BaseView {
 
-    protected P mPresenter;
+    protected P presenter;
+    protected @BindView(android.R.id.content) View contentView;
 
     protected abstract int getLayout();
 
@@ -27,7 +31,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
-        mPresenter = providePresenter();
+        presenter = providePresenter();
         ButterKnife.bind(this);
         setupView();
     }
@@ -36,17 +40,27 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     public void onResume() {
         super.onResume();
         //noinspection unchecked
-        mPresenter.attachView(this);
+        presenter.attachView(this);
     }
 
     @Override
     public void onPause() {
-        mPresenter.detachView();
+        presenter.detachView();
         super.onPause();
     }
 
     @Override
     public Observable<Boolean> resolvePermissions(String... permissions) {
         return new RxPermissions(this).request(permissions);
+    }
+
+    @Override
+    public void showMessage(String message) {
+        Snackbar.make(contentView, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessage(int messageId) {
+        Snackbar.make(contentView, messageId, Snackbar.LENGTH_SHORT).show();
     }
 }

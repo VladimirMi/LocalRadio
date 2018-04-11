@@ -5,13 +5,17 @@ import android.support.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.data.repository.GeoLocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
 
 /**
@@ -39,6 +43,7 @@ public class SearchInteractor {
 
     public Completable saveAutodetect(boolean enabled) {
         locationRepository.saveAutodetect(enabled);
+        if (!enabled) locationRepository.saveCountryCodeCity("", "");
         return stationsRepository.refreshStations();
     }
 
@@ -47,33 +52,44 @@ public class SearchInteractor {
     }
 
     public boolean isDone() {
-        return isAutodetect() || !getCountry().isEmpty();
+        return isAutodetect() || !locationRepository.getCountryCode().isEmpty();
     }
 
-    public String getCountry() {
+    public String getCountryName() {
         String countryCode = locationRepository.getCountryCode();
         if (countryCode.isEmpty()) {
-            return countryCode;
+            return anyCountry.getName();
         }
         return new Locale("", countryCode).getDisplayCountry();
     }
 
     public String getCity() {
-        return locationRepository.getCity();
+        String city = locationRepository.getCity();
+        if (city.isEmpty()) return anyCity;
+        return city;
     }
 
     public Completable search(String countryName, String cityName) {
-        saveCountryCodeCity(countryName, cityName);
+        saveCountryNameCity(countryName, cityName);
+        return performSearch();
+    }
+
+    public Completable performSearch() {
+        if (locationRepository.getCountryCode().isEmpty() && locationRepository.getCity().isEmpty()) {
+            return Completable.error(new MessageException(R.string.error_specify_location));
+        }
         return stationsRepository.refreshStations();
     }
 
-    private void saveCountryCodeCity(String countryName, String cityName) {
+    private void saveCountryNameCity(String countryName, String cityName) {
         String countryCode = "";
         for (Country country : getCountries()) {
-            if (country.getName().equals(countryName)) {
+            if (country.getName().equals(countryName) && !country.equals(anyCountry)) {
                 countryCode = country.getIsoCode();
+                break;
             }
         }
+        if (cityName.equals(anyCity)) cityName = "";
         locationRepository.saveCountryCodeCity(countryCode, cityName);
     }
 
@@ -88,7 +104,7 @@ public class SearchInteractor {
     }
 
     public List<String> findCities(List<Country> countries) {
-        List<String> cities = new ArrayList<>();
+        Set<String> cities = new TreeSet<>();
 
         if (countries.size() == 1 && countries.get(0).equals(anyCountry)) {
             countries = locationRepository.getCountries();

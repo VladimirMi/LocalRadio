@@ -38,10 +38,6 @@ public class GeoLocationRepository {
 
     public void saveAutodetect(boolean enabled) {
         preferences.autodetect.put(enabled);
-        if (!enabled) {
-            preferences.countryCode.put("");
-            preferences.city.put("");
-        }
     }
 
     public boolean isAutodetect() {

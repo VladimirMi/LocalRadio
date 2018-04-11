@@ -9,4 +9,8 @@ import io.reactivex.Observable;
 public interface BaseView {
 
     Observable<Boolean> resolvePermissions(String... permissions);
+
+    void showMessage(String message);
+
+    void showMessage(int messageId);
 }

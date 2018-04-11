@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
-    android:padding="16dp"
     >
 
     <View
@@ -16,69 +17,147 @@
         android:focusableInTouchMode="true"
         />
 
-
     <CheckedTextView
         android:id="@+id/autodetectCb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:checked="true"
         android:padding="4dp"
         android:text="@string/automatic_position_detection"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
 
-    <GridLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:columnCount="2"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        app:contentPadding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/autodetectCb"
         >
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:padding="4dp"
-            android:text="Country:"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:textSize="16sp"
-            />
-
-        <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
-            android:id="@+id/countryEt"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/country"
-            android:inputType="textNoSuggestions|textCapSentences"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/autodetectCb"
-            />
+            android:orientation="vertical"
+            >
 
-        <TextView
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/countryLabelTv"
+                style="@style/CustomText"
+                android:labelFor="@id/countryEt"
+                android:text="@string/country"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textSize="18sp"
+                />
+
+            <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+                android:id="@+id/countryEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:imeOptions="actionNext"
+                android:inputType="textNoSuggestions|textCapSentences"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/countryLabelTv"
+                />
+
+            <TextView
+                android:id="@+id/cityLabelTv"
+                style="@style/CustomText"
+                android:layout_marginTop="16dp"
+                android:labelFor="@id/cityEt"
+                android:text="@string/city"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/countryEt"
+                />
+
+
+            <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+                android:id="@+id/cityEt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:imeOptions="actionDone"
+                android:inputType="textNoSuggestions|textCapSentences"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cityLabelTv"
+                />
+
+            <TextView
+                android:id="@+id/searchResultTv"
+                style="@style/CustomText"
+                android:layout_width="match_parent"
+                android:layout_marginTop="24dp"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/autodetectCb"
+                tools:text="Ionicis tormento, index, et verpa."
+                />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        >
+
+        <Button
+            android:id="@+id/refreshBt"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:text="City:"
-            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-            android:textSize="16sp"
+            android:layout_weight="1"
+            android:text="Refresh"
+            android:theme="@style/GreyButton"
             />
 
-
-        <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
-            android:id="@+id/cityEt"
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/newSearchBt"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/city"
-            android:inputType="textNoSuggestions|textCapSentences"
+            android:layout_weight="1"
+            android:text="New search"
+            android:theme="@style/AccentButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/countryEt"
+            app:layout_constraintTop_toTopOf="@+id/refreshBt"
             />
-    </GridLayout>
+    </LinearLayout>
 
 
-</LinearLayout>
+    <Button
+        android:id="@+id/searchBt"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:text="Search"
+        android:theme="@style/AccentButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+
+</android.support.constraint.ConstraintLayout>

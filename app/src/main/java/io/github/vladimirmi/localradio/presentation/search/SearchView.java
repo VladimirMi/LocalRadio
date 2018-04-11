@@ -15,9 +15,13 @@ public interface SearchView extends BaseView {
 
     void setCities(List<String> cities);
 
-    void setCountry(String name);
+    void setCountryName(String name);
 
-    void setCity(List<String> cities);
+    void setCity(String city);
 
-    void setAutodetect(Boolean enabled);
+    void setAutodetect(boolean enabled);
+
+    void setNewSearch(boolean enabled);
+
+    void setSearchResult(int foundStations);
 }

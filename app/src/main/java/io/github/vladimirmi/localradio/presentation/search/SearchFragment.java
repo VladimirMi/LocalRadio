@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
 
@@ -25,7 +26,12 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
+    @BindView(R.id.cityLabelTv) TextView cityLabelTv;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
+    @BindView(R.id.searchBt) Button searchBt;
+    @BindView(R.id.refreshBt) Button refreshBt;
+    @BindView(R.id.newSearchBt) Button newSearchBt;
+    @BindView(R.id.searchResultTv) TextView searchResultTv;
 
     @Override
     protected int getLayout() {
@@ -37,6 +43,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         return Scopes.getAppScope().getInstance(SearchPresenter.class);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
         autodetectCb.setOnClickListener(v -> presenter.setAutodetect(!autodetectCb.isChecked()));
@@ -58,8 +65,21 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             }
             return true;
         });
+
+        searchBt.setOnClickListener(v -> {
+            if (countryEt.getText().toString().isEmpty()) countryEt.setText(" ");
+            countryEt.performValidation();
+            if (cityEt.getText().toString().isEmpty()) cityEt.setText(" ");
+            cityEt.performValidation();
+            presenter.performSearch(countryEt.getText().toString(),
+                    cityEt.getText().toString());
+        });
+
+        refreshBt.setOnClickListener(v -> presenter.refreshSearch());
+        newSearchBt.setOnClickListener(v -> presenter.newSearch());
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void setCountries(List<Country> countries) {
         CustomArrayAdapter<Country> countryAdapter = new CustomArrayAdapter<>(getContext(),
@@ -67,10 +87,12 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         countryAdapter.setDefaultValue(Country.any(getContext()));
 
         countryEt.setAdapter(countryAdapter);
+        countryEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(countries));
 
         countryAdapter.setOnFilteringListener(filteredData -> presenter.selectCountries(filteredData));
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void setCities(List<String> cities) {
         CustomArrayAdapter<String> cityAdapter = new CustomArrayAdapter<>(getContext(),
@@ -78,30 +100,62 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         cityAdapter.setDefaultValue(Country.any(getContext()).getCities().get(0));
 
         cityEt.setAdapter(cityAdapter);
+        cityEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(cities));
     }
 
     @Override
-    public void setCountry(String name) {
+    public void setCountryName(String name) {
         countryEt.setText(name);
+        countryEt.setSelection(name.length());
     }
 
     @Override
-    public void setCity(List<String> cities) {
-        if (!cities.contains(cityEt.getText().toString())) {
-            cityEt.setText(cities.get(0));
-        }
+    public void setCity(String city) {
+        cityEt.setText(city);
+        cityEt.setSelection(city.length());
     }
 
     @Override
-    public void setAutodetect(Boolean enabled) {
+    public void setAutodetect(boolean enabled) {
         autodetectCb.setChecked(enabled);
         enableView(countryEt, !enabled);
         enableView(cityEt, !enabled);
+        setVisible(cityLabelTv, !enabled);
+        setVisible(cityEt, !enabled);
+        setVisible(searchBt, !enabled);
+        setVisible(newSearchBt, !enabled);
+        setVisible(refreshBt, enabled);
+    }
+
+    @Override
+    public void setNewSearch(boolean enabled) {
+        enableView(countryEt, enabled);
+        enableView(cityEt, enabled);
+        setVisible(searchBt, enabled);
+        setVisible(newSearchBt, !enabled);
+        setVisible(refreshBt, !enabled);
+    }
+
+    @Override
+    public void setSearchResult(int foundStations) {
+        if (foundStations == -1) {
+            searchResultTv.setText("");
+        } else {
+            searchResultTv.setText(String.format("Found %d stations", foundStations));
+        }
     }
 
     private void enableView(TextView view, boolean enable) {
         view.setEnabled(enable);
         view.setFocusable(enable);
         view.setFocusableInTouchMode(enable);
+    }
+
+    private void setVisible(View view, boolean visible) {
+        if (visible) {
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.GONE);
+        }
     }
 }

@@ -41,8 +41,6 @@ public class StationsRepository {
         this.locationSource = locationSource;
         this.preferences = preferences;
         this.networkChecker = networkChecker;
-
-        refreshStations().subscribe();
     }
 
     public Observable<List<Station>> getStations() {
@@ -119,10 +117,11 @@ public class StationsRepository {
     private Single<List<Station>> searchStationsManual() {
         Single<List<Station>> result;
         String countryCode = preferences.countryCode.get();
-        if (countryCode.isEmpty()) {
+        String city = preferences.city.get();
+        if (countryCode.isEmpty() && city.isEmpty()) {
             result = Single.just(Collections.emptyList());
         } else {
-            result = restService.getStationsByLocation(countryCode, preferences.city.get(), 1)
+            result = restService.getStationsByLocation(countryCode, city, 1)
                     .map(StationsResult::getStations);
         }
         return result;

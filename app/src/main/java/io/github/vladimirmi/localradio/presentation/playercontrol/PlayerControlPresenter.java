@@ -5,6 +5,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.service.Metadata;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
@@ -31,7 +32,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     protected void onAttach(PlayerControlView view) {
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::setStation));
+                .subscribe(this::handleCurrentStation));
 
         compDisp.add(controlInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -40,6 +41,10 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         compDisp.add(controlInteractor.getPlaybackMetadataObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::handleMetadata));
+    }
+
+    private void handleCurrentStation(Station station) {
+        view.setStation(station);
     }
 
     private void handleState(PlaybackStateCompat state) {
