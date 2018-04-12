@@ -40,6 +40,11 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
+
+        <provider
+            android:authorities="${applicationId}"
+            android:name=".data.db.StationContentProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

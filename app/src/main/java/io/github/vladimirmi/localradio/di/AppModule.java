@@ -1,9 +1,12 @@
 package io.github.vladimirmi.localradio.di;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.squareup.moshi.Moshi;
 
+import io.github.vladimirmi.localradio.data.db.StationDbHelper;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
@@ -37,6 +40,9 @@ public class AppModule extends Module {
 
         bind(RestService.class).toInstance(RestServiceProvider.getService(client, factory));
         bind(NetworkChecker.class).singletonInScope();
+
+        bind(SQLiteDatabase.class).toInstance(new StationDbHelper(context).getWritableDatabase());
+        bind(ContentResolver.class).toInstance(context.getContentResolver());
 
         bind(Preferences.class).singletonInScope();
 

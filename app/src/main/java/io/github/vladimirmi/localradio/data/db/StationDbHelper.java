@@ -9,7 +9,7 @@ import io.github.vladimirmi.localradio.data.db.StationContract.StationEntry;
 /**
  * Created by Vladimir Mikhalev 12.04.2018.
  */
-public final class StationsDbHelper extends SQLiteOpenHelper {
+public final class StationDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "stations.db";
     private static final int DATABASE_VERSION = 1;
@@ -29,13 +29,13 @@ public final class StationsDbHelper extends SQLiteOpenHelper {
             StationEntry.COLUMN_CITY + " TEXT," +
             StationEntry.COLUMN_PHONE + " TEXT," +
             StationEntry.COLUMN_EMAIL + " TEXT," +
-            StationEntry.COLUMN_WEBSITEURL + " TEXT," +
-            StationEntry.COLUMN_IMAGEURL + " TEXT," +
+            StationEntry.COLUMN_WEBSITE_URL + " TEXT," +
+            StationEntry.COLUMN_IMAGE_URL + " TEXT," +
             StationEntry.COLUMN_ENCODING + " TEXT," +
             StationEntry.COLUMN_STATUS + " TEXT," +
             StationEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
-    public StationsDbHelper(Context context) {
+    public StationDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

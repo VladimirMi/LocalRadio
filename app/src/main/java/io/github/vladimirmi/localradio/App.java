@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.facebook.stetho.Stetho;
 
-import io.github.vladimirmi.localradio.data.source.CountrySource;
 import io.github.vladimirmi.localradio.di.AppModule;
 import io.github.vladimirmi.localradio.di.Scopes;
 import timber.log.Timber;
@@ -36,7 +35,7 @@ public class App extends Application {
             MemberInjectorRegistryLocator.setRootRegistry(new MemberInjectorRegistry());
         }
 
+        Timber.e("onCreate: ");
         Scopes.getAppScope().installModules(new AppModule(getApplicationContext()));
-        CountrySource source = Scopes.getAppScope().getInstance(CountrySource.class);
     }
 }
