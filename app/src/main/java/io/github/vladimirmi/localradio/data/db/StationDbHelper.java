@@ -19,20 +19,20 @@ public final class StationDbHelper extends SQLiteOpenHelper {
             StationEntry._ID + " INTEGER PRIMARY KEY," +
             StationEntry.COLUMN_URL + " TEXT NOT NULL," +
             StationEntry.COLUMN_CALLSIGN + " TEXT NOT NULL," +
-            StationEntry.COLUMN_DESCRIPTION + " TEXT," +
-            StationEntry.COLUMN_SLOGAN + " TEXT," +
+            StationEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL," +
+            StationEntry.COLUMN_SLOGAN + " TEXT NOT NULL," +
             StationEntry.COLUMN_GENRE + " TEXT NOT NULL," +
             StationEntry.COLUMN_BAND + " TEXT NOT NULL," +
-            StationEntry.COLUMN_DIAL + " REAL," +
+            StationEntry.COLUMN_DIAL + " TEXT NOT NULL," +
             StationEntry.COLUMN_LANGUAGE + " TEXT NOT NULL," +
             StationEntry.COLUMN_COUNTRY + " TEXT NOT NULL," +
-            StationEntry.COLUMN_CITY + " TEXT," +
-            StationEntry.COLUMN_PHONE + " TEXT," +
-            StationEntry.COLUMN_EMAIL + " TEXT," +
-            StationEntry.COLUMN_WEBSITE_URL + " TEXT," +
-            StationEntry.COLUMN_IMAGE_URL + " TEXT," +
-            StationEntry.COLUMN_ENCODING + " TEXT," +
-            StationEntry.COLUMN_STATUS + " TEXT," +
+            StationEntry.COLUMN_CITY + " TEXT NOT NULL," +
+            StationEntry.COLUMN_PHONE + " TEXT NOT NULL," +
+            StationEntry.COLUMN_EMAIL + " TEXT NOT NULL," +
+            StationEntry.COLUMN_WEBSITE_URL + " TEXT NOT NULL," +
+            StationEntry.COLUMN_IMAGE_URL + " TEXT NOT NULL," +
+            StationEntry.COLUMN_ENCODING + " TEXT NOT NULL," +
+            StationEntry.COLUMN_STATUS + " TEXT NOT NULL," +
             StationEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
     public StationDbHelper(Context context) {

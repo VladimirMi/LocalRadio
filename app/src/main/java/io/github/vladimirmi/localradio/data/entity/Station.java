@@ -26,6 +26,32 @@ public class Station {
     @Json(name = "slogan") private String slogan;
     @Json(name = "url") private String url;
 
+    public Station() {
+    }
+
+    public Station(int id, String callsign, String band, String genre, String language,
+                   String websiteurl, String imageurl, String description, String encoding,
+                   String status, String countryCode, String city, String phone, String email,
+                   String dial, String slogan, String url) {
+        this.id = id;
+        this.callsign = callsign;
+        this.band = band;
+        this.genre = genre;
+        this.language = language;
+        this.websiteurl = websiteurl;
+        this.imageurl = imageurl;
+        this.description = description;
+        this.encoding = encoding;
+        this.status = status;
+        this.countryCode = countryCode;
+        this.city = city;
+        this.phone = phone;
+        this.email = email;
+        this.dial = dial;
+        this.slogan = slogan;
+        this.url = url;
+    }
+
     public String getBand() {
         return band;
     }

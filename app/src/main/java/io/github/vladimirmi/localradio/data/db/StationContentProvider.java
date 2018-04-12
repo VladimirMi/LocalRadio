@@ -12,8 +12,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import io.github.vladimirmi.localradio.di.AppModule;
 import io.github.vladimirmi.localradio.di.Scopes;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 12.04.2018.
@@ -29,7 +29,7 @@ public class StationContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Timber.e("onCreate: ");
+        Scopes.getAppScope().installModules(new AppModule(getContext()));
         matcher = new UriMatcher(UriMatcher.NO_MATCH);
         matcher.addURI(StationContract.AUTHORITY, StationContract.PATH_STATIONS, STATIONS);
         matcher.addURI(StationContract.AUTHORITY, StationContract.PATH_STATIONS + "/#", STATION_BY_ID);

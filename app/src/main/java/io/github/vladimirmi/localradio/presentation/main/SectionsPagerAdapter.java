@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import io.github.vladimirmi.localradio.presentation.favorite.FavoriteFragment;
 import io.github.vladimirmi.localradio.presentation.search.SearchFragment;
 import io.github.vladimirmi.localradio.presentation.stations.StationsFragment;
 
@@ -21,7 +22,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new Fragment();
+                return new FavoriteFragment();
             case 1:
                 return new StationsFragment();
             case 2:

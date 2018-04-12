@@ -127,10 +127,9 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         }
     }
 
-    interface onStationListener {
+    public interface onStationListener {
 
         void onStationClick(Station station);
 
-        void onStationLongClick(Station station);
     }
 }

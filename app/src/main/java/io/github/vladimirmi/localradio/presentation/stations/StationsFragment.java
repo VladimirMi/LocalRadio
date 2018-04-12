@@ -61,9 +61,4 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     public void onStationClick(Station station) {
         presenter.select(station);
     }
-
-    @Override
-    public void onStationLongClick(Station station) {
-
-    }
 }
