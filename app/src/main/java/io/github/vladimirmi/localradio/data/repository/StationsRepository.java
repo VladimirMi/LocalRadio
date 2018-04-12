@@ -12,6 +12,7 @@ import io.github.vladimirmi.localradio.data.entity.StationsResult;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
+import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -28,6 +29,7 @@ public class StationsRepository {
     private final LocationSource locationSource;
     private final Preferences preferences;
     private final NetworkChecker networkChecker;
+    private final CacheSource cacheSource;
 
     private final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
     private final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
@@ -36,26 +38,30 @@ public class StationsRepository {
     public StationsRepository(RestService restService,
                               LocationSource locationSource,
                               Preferences preferences,
-                              NetworkChecker networkChecker) {
+                              NetworkChecker networkChecker,
+                              CacheSource cacheSource) {
         this.restService = restService;
         this.locationSource = locationSource;
         this.preferences = preferences;
         this.networkChecker = networkChecker;
+        this.cacheSource = cacheSource;
+
+        searchStations().subscribe();
     }
 
     public Observable<List<Station>> getStations() {
         return stations;
     }
 
-    public Completable refreshStations() {
-        Single<List<Station>> result;
+    public Completable searchStations() {
+        Single<List<Station>> search;
 
         if (preferences.autodetect.get()) {
-            result = searchStationsAuto();
+            search = searchStationsAuto();
         } else {
-            result = searchStationsManual();
+            search = searchStationsManual();
         }
-        return result
+        return search
                 .onErrorReturn(throwable -> {
                     Timber.w(throwable);
                     return Collections.emptyList();
@@ -64,6 +70,12 @@ public class StationsRepository {
                     this.stations.accept(stations);
                     return updateCurrentStation(stations);
                 });
+    }
+
+    public Completable refreshStations() {
+        return Completable.fromAction(cacheSource::cleanCache)
+                .andThen(searchStations());
+
     }
 
     public BehaviorRelay<Station> getCurrentStation() {

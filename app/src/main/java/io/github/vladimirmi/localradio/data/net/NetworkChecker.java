@@ -6,6 +6,8 @@ import android.support.annotation.WorkerThread;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -17,7 +19,7 @@ public class NetworkChecker {
     private final OkHttpClient client;
     public static final String API_CHECK = "https://api.ipify.org/";
 
-
+    @Inject
     public NetworkChecker(Context context, OkHttpClient client) {
         this.context = context;
         this.client = client;

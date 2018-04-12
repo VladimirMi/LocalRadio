@@ -8,6 +8,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.reactivex.Single;
 
@@ -15,6 +16,7 @@ import io.reactivex.Single;
  * Created by Vladimir Mikhalev 06.04.2018.
  */
 
+@Singleton
 public class LocationSource {
 
     private final FusedLocationProviderClient fusedLocationProviderClient;

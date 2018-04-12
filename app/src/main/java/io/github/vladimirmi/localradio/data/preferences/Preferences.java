@@ -3,6 +3,8 @@ package io.github.vladimirmi.localradio.data.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import javax.inject.Inject;
+
 public class Preferences {
 
     private static final String KEY_AUTODETECT = "AUTODETECT";
@@ -17,6 +19,7 @@ public class Preferences {
     private static final String KEY_CURRENT_STATION = "CURRENT_STATION";
     public final Preference<Integer> currentStation;
 
+    @Inject
     public Preferences(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("default", Context.MODE_PRIVATE);
 

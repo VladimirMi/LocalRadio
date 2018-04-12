@@ -9,9 +9,11 @@ import com.squareup.moshi.Types;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Country;
@@ -21,10 +23,11 @@ import io.github.vladimirmi.localradio.di.Scopes;
  * Created by Vladimir Mikhalev 03.04.2018.
  */
 
+@Singleton
 public class CountrySource {
 
-    private Context context;
-    private List<Country> countries;
+    private final Context context;
+    private List<Country> countries = Collections.emptyList();
 
     @Inject
     public CountrySource(Context context) {

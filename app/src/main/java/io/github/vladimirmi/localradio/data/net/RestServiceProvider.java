@@ -6,6 +6,7 @@ import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import java.util.concurrent.TimeUnit;
 
 import io.github.vladimirmi.localradio.BuildConfig;
+import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -28,11 +29,12 @@ public class RestServiceProvider {
         return createRetrofit(client, factory).create(RestService.class);
     }
 
-    public static OkHttpClient createClient() {
+    public static OkHttpClient createClient(CacheSource cacheSource) {
         return new OkHttpClient.Builder()
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .addNetworkInterceptor(new StethoInterceptor())
-                .addInterceptor(getApiKeyInterceptor())
+                .addInterceptor(cacheSource)
+                .addInterceptor(apiKeyInterceptor())
+                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
                 .connectTimeout(Api.CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(Api.READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(Api.WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
@@ -48,7 +50,7 @@ public class RestServiceProvider {
                 .build();
     }
 
-    private static Interceptor getApiKeyInterceptor() {
+    private static Interceptor apiKeyInterceptor() {
         return chain -> {
             Request originalRequest = chain.request();
 

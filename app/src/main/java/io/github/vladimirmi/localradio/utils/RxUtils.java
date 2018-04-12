@@ -29,9 +29,10 @@ public class RxUtils {
 
         @Override
         public void onError(Throwable e) {
-            Timber.e(e);
             if (view != null && e instanceof MessageException) {
                 view.showMessage(((MessageException) e).getMessageId());
+            } else {
+                Timber.e(e);
             }
         }
     }
@@ -50,9 +51,10 @@ public class RxUtils {
 
         @Override
         public void onError(Throwable e) {
-            Timber.e(e);
             if (view != null && e instanceof MessageException) {
                 view.showMessage(((MessageException) e).getMessageId());
+            } else {
+                Timber.e(e);
             }
         }
     }
@@ -72,9 +74,10 @@ public class RxUtils {
 
         @Override
         public void onError(Throwable e) {
-            Timber.e(e);
             if (view != null && e instanceof MessageException) {
                 view.showMessage(((MessageException) e).getMessageId());
+            } else {
+                Timber.e(e);
             }
         }
 

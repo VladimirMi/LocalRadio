@@ -27,7 +27,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     @Override
     protected void onAttach(MainView view) {
         controlInteractor.connect();
-        view.showSearch();
+        view.showStations();
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::handleCurrentStation));
