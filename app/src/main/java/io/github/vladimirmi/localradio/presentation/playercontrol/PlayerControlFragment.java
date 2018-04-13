@@ -43,6 +43,8 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         playPauseBt.setOnClickListener(v -> presenter.playPause());
         previousBt.setOnClickListener(v -> presenter.skipToPrevious());
         nextBt.setOnClickListener(v -> presenter.skipToNext());
+        favoriteBt.setOnClickListener(v -> presenter.switchFavorite());
+
     }
 
     @Override
@@ -54,6 +56,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .error(R.drawable.ic_radio)
                 .into(iconIv);
+        favoriteBt.setBackgroundResource(station.isFavorite() ? R.drawable.ic_star : R.drawable.ic_star_empty);
     }
 
     @Override

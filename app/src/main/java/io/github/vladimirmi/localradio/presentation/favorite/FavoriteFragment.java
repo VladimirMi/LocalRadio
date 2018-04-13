@@ -12,8 +12,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.List;
+
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.db.StationContract;
+import io.github.vladimirmi.localradio.data.db.ValuesMapper;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
@@ -25,7 +28,8 @@ import io.github.vladimirmi.localradio.presentation.stations.StationsAdapter;
 public class FavoriteFragment extends BaseFragment<FavoritePresenter>
         implements FavoriteView, LoaderManager.LoaderCallbacks<Cursor>, StationsAdapter.onStationListener {
 
-    private FavoriteAdapter stationsAdapter;
+    public static final int LOADER_ID = 0;
+    private StationsAdapter stationsAdapter;
 
     @Override
     protected int getLayout() {
@@ -38,9 +42,9 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getActivity().getSupportLoaderManager().initLoader(0, null, this);
+    public void onResume() {
+        super.onResume();
+        getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -51,7 +55,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
         DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),
                 layoutManager.getOrientation());
         stationList.addItemDecoration(itemDecoration);
-        stationsAdapter = new FavoriteAdapter(this);
+        stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
     }
 
@@ -64,16 +68,18 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-        stationsAdapter.swapCursor(data);
+        List<Station> list = ValuesMapper.getList(data, ValuesMapper::cursorToStation);
+        stationsAdapter.submitList(list);
+        presenter.listChanged(list);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-        stationsAdapter.swapCursor(null);
+        stationsAdapter.submitList(null);
     }
 
     @Override
     public void onStationClick(Station station) {
-
+        presenter.select(station);
     }
 }

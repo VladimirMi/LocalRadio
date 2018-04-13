@@ -20,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -39,7 +40,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
         @Override
         public boolean areContentsTheSame(Station oldItem, Station newItem) {
-            return true;
+            return oldItem.isFavorite() == newItem.isFavorite();
         }
     };
 
@@ -50,6 +51,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void submitList(List<Station> list) {
+        Timber.e("submitList: ");
         stations = list;
         super.submitList(list);
     }
@@ -114,6 +116,8 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .error(R.drawable.ic_radio)
                     .into(imageIv);
+
+            favoriteIv.setVisibility(station.isFavorite() ? View.VISIBLE : View.GONE);
         }
 
         public void select(boolean select) {

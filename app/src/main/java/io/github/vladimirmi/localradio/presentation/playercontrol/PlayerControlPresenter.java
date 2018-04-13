@@ -7,9 +7,11 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.service.Metadata;
+import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
@@ -20,30 +22,51 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     private final PlayerControlInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
+    private final FavoriteInteractor favoriteInteractor;
+
+    private Station currentStation;
 
     @Inject
     public PlayerControlPresenter(PlayerControlInteractor controlInteractor,
-                                  StationsInteractor stationsInteractor) {
+                                  StationsInteractor stationsInteractor,
+                                  FavoriteInteractor favoriteInteractor) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
+        this.favoriteInteractor = favoriteInteractor;
     }
 
     @Override
     protected void onAttach(PlayerControlView view) {
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::handleCurrentStation));
+                .subscribeWith(new RxUtils.ErrorObservableObserver<Station>(view) {
+                    @Override
+                    public void onNext(Station station) {
+                        handleCurrentStation(station);
+                    }
+                }));
 
         compDisp.add(controlInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::handleState));
+                .subscribeWith(new RxUtils.ErrorObservableObserver<PlaybackStateCompat>(view) {
+                    @Override
+                    public void onNext(PlaybackStateCompat playbackStateCompat) {
+                        handleState(playbackStateCompat);
+                    }
+                }));
 
         compDisp.add(controlInteractor.getPlaybackMetadataObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::handleMetadata));
+                .subscribeWith(new RxUtils.ErrorObservableObserver<Metadata>(view) {
+                    @Override
+                    public void onNext(Metadata metadata) {
+                        handleMetadata(metadata);
+                    }
+                }));
     }
 
     private void handleCurrentStation(Station station) {
+        currentStation = station;
         view.setStation(station);
     }
 
@@ -79,7 +102,8 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void switchFavorite() {
-
+        compDisp.add(favoriteInteractor.switchFavorite(currentStation)
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
     public void showStation() {

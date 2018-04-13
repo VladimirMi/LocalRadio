@@ -25,6 +25,7 @@ public class Station {
     @Json(name = "dial") private String dial;
     @Json(name = "slogan") private String slogan;
     @Json(name = "url") private String url;
+    private boolean isFavorite;
 
     public Station() {
     }
@@ -32,7 +33,7 @@ public class Station {
     public Station(int id, String callsign, String band, String genre, String language,
                    String websiteurl, String imageurl, String description, String encoding,
                    String status, String countryCode, String city, String phone, String email,
-                   String dial, String slogan, String url) {
+                   String dial, String slogan, String url, boolean isFavorite) {
         this.id = id;
         this.callsign = callsign;
         this.band = band;
@@ -50,6 +51,7 @@ public class Station {
         this.dial = dial;
         this.slogan = slogan;
         this.url = url;
+        this.isFavorite = isFavorite;
     }
 
     public String getBand() {
@@ -124,6 +126,14 @@ public class Station {
         this.url = url;
     }
 
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -137,6 +147,43 @@ public class Station {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", callsign='" + callsign + '\'' +
+                ", band='" + band + '\'' +
+                ", genre='" + genre + '\'' +
+                ", language='" + language + '\'' +
+                ", websiteurl='" + websiteurl + '\'' +
+                ", imageurl='" + imageurl + '\'' +
+                ", description='" + description + '\'' +
+                ", encoding='" + encoding + '\'' +
+                ", status='" + status + '\'' +
+                ", countryCode='" + countryCode + '\'' +
+                ", city='" + city + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", dial='" + dial + '\'' +
+                ", slogan='" + slogan + '\'' +
+                ", url='" + url + '\'' +
+                ", isFavorite=" + isFavorite +
+                '}';
+    }
+
+    public boolean update(Station station) {
+        boolean updated = false;
+        if (url != null && station.url != null && !url.equals(station.url)) {
+            url = station.url;
+            updated = true;
+        }
+        if (isFavorite != station.isFavorite) {
+            isFavorite = station.isFavorite;
+            updated = true;
+        }
+        return updated;
     }
 
     public static Station nullStation() {

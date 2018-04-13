@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.data.repository;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
+import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -46,7 +48,7 @@ public class StationsRepository {
         this.networkChecker = networkChecker;
         this.cacheSource = cacheSource;
 
-        searchStations().subscribe();
+        searchStations().subscribeWith(new RxUtils.ErrorCompletableObserver(null));
     }
 
     public Observable<List<Station>> getStations() {
@@ -68,7 +70,7 @@ public class StationsRepository {
                 })
                 .flatMapCompletable(stations -> {
                     this.stations.accept(stations);
-                    return updateCurrentStation(stations);
+                    return updateCurrentStationFromPreferences(stations);
                 });
     }
 
@@ -84,28 +86,40 @@ public class StationsRepository {
 
     public Completable setCurrentStation(Station station) {
         preferences.currentStation.put(station.getId());
-        Completable ensureHaveUrl;
 
         if (!station.isNullStation() && station.getUrl() == null) {
-            ensureHaveUrl = restService.getStationUrl(station.getId())
+            return restService.getStationUrl(station.getId())
                     .filter(stationUrlResult -> stationUrlResult.isSuccess() && !stationUrlResult.getResult().isEmpty())
                     .map(stationUrlResult -> stationUrlResult.getResult().get(0))
-                    .doOnSuccess(stationWithUrl -> {
-                        List<Station> newList = stations.getValue();
-                        for (Station newStation : newList) {
-                            if (newStation.getId() == stationWithUrl.getId()) {
-                                newStation.setUrl(stationWithUrl.getUrl());
-                                currentStation.accept(newStation);
-                                stations.accept(newList);
-                                break;
-                            }
-                        }
-                    }).ignoreElement();
+                    .doOnSuccess(stationsWithUrl -> {
+                        Station updated = updateStations(stationsWithUrl).get(0);
+                        currentStation.accept(updated);
+                    })
+                    .ignoreElement();
         } else {
-            ensureHaveUrl = Completable.fromAction(() -> currentStation.accept(station));
+            return Completable.fromAction(() -> {
+                Station updated = updateStations(station).get(0);
+                currentStation.accept(updated);
+            });
         }
+    }
 
-        return ensureHaveUrl;
+    public List<Station> updateStations(Station... newStations) {
+        boolean updated = false;
+        List<Station> updatedList = new ArrayList<>();
+        List<Station> list = stations.getValue();
+        for (int i = 0; i < list.size(); i++) {
+            Station station = list.get(i);
+            for (Station newStation : newStations) {
+                if (station.getId() == newStation.getId()) {
+                    updated = station.update(newStation);
+                    updatedList.add(station);
+                    break;
+                }
+            }
+        }
+        if (updated) stations.accept(list);
+        return updatedList;
     }
 
     private Single<List<Station>> searchStationsAuto() {
@@ -139,7 +153,7 @@ public class StationsRepository {
         return result;
     }
 
-    private Completable updateCurrentStation(List<Station> stations) {
+    private Completable updateCurrentStationFromPreferences(List<Station> stations) {
         Station newCurrentStation = null;
         for (Station station : stations) {
             if (station.getId() == preferences.currentStation.get()) {
@@ -152,9 +166,9 @@ public class StationsRepository {
                 newCurrentStation = Station.nullStation();
             } else {
                 newCurrentStation = stations.get(0);
-                preferences.currentStation.put(newCurrentStation.getId());
             }
         }
+        preferences.currentStation.put(newCurrentStation.getId());
         return setCurrentStation(newCurrentStation);
     }
 

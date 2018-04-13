@@ -37,7 +37,8 @@ public class ValuesMapper {
                 cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_EMAIL)),
                 cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_DIAL)),
                 cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_SLOGAN)),
-                cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_URL))
+                cursor.getString(cursor.getColumnIndex(StationEntry.COLUMN_URL)),
+                true
         );
     }
 
@@ -76,7 +77,6 @@ public class ValuesMapper {
                 e.printStackTrace();
             }
         }
-        cursor.close();
         return list;
     }
 
