@@ -27,6 +27,8 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @BindView(R.id.favoriteBt) Button favoriteBt;
     @BindView(R.id.metadataTv) TextView metadataTv;
 
+    private String iconUrl;
+
     @Override
     protected int getLayout() {
         return R.layout.fragment_player_controls;
@@ -44,18 +46,22 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         previousBt.setOnClickListener(v -> presenter.skipToPrevious());
         nextBt.setOnClickListener(v -> presenter.skipToNext());
         favoriteBt.setOnClickListener(v -> presenter.switchFavorite());
-
     }
 
     @Override
     public void setStation(Station station) {
         metadataTv.setText(station.getCallsign());
-        Glide.with(getContext())
-                .load(station.getImageurl())
-                .skipMemoryCache(true)
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .error(R.drawable.ic_radio)
-                .into(iconIv);
+        if (iconUrl == null || !iconUrl.equals(station.getImageurl())) {
+            iconUrl = station.getImageurl();
+
+            Glide.with(getContext())
+                    .load(iconUrl)
+                    .skipMemoryCache(true)
+                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                    .error(R.drawable.ic_radio)
+                    .into(iconIv);
+        }
+
         favoriteBt.setBackgroundResource(station.isFavorite() ? R.drawable.ic_star : R.drawable.ic_star_empty);
     }
 

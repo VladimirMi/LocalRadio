@@ -1,10 +1,13 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
@@ -27,11 +30,19 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                 .subscribe(view::setStations));
 
         compDisp.add(interactor.getCurrentStationObs()
+                .buffer(2, 1)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::selectStation));
+                .subscribeWith(new RxUtils.ErrorObservableObserver<List<Station>>(view) {
+                    @Override
+                    public void onNext(List<Station> stations) {
+                        view.selectStation(stations);
+                    }
+                }));
     }
 
-    public void select(Station station) {
-        compDisp.add(interactor.setCurrentStation(station).subscribe());
+    public void selectStation(Station station) {
+        compDisp.add(interactor.setCurrentStation(station)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 }

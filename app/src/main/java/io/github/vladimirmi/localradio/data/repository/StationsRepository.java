@@ -2,7 +2,6 @@ package io.github.vladimirmi.localradio.data.repository;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import timber.log.Timber;
 
@@ -33,8 +31,8 @@ public class StationsRepository {
     private final NetworkChecker networkChecker;
     private final CacheSource cacheSource;
 
-    private final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
-    private final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
+    public final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
+    public final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
 
     @Inject
     public StationsRepository(RestService restService,
@@ -49,10 +47,6 @@ public class StationsRepository {
         this.cacheSource = cacheSource;
 
         searchStations().subscribeWith(new RxUtils.ErrorCompletableObserver(null));
-    }
-
-    public Observable<List<Station>> getStations() {
-        return stations;
     }
 
     public Completable searchStations() {
@@ -77,49 +71,44 @@ public class StationsRepository {
     public Completable refreshStations() {
         return Completable.fromAction(cacheSource::cleanCache)
                 .andThen(searchStations());
-
-    }
-
-    public BehaviorRelay<Station> getCurrentStation() {
-        return currentStation;
     }
 
     public Completable setCurrentStation(Station station) {
         preferences.currentStation.put(station.getId());
 
-        if (!station.isNullStation() && station.getUrl() == null) {
+//        if (station.isNullStation()) {
+//            currentStation.accept(station);
+//            return Completable.complete();
+
+        if (station.getUrl() == null) {
             return restService.getStationUrl(station.getId())
                     .filter(stationUrlResult -> stationUrlResult.isSuccess() && !stationUrlResult.getResult().isEmpty())
                     .map(stationUrlResult -> stationUrlResult.getResult().get(0))
-                    .doOnSuccess(stationsWithUrl -> {
-                        Station updated = updateStations(stationsWithUrl).get(0);
-                        currentStation.accept(updated);
-                    })
+                    .doOnSuccess(this::updateStationsWith)
                     .ignoreElement();
         } else {
-            return Completable.fromAction(() -> {
-                Station updated = updateStations(station).get(0);
-                currentStation.accept(updated);
-            });
+            currentStation.accept(station);
+            return Completable.complete();
         }
     }
 
-    public List<Station> updateStations(Station... newStations) {
+    public void updateStationsWith(Station... newStations) {
         boolean updated = false;
-        List<Station> updatedList = new ArrayList<>();
         List<Station> list = stations.getValue();
-        for (int i = 0; i < list.size(); i++) {
-            Station station = list.get(i);
+        int currentId = preferences.currentStation.get();
+
+        for (Station station : list) {
             for (Station newStation : newStations) {
                 if (station.getId() == newStation.getId()) {
                     updated = station.update(newStation);
-                    updatedList.add(station);
+                    if (station.getId() == currentId) {
+                        currentStation.accept(station);
+                    }
                     break;
                 }
             }
         }
         if (updated) stations.accept(list);
-        return updatedList;
     }
 
     private Single<List<Station>> searchStationsAuto() {
@@ -168,7 +157,6 @@ public class StationsRepository {
                 newCurrentStation = stations.get(0);
             }
         }
-        preferences.currentStation.put(newCurrentStation.getId());
         return setCurrentStation(newCurrentStation);
     }
 

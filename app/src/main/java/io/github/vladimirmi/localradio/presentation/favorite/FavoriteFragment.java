@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import java.util.Collections;
 import java.util.List;
 
 import io.github.vladimirmi.localradio.R;
@@ -59,6 +60,15 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
         stationList.setAdapter(stationsAdapter);
     }
 
+    @Override
+    public void selectStation(List<Station> stations) {
+        Station oldStation = stations.get(0);
+        Station newStation = stations.get(1);
+        stationsAdapter.select(oldStation, newStation);
+        int stationPosition = stationsAdapter.getPositionById(newStation.getId());
+        ((RecyclerView) getView()).smoothScrollToPosition(stationPosition);
+    }
+
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
@@ -75,11 +85,11 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
-        stationsAdapter.submitList(null);
+        stationsAdapter.submitList(Collections.emptyList());
     }
 
     @Override
     public void onStationClick(Station station) {
-        presenter.select(station);
+        presenter.selectStation(station);
     }
 }

@@ -23,15 +23,15 @@ public class StationsInteractor {
     }
 
     public Observable<List<Station>> getStationsObs() {
-        return stationsRepository.getStations();
+        return stationsRepository.stations;
     }
 
     public Observable<Station> getCurrentStationObs() {
-        return stationsRepository.getCurrentStation();
+        return stationsRepository.currentStation;
     }
 
     public Station getCurrentStation() {
-        return stationsRepository.getCurrentStation().getValue();
+        return stationsRepository.currentStation.getValue();
     }
 
     public Completable setCurrentStation(Station station) {

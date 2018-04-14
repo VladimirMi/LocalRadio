@@ -26,7 +26,7 @@ public class FavoriteInteractor {
     }
 
     public void initFavorites(List<Station> stations) {
-        stationsRepository.updateStations(stations.toArray(new Station[stations.size()]));
+        stationsRepository.updateStationsWith(stations.toArray(new Station[stations.size()]));
     }
 
     public Completable switchFavorite(Station station) {
@@ -38,6 +38,7 @@ public class FavoriteInteractor {
         } else {
             switchFavorite = favoriteRepository.removeFavorite(station);
         }
-        return switchFavorite.subscribeOn(Schedulers.io());
+        return switchFavorite.andThen(stationsRepository.setCurrentStation(station))
+                .subscribeOn(Schedulers.io());
     }
 }

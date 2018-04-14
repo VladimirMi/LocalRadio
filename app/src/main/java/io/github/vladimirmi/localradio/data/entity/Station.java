@@ -175,7 +175,7 @@ public class Station {
 
     public boolean update(Station station) {
         boolean updated = false;
-        if (url != null && station.url != null && !url.equals(station.url)) {
+        if (station.url != null && !station.url.equals(url)) {
             url = station.url;
             updated = true;
         }

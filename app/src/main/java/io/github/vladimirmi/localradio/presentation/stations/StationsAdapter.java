@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindView;
@@ -29,8 +30,7 @@ import timber.log.Timber;
 public class StationsAdapter extends ListAdapter<Station, StationsAdapter.StationVH> {
 
     private final onStationListener listener;
-    private Station selectedStation;
-    private List<Station> stations;
+    private List<Station> stations = Collections.emptyList();
 
     private static final DiffUtil.ItemCallback CALLBACK = new DiffUtil.ItemCallback<Station>() {
         @Override
@@ -51,7 +51,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void submitList(List<Station> list) {
-        Timber.e("submitList: ");
+        Timber.e("submitList: " + (list != null ? list.size() : 0));
         stations = list;
         super.submitList(list);
     }
@@ -64,19 +64,27 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     }
 
     @Override
+    public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.size() != 0) {
+            Boolean select = (Boolean) payloads.get(0);
+            holder.select(select);
+        } else {
+            onBindViewHolder(holder, position);
+        }
+    }
+
+    @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position) {
         Station station = getItem(position);
         holder.bind(station);
-        holder.select(selectedStation != null && selectedStation.getId() == station.getId());
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
     }
 
-    public void select(Station station) {
-        int oldSelectedPos = stations.indexOf(selectedStation);
-        int newSelectedPos = stations.indexOf(station);
-        selectedStation = station;
-        notifyItemChanged(oldSelectedPos);
-        notifyItemChanged(newSelectedPos);
+    public void select(Station oldStation, Station newStation) {
+        int oldSelectedPos = stations.indexOf(oldStation);
+        int newSelectedPos = stations.indexOf(newStation);
+        notifyItemChanged(oldSelectedPos, false);
+        notifyItemChanged(newSelectedPos, true);
     }
 
     public int getPositionById(int stationId) {
