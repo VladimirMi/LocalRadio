@@ -19,6 +19,9 @@ public class Preferences {
     private static final String KEY_CURRENT_STATION = "CURRENT_STATION";
     public final Preference<Integer> currentStation;
 
+    private static final String KEY_PAGE = "PAGE";
+    public final Preference<Integer> page;
+
     @Inject
     public Preferences(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("default", Context.MODE_PRIVATE);
@@ -26,6 +29,7 @@ public class Preferences {
         autodetect = new Preference<>(prefs, KEY_AUTODETECT, false);
         countryCode = new Preference<>(prefs, KEY_COUNTRY_CODE, "");
         city = new Preference<>(prefs, KEY_CITY, "");
-        currentStation = new Preference<>(prefs, KEY_CURRENT_STATION, -1);
+        currentStation = new Preference<>(prefs, KEY_CURRENT_STATION, 0);
+        page = new Preference<>(prefs, KEY_PAGE, 2);
     }
 }

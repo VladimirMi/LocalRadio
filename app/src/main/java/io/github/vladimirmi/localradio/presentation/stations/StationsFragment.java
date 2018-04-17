@@ -49,12 +49,16 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     }
 
     @Override
-    public void selectStation(List<Station> stations) {
-        Station oldStation = stations.get(0);
-        Station newStation = stations.get(1);
-        stationsAdapter.select(oldStation, newStation);
-        int stationPosition = stationsAdapter.getPositionById(newStation.getId());
-        ((RecyclerView) getView()).smoothScrollToPosition(stationPosition);
+    public void selectStation(Station station) {
+        int stationPosition = stationsAdapter.select(station);
+        if (stationPosition >= 0) {
+            ((RecyclerView) getView()).smoothScrollToPosition(stationPosition);
+        }
+    }
+
+    @Override
+    public void setSelectedPlaying(boolean playing) {
+        stationsAdapter.setPlaying(playing);
     }
 
     @Override

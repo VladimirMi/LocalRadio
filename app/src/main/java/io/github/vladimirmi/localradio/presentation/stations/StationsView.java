@@ -13,5 +13,7 @@ public interface StationsView extends BaseView {
 
     void setStations(List<Station> stations);
 
-    void selectStation(List<Station> stations);
+    void selectStation(Station station);
+
+    void setSelectedPlaying(boolean playing);
 }

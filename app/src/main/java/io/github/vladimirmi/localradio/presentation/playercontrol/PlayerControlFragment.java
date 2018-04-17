@@ -77,7 +77,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     public void showPlaying() {
-        playPauseBt.setBackgroundResource(R.drawable.ic_play);
+        playPauseBt.setBackgroundResource(R.drawable.ic_stop);
         if (metadataTv.getText().toString().equals(getString(R.string.metadata_buffering))) {
             metadataTv.setText("");
         }
@@ -85,6 +85,6 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     public void showStopped() {
-        playPauseBt.setBackgroundResource(R.drawable.ic_stop);
+        playPauseBt.setBackgroundResource(R.drawable.ic_play);
     }
 }

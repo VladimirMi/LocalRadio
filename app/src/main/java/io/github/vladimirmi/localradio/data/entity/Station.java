@@ -122,16 +122,8 @@ public class Station {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public boolean isFavorite() {
         return isFavorite;
-    }
-
-    public void setFavorite(boolean favorite) {
-        isFavorite = favorite;
     }
 
     @Override
@@ -173,24 +165,21 @@ public class Station {
                 '}';
     }
 
-    public boolean update(Station station) {
-        boolean updated = false;
-        if (station.url != null && !station.url.equals(url)) {
-            url = station.url;
-            updated = true;
-        }
-        if (isFavorite != station.isFavorite) {
-            isFavorite = station.isFavorite;
-            updated = true;
-        }
-        return updated;
-    }
-
     public static Station nullStation() {
         return new Station();
     }
 
     public boolean isNullStation() {
         return id == 0;
+    }
+
+    public Station setFavorite(boolean isFavorite) {
+        return new Station(id, callsign, band, genre, language, websiteurl, imageurl, description,
+                encoding, status, countryCode, city, phone, email, dial, slogan, url, isFavorite);
+    }
+
+    public Station setUrl(String url) {
+        return new Station(id, callsign, band, genre, language, websiteurl, imageurl, description,
+                encoding, status, countryCode, city, phone, email, dial, slogan, url, isFavorite);
     }
 }

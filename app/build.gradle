@@ -42,7 +42,7 @@ android {
 }
 
 ext {
-    SUPPORT_LIBRARY_VERSION = "27.1.0"
+    SUPPORT_LIBRARY_VERSION = "27.1.1"
     PLAY_SERVICES_VERSION = "12.0.0"
 }
 

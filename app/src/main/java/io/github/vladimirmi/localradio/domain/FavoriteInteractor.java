@@ -26,19 +26,23 @@ public class FavoriteInteractor {
     }
 
     public void initFavorites(List<Station> stations) {
-        stationsRepository.updateStationsWith(stations.toArray(new Station[stations.size()]));
+        stationsRepository.updateFavorites(stations);
+        Station currentFavoriteStation = favoriteRepository.findCurrentFavoriteStation(stations);
+        if (currentFavoriteStation != null) {
+            stationsRepository.currentStation.accept(currentFavoriteStation);
+        }
     }
 
     public Completable switchFavorite(Station station) {
-        station.setFavorite(!station.isFavorite());
+        Station newStation = station.setFavorite(!station.isFavorite());
         Completable switchFavorite;
 
-        if (station.isFavorite()) {
-            switchFavorite = favoriteRepository.addFavorite(station);
+        if (newStation.isFavorite()) {
+            switchFavorite = favoriteRepository.addFavorite(newStation);
         } else {
-            switchFavorite = favoriteRepository.removeFavorite(station);
+            switchFavorite = favoriteRepository.removeFavorite(newStation);
         }
-        return switchFavorite.andThen(stationsRepository.setCurrentStation(station))
+        return switchFavorite.andThen(stationsRepository.setCurrentStation(newStation))
                 .subscribeOn(Schedulers.io());
     }
 }

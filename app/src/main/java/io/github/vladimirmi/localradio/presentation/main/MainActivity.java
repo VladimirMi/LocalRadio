@@ -40,17 +40,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                switch (tab.getPosition()) {
-                    case 0:
-                        showFavorite();
-                        break;
-                    case 1:
-                        showStations();
-                        break;
-                    case 2:
-                        showSearch();
-                        break;
-                }
+                presenter.selectPage(tab.getPosition());
             }
         });
     }

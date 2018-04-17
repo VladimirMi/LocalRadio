@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.data.repository;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -76,15 +77,14 @@ public class StationsRepository {
     public Completable setCurrentStation(Station station) {
         preferences.currentStation.put(station.getId());
 
-//        if (station.isNullStation()) {
-//            currentStation.accept(station);
-//            return Completable.complete();
-
         if (station.getUrl() == null) {
             return restService.getStationUrl(station.getId())
                     .filter(stationUrlResult -> stationUrlResult.isSuccess() && !stationUrlResult.getResult().isEmpty())
                     .map(stationUrlResult -> stationUrlResult.getResult().get(0))
-                    .doOnSuccess(this::updateStationsWith)
+                    .doOnSuccess(stationWithUrl -> {
+                        Station copy = station.setUrl(stationWithUrl.getUrl());
+                        currentStation.accept(copy);
+                    })
                     .ignoreElement();
         } else {
             currentStation.accept(station);
@@ -92,23 +92,26 @@ public class StationsRepository {
         }
     }
 
-    public void updateStationsWith(Station... newStations) {
-        boolean updated = false;
-        List<Station> list = stations.getValue();
-        int currentId = preferences.currentStation.get();
+    public void updateFavorites(List<Station> favoriteStations) {
+        List<Station> list = new ArrayList<>(stations.getValue());
+        if (list.isEmpty()) return;
 
-        for (Station station : list) {
-            for (Station newStation : newStations) {
-                if (station.getId() == newStation.getId()) {
-                    updated = station.update(newStation);
-                    if (station.getId() == currentId) {
-                        currentStation.accept(station);
-                    }
+        for (int i = 0; i < list.size(); i++) {
+            Station oldStation = list.get(i);
+            boolean isFavorite = false;
+
+            for (Station favoriteStation : favoriteStations) {
+                if (oldStation.getId() == favoriteStation.getId()) {
+                    isFavorite = true;
                     break;
                 }
             }
+            if (oldStation.isFavorite() != isFavorite) {
+                list.set(i, oldStation.setFavorite(isFavorite));
+            }
         }
-        if (updated) stations.accept(list);
+
+        stations.accept(list);
     }
 
     private Single<List<Station>> searchStationsAuto() {
@@ -144,13 +147,15 @@ public class StationsRepository {
 
     private Completable updateCurrentStationFromPreferences(List<Station> stations) {
         Station newCurrentStation = null;
+        Integer currentId = preferences.currentStation.get();
         for (Station station : stations) {
-            if (station.getId() == preferences.currentStation.get()) {
+            if (station.getId() == currentId) {
                 newCurrentStation = station;
+                break;
             }
         }
-
-        if (newCurrentStation == null || !stations.contains(newCurrentStation)) {
+        if ((newCurrentStation == null || !stations.contains(newCurrentStation))
+                && preferences.page.get() == 1) {
             if (stations.isEmpty()) {
                 newCurrentStation = Station.nullStation();
             } else {

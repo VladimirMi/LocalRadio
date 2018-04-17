@@ -21,7 +21,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -29,8 +28,12 @@ import timber.log.Timber;
 
 public class StationsAdapter extends ListAdapter<Station, StationsAdapter.StationVH> {
 
+    private static final String PAYLOAD_SELECTED_CHANGE = "PAYLOAD_SELECTED_CHANGE";
+    private static final String PAYLOAD_FAVORITE_CHANGE = "PAYLOAD_FAVORITE_CHANGE";
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
+    private int selectedPosition;
+    private boolean playing;
 
     private static final DiffUtil.ItemCallback CALLBACK = new DiffUtil.ItemCallback<Station>() {
         @Override
@@ -42,6 +45,11 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         public boolean areContentsTheSame(Station oldItem, Station newItem) {
             return oldItem.isFavorite() == newItem.isFavorite();
         }
+
+        @Override
+        public Object getChangePayload(Station oldItem, Station newItem) {
+            return PAYLOAD_FAVORITE_CHANGE;
+        }
     };
 
     public StationsAdapter(onStationListener listener) {
@@ -51,7 +59,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void submitList(List<Station> list) {
-        Timber.e("submitList: " + (list != null ? list.size() : 0));
         stations = list;
         super.submitList(list);
     }
@@ -65,11 +72,14 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
-        if (payloads.size() != 0) {
-            Boolean select = (Boolean) payloads.get(0);
-            holder.select(select);
+        if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
+            holder.select(position == selectedPosition, playing);
+
+        } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
+            holder.setFavorite(getItem(position));
+
         } else {
-            onBindViewHolder(holder, position);
+            super.onBindViewHolder(holder, position, payloads);
         }
     }
 
@@ -77,21 +87,23 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     public void onBindViewHolder(@NonNull StationVH holder, int position) {
         Station station = getItem(position);
         holder.bind(station);
+        holder.setFavorite(station);
+        holder.select(position == selectedPosition, playing);
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
     }
 
-    public void select(Station oldStation, Station newStation) {
-        int oldSelectedPos = stations.indexOf(oldStation);
-        int newSelectedPos = stations.indexOf(newStation);
-        notifyItemChanged(oldSelectedPos, false);
-        notifyItemChanged(newSelectedPos, true);
+    public int select(Station station) {
+        int oldSelectedPos = selectedPosition;
+        int newSelectedPos = stations.indexOf(station);
+        selectedPosition = newSelectedPos;
+        notifyItemChanged(oldSelectedPos, PAYLOAD_SELECTED_CHANGE);
+        notifyItemChanged(newSelectedPos, PAYLOAD_SELECTED_CHANGE);
+        return selectedPosition;
     }
 
-    public int getPositionById(int stationId) {
-        for (int i = 0; i < stations.size(); i++) {
-            if (stations.get(i).getId() == stationId) return i;
-        }
-        return 0;
+    public void setPlaying(boolean playing) {
+        this.playing = playing;
+        notifyItemChanged(selectedPosition, PAYLOAD_SELECTED_CHANGE);
     }
 
     static class StationVH extends RecyclerView.ViewHolder {
@@ -125,13 +137,20 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
                     .error(R.drawable.ic_radio)
                     .into(imageIv);
 
+        }
+
+        void setFavorite(Station station) {
             favoriteIv.setVisibility(station.isFavorite() ? View.VISIBLE : View.GONE);
         }
 
-        public void select(boolean select) {
+        void select(boolean select, boolean playing) {
             final int color;
             if (select) {
-                color = ContextCompat.getColor(itemView.getContext(), R.color.selected);
+                if (playing) {
+                    color = ContextCompat.getColor(itemView.getContext(), R.color.playing);
+                } else {
+                    color = ContextCompat.getColor(itemView.getContext(), R.color.selected);
+                }
             } else {
                 color = ContextCompat.getColor(itemView.getContext(), android.R.color.transparent);
             }
