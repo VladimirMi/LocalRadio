@@ -35,6 +35,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
         SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
