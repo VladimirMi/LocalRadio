@@ -3,6 +3,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimaryDark"
@@ -15,7 +16,6 @@
         android:layout_marginTop="8dp"
         android:contentDescription="@string/desc_station_icon"
         android:src="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
@@ -38,7 +38,6 @@
         android:layout_height="56dp"
         android:background="@drawable/ic_play"
         android:contentDescription="@string/desc_play_pause_button"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/metadataTv"
@@ -78,10 +77,17 @@
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
         android:singleLine="true"
-        android:text="Festus vigils ducunt ad gemna."
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
         app:layout_constraintStart_toEndOf="@+id/iconIv"
         app:layout_constraintTop_toTopOf="parent"
+        tools:text="Festus vigils ducunt ad gemna."
+        />
+
+    <include
+        layout="@layout/view_station_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/iconIv"
         />
 
 </android.support.constraint.ConstraintLayout>
