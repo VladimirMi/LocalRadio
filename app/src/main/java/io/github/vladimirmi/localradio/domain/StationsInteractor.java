@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,6 +17,7 @@ import io.reactivex.Observable;
 public class StationsInteractor {
 
     private final StationsRepository stationsRepository;
+    private String filter = "";
 
     @Inject
     public StationsInteractor(StationsRepository stationsRepository) {
@@ -23,7 +25,8 @@ public class StationsInteractor {
     }
 
     public Observable<List<Station>> getStationsObs() {
-        return stationsRepository.stations;
+        return stationsRepository.stations
+                .map(this::filter);
     }
 
     public Observable<Station> getCurrentStationObs() {
@@ -44,5 +47,34 @@ public class StationsInteractor {
 
     public Completable nextStation() {
         return Completable.complete();
+    }
+
+    public void filterStations(String filter) {
+        this.filter = filter.toLowerCase();
+        stationsRepository.stations.accept(stationsRepository.stations.getValue());
+    }
+
+    private List<Station> filter(List<Station> stations) {
+        if (filter.isEmpty()) return stations;
+
+        List<Station> filtered = new ArrayList<>();
+
+        for (Station station : stations) {
+            if (checkCanFilter(station.getCallsign())
+                    || checkCanFilter(station.getGenre())
+                    || checkCanFilter(station.getDial())
+                    || checkCanFilter(station.getBand())) {
+                filtered.add(station);
+            }
+        }
+        return filtered;
+    }
+
+    private boolean checkCanFilter(String field) {
+        return field != null && field.toLowerCase().contains(filter);
+    }
+
+    public String getFilter() {
+        return filter;
     }
 }

@@ -52,9 +52,18 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                 }));
     }
 
+
     public void selectStation(Station station) {
         compDisp.add(stationsInteractor.setCurrentStation(station)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+    }
+
+    public void filterStations(String filter) {
+        stationsInteractor.filterStations(filter);
+    }
+
+    public String getFilter() {
+        return stationsInteractor.getFilter();
     }
 }
