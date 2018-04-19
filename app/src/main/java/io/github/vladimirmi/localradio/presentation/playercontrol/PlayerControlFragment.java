@@ -26,6 +26,15 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @BindView(R.id.nextBt) Button nextBt;
     @BindView(R.id.favoriteBt) Button favoriteBt;
     @BindView(R.id.metadataTv) TextView metadataTv;
+    @BindView(R.id.titleTv) TextView titleTv;
+    @BindView(R.id.sloganTv) TextView sloganTv;
+    @BindView(R.id.descriptionTv) TextView descriptionTv;
+    @BindView(R.id.genreTv) TextView genreTv;
+    @BindView(R.id.locationTv) TextView locationTv;
+    @BindView(R.id.websiteTv) TextView websiteTv;
+    @BindView(R.id.emailTv) TextView emailTv;
+    @BindView(R.id.phoneTv) TextView phoneTv;
+
 
     private String iconUrl;
 
@@ -63,6 +72,24 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         }
 
         favoriteBt.setBackgroundResource(station.isFavorite() ? R.drawable.ic_star : R.drawable.ic_star_empty);
+
+        setTextOrHideIfEmpty(titleTv, station.getCallsign());
+        setTextOrHideIfEmpty(sloganTv, station.getSlogan());
+        setTextOrHideIfEmpty(descriptionTv, station.getDescription());
+        setTextOrHideIfEmpty(genreTv, station.getGenre());
+        setTextOrHideIfEmpty(locationTv, String.format("%s, %s", station.getCity(), station.getCountryCode()));
+        setTextOrHideIfEmpty(websiteTv, station.getWebsiteurl());
+        setTextOrHideIfEmpty(emailTv, station.getEmail());
+        setTextOrHideIfEmpty(phoneTv, station.getPhone());
+    }
+
+    private void setTextOrHideIfEmpty(TextView tv, String text) {
+        if (text == null || text.isEmpty()) {
+            tv.setVisibility(View.GONE);
+        } else {
+            tv.setVisibility(View.VISIBLE);
+            tv.setText(text);
+        }
     }
 
     @Override
@@ -87,4 +114,5 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     public void showStopped() {
         playPauseBt.setBackgroundResource(R.drawable.ic_play);
     }
+
 }
