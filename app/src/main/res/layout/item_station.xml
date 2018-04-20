@@ -62,6 +62,18 @@
         android:contentDescription="@string/desc_favorite"
         />
 
+    <ProgressBar
+        android:id="@+id/loadingPb"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:indeterminate="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone"
+        />
+
     <TextView
         android:id="@+id/genresTv"
         android:layout_width="wrap_content"

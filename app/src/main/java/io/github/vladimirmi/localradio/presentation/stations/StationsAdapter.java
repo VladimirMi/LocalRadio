@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -89,7 +90,12 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.bind(station);
         holder.setFavorite(station);
         holder.select(position == selectedPosition, playing);
-        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
+        holder.itemView.setOnClickListener(view -> {
+            listener.onStationClick(station);
+            if (station.getUrl() == null && !station.isFavorite()) {
+                holder.showLoading(true);
+            }
+        });
     }
 
     public int select(Station station) {
@@ -113,6 +119,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         @BindView(R.id.bandTv) TextView bandTv;
         @BindView(R.id.favoriteIv) ImageView favoriteIv;
         @BindView(R.id.genresTv) TextView genresTv;
+        @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
         StationVH(View itemView) {
             super(itemView);
@@ -155,6 +162,11 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
                 color = ContextCompat.getColor(itemView.getContext(), android.R.color.transparent);
             }
             itemView.setBackgroundColor(color);
+            showLoading(false);
+        }
+
+        void showLoading(boolean loading) {
+            loadingPb.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
     }
 
