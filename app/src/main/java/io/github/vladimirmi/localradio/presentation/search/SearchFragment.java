@@ -115,8 +115,23 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         cityEt.setSelection(city.length());
     }
 
+    //workaround on not correct initialized checkbox view on a hidden fragment
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        isFragmentVisible = isVisibleToUser;
+        if (getView() != null && isVisibleToUser) {
+            setAutodetect(isAutodetect);
+        }
+    }
+
+    private boolean isFragmentVisible;
+    private boolean isAutodetect;
+
     @Override
     public void setAutodetect(boolean enabled) {
+        isAutodetect = enabled;
+        if (!isFragmentVisible) return;
         autodetectCb.setChecked(enabled);
         enableView(countryEt, !enabled);
         enableView(cityEt, !enabled);

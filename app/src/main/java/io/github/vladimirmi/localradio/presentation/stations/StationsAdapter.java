@@ -92,7 +92,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.select(position == selectedPosition, playing);
         holder.itemView.setOnClickListener(view -> {
             listener.onStationClick(station);
-            if (station.getUrl() == null && !station.isFavorite()) {
+            if (station.getUrl() == null && !station.isFavorite() && position != selectedPosition) {
                 holder.showLoading(true);
             }
         });
