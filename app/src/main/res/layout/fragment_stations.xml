@@ -4,5 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:scrollbars="vertical"
     tools:listitem="@layout/item_station"
+    android:layout_marginBottom="80dp"
     />

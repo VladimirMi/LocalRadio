@@ -59,13 +59,13 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private void initPage() {
         switch (preferences.page.get()) {
-            case 0:
+            case MainActivity.PAGE_FAVORITE:
                 view.showFavorite();
                 break;
-            case 1:
+            case MainActivity.PAGE_STATIONS:
                 view.showStations();
                 break;
-            case 2:
+            case MainActivity.PAGE_SEARCH:
                 view.showSearch();
                 break;
         }
