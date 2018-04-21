@@ -156,6 +156,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         if (foundStations == -1) {
             searchResultTv.setText("");
         } else {
+            //todo plurals
             searchResultTv.setText(String.format("Found %d stations", foundStations));
         }
     }

@@ -18,6 +18,7 @@ public class StationUrlResult {
         return success;
     }
 
+    //todo replace Station with String url
     public List<Station> getResult() {
         return result;
     }

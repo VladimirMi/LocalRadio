@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.data.source;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -18,21 +19,18 @@ import okhttp3.internal.http.RealResponseBody;
 import okhttp3.internal.io.FileSystem;
 import okio.BufferedSource;
 import okio.Okio;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 12.04.2018.
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class CacheSource implements Interceptor {
 
-
-    private static final String SEARCH_PREFIX = "search_cache";
-    private static final String URL_PREFIX = "url_cache";
-    private static final String SUFFIX = ".json";
+    private static final String CACHE_PREFIX = "cache";
+    private static final String SEARCH_PREFIX = "cache_search";
+    private static final String URL_PREFIX = "cache_url";
+    private static final String SUFFIX = "json";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.ENGLISH);
-
-    private static final long SEARCH_CACHE_SIZE = 10 * 1024 * 1024; //10Mb
-    private static final int URL_CACHE_SIZE = 100; //files
 
     private final File cacheDir;
 
@@ -41,7 +39,7 @@ public class CacheSource implements Interceptor {
     }
 
     @Override
-    public Response intercept(Chain chain) throws IOException {
+    public Response intercept(@NonNull Chain chain) throws IOException {
 
         File cacheFile = createLocationSearchCache(chain.request().url());
         if (cacheFile == null) {
@@ -58,7 +56,7 @@ public class CacheSource implements Interceptor {
         }
 
         if (!cacheFile.exists()) {
-            cleanCache();
+            cleanOldCache();
 
             Response response = chain.proceed(chain.request());
             if (response.isSuccessful()) {
@@ -81,26 +79,20 @@ public class CacheSource implements Interceptor {
                 .build();
     }
 
-    public void cleanCache() {
-        File[] files = cacheDir.listFiles((dir, name) -> name.startsWith(SEARCH_PREFIX));
-        long cacheSize = 0;
-        for (int i = files.length - 1; i >= 0; i--) {
-            File file = files[i];
-            cacheSize += file.length();
-            if (cacheSize > SEARCH_CACHE_SIZE) {
-                file.delete();
-                Timber.e("cleanCache: " + file.getName());
-            }
-        }
 
-        files = cacheDir.listFiles((dir, name) -> name.startsWith(URL_PREFIX));
-        cacheSize = 0;
-        for (int i = files.length - 1; i >= 0; i--) {
-            cacheSize++;
-            File file = files[i];
-            if (cacheSize > URL_CACHE_SIZE) {
+    public void cleanCache(String namePart) {
+        File[] files = cacheDir.listFiles((dir, name) -> name.contains(namePart));
+        for (File file : files) {
+            file.delete();
+        }
+    }
+
+    private void cleanOldCache() {
+        File[] files = cacheDir.listFiles((dir, name) -> name.startsWith(CACHE_PREFIX));
+        String nowDate = dateFormat.format(new Date());
+        for (File file : files) {
+            if (!file.getName().contains(nowDate)) {
                 file.delete();
-                Timber.e("cleanCache: " + file.getName());
             }
         }
     }
@@ -112,7 +104,7 @@ public class CacheSource implements Interceptor {
         if (country == null || city == null) {
             return null;
         }
-        String fileName = String.format("%s_%s_%s_%s_%s", SEARCH_PREFIX, dateFormat.format(new Date()),
+        String fileName = String.format("%s_%s_%s_%s.%s", SEARCH_PREFIX, dateFormat.format(new Date()),
                 country, city, SUFFIX);
 
         return new File(cacheDir, fileName);
@@ -125,7 +117,7 @@ public class CacheSource implements Interceptor {
         if (latitude == null || longitude == null) {
             return null;
         }
-        String fileName = String.format("%s_%s_%s_%s_%s", SEARCH_PREFIX, dateFormat.format(new Date()),
+        String fileName = String.format("%s_%s_%s_%s.%s", SEARCH_PREFIX, dateFormat.format(new Date()),
                 latitude, longitude, SUFFIX);
 
         return new File(cacheDir, fileName);
@@ -135,7 +127,7 @@ public class CacheSource implements Interceptor {
         String ip = url.queryParameter("ip");
 
         if (ip == null) return null;
-        String fileName = String.format("%s_%s_%s_%s", SEARCH_PREFIX, dateFormat.format(new Date()), ip, SUFFIX);
+        String fileName = String.format("%s_%s_%s.%s", SEARCH_PREFIX, dateFormat.format(new Date()), ip, SUFFIX);
 
         return new File(cacheDir, fileName);
     }
@@ -148,7 +140,7 @@ public class CacheSource implements Interceptor {
             return null;
         }
 
-        String fileName = String.format("%s_%s_%s_%s", URL_PREFIX, dateFormat.format(new Date()), id, SUFFIX);
+        String fileName = String.format("%s_%s_%s.%s", URL_PREFIX, dateFormat.format(new Date()), id, SUFFIX);
 
         return new File(cacheDir, fileName);
     }
