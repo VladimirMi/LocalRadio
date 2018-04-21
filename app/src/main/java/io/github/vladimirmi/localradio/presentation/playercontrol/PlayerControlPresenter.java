@@ -37,7 +37,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     @Override
     protected void onAttach(PlayerControlView view) {
-        compDisp.add(stationsInteractor.getCurrentStationObs()
+        compDisp.add(stationsInteractor.getCurrentStationWithUrlObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObservableObserver<Station>(view) {
                     @Override
@@ -94,11 +94,13 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void skipToPrevious() {
-
+        compDisp.add(stationsInteractor.previousStation()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
     public void skipToNext() {
-
+        compDisp.add(stationsInteractor.nextStation()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
     public void switchFavorite() {

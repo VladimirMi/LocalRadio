@@ -33,7 +33,6 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                 .subscribe(view::setStations));
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
-                .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObservableObserver<Station>(view) {
                     @Override

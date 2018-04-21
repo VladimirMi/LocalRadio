@@ -67,7 +67,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         playback = new Playback(this, playerCallback);
 
-        compDisp.add(stationsInteractor.getCurrentStationObs()
+        compDisp.add(stationsInteractor.getCurrentStationWithUrlObs()
                 .subscribe(this::handleCurrentStation));
     }
 

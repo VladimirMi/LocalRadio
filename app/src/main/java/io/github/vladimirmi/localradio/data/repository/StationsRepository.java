@@ -78,6 +78,7 @@ public class StationsRepository {
 
     public Completable setCurrentStation(Station station) {
         preferences.currentStation.put(station.getId());
+        currentStation.accept(station);
 
         if (!station.isNullStation() && station.getUrl() == null) {
             return restService.getStationUrl(station.getId())
@@ -85,11 +86,11 @@ public class StationsRepository {
                     .map(stationUrlResult -> stationUrlResult.getResult().get(0))
                     .doOnSuccess(stationWithUrl -> {
                         Station copy = station.setUrl(stationWithUrl.getUrl());
+//                        updateStationsWith(copy);
                         currentStation.accept(copy);
                     })
                     .ignoreElement();
         } else {
-            currentStation.accept(station);
             return Completable.complete();
         }
     }
@@ -178,6 +179,13 @@ public class StationsRepository {
             newCurrentStation = stations.get(0);
         }
         return setCurrentStation(newCurrentStation);
+    }
+
+    private void updateStationsWith(Station station) {
+        List<Station> stationList = stations.getValue();
+        int index = stationList.indexOf(station);
+        stationList.set(index, station);
+        stations.accept(stationList);
     }
 
 }

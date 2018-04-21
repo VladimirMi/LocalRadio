@@ -17,6 +17,7 @@ import io.reactivex.Observable;
 public class StationsInteractor {
 
     private final StationsRepository stationsRepository;
+    private List<Station> stations;
     private String filter = "";
 
     @Inject
@@ -26,11 +27,16 @@ public class StationsInteractor {
 
     public Observable<List<Station>> getStationsObs() {
         return stationsRepository.stations
-                .map(this::filter);
+                .map(this::filter)
+                .doOnNext(it -> stations = it);
     }
 
     public Observable<Station> getCurrentStationObs() {
         return stationsRepository.currentStation;
+    }
+
+    public Observable<Station> getCurrentStationWithUrlObs() {
+        return stationsRepository.currentStation.filter(station -> station.getUrl() != null);
     }
 
     public Station getCurrentStation() {
@@ -42,11 +48,21 @@ public class StationsInteractor {
     }
 
     public Completable previousStation() {
-        return Completable.complete();
+        int indexOfCurrent = stations.indexOf(getCurrentStation());
+        if (indexOfCurrent == -1) return Completable.complete();
+
+        int indexOfPrevious = (indexOfCurrent + stations.size() - 1) % stations.size();
+
+        return setCurrentStation(stations.get(indexOfPrevious));
     }
 
     public Completable nextStation() {
-        return Completable.complete();
+        int indexOfCurrent = stations.indexOf(getCurrentStation());
+        if (indexOfCurrent == -1) return Completable.complete();
+
+        int indexOfNext = (indexOfCurrent + 1) % stations.size();
+
+        return setCurrentStation(stations.get(indexOfNext));
     }
 
     public void filterStations(String filter) {

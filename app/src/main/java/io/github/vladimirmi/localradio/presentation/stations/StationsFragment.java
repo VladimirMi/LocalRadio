@@ -17,6 +17,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -27,6 +28,7 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     private StationsAdapter stationsAdapter;
     private SearchView searchView;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected int getLayout() {
@@ -69,7 +71,7 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     @Override
     protected void setupView(View view) {
         RecyclerView stationList = (RecyclerView) view;
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager = new LinearLayoutManager(getContext());
         stationList.setLayoutManager(layoutManager);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),
                 layoutManager.getOrientation());
@@ -87,7 +89,9 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     @Override
     public void selectStation(Station station) {
         stationsAdapter.select(station);
-        scrollToSelectedStation();
+        if (station.getUrl() != null) {
+            scrollToSelectedStation();
+        }
     }
 
     @Override
@@ -114,12 +118,25 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     private void scrollToSelectedStation() {
         int stationPosition = stationsAdapter.getSelectedPosition();
-        if (getView() != null) {
-            getView().postDelayed(() -> {
-                if (stationPosition >= 0) {
-                    ((RecyclerView) getView()).scrollToPosition(stationPosition);
-                }
-            }, 100);
+        if (stationPosition < 0) return;
+
+        int firstPosition = layoutManager.findFirstVisibleItemPosition();
+        int lastPosition = layoutManager.findLastVisibleItemPosition();
+        int offset = (lastPosition - firstPosition) / 4;
+
+        if (stationPosition > firstPosition + offset && stationPosition < lastPosition - offset) {
+            return;
         }
+
+        if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
+            getView().postDelayed(() -> layoutManager
+                    .scrollToPositionWithOffset(stationPosition, getView().getHeight() / 3), 10);
+        } else {
+            layoutManager.scrollToPositionWithOffset(stationPosition, getView().getHeight() / 3);
+        }
+
+        Timber.e("scrollToSelectedStation: %s %s %s", stationPosition,
+                firstPosition,
+                lastPosition);
     }
 }

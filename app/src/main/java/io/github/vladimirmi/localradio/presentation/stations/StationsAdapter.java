@@ -31,10 +31,11 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     private static final String PAYLOAD_SELECTED_CHANGE = "PAYLOAD_SELECTED_CHANGE";
     private static final String PAYLOAD_FAVORITE_CHANGE = "PAYLOAD_FAVORITE_CHANGE";
+    private static final String PAYLOAD_LOADING = "PAYLOAD_LOADING";
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
-    private Station selectedStation;
     private int selectedPosition;
+    private Station selectedStation;
     private boolean playing;
 
     private static final DiffUtil.ItemCallback CALLBACK = new DiffUtil.ItemCallback<Station>() {
@@ -62,7 +63,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     @Override
     public void submitList(List<Station> list) {
         stations = list;
-        selectedPosition = list.indexOf(selectedStation);
+        selectedPosition = stations.indexOf(selectedStation);
         super.submitList(list);
     }
 
@@ -77,6 +78,10 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
         if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
             holder.select(position == selectedPosition, playing);
+            holder.showLoading(false);
+
+        } else if (payloads.contains(PAYLOAD_LOADING)) {
+            holder.showLoading(true);
 
         } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
             holder.setFavorite(getItem(position));
@@ -92,19 +97,21 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.bind(station);
         holder.setFavorite(station);
         holder.select(position == selectedPosition, playing);
-        holder.itemView.setOnClickListener(view -> {
-            listener.onStationClick(station);
-            if (station.getUrl() == null && !station.isFavorite() && position != selectedPosition) {
-                holder.showLoading(true);
-            }
-        });
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
     }
 
     public void select(Station station) {
-        int oldSelectedPos = selectedPosition;
         int newSelectedPos = stations.indexOf(station);
-        selectedStation = station;
+
+        if (station.getUrl() == null) {
+            notifyItemChanged(newSelectedPos, PAYLOAD_LOADING);
+            return;
+        }
+        int oldSelectedPos = stations.indexOf(selectedStation);
+
         selectedPosition = newSelectedPos;
+        selectedStation = station;
+
         notifyItemChanged(oldSelectedPos, PAYLOAD_SELECTED_CHANGE);
         notifyItemChanged(newSelectedPos, PAYLOAD_SELECTED_CHANGE);
     }
@@ -159,16 +166,12 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         void select(boolean select, boolean playing) {
             final int color;
             if (select) {
-                if (playing) {
-                    color = ContextCompat.getColor(itemView.getContext(), R.color.playing);
-                } else {
-                    color = ContextCompat.getColor(itemView.getContext(), R.color.selected);
-                }
+                color = ContextCompat.getColor(itemView.getContext(),
+                        playing ? R.color.playing : R.color.selected);
             } else {
                 color = ContextCompat.getColor(itemView.getContext(), android.R.color.transparent);
             }
             itemView.setBackgroundColor(color);
-            showLoading(false);
         }
 
         void showLoading(boolean loading) {

@@ -15,6 +15,10 @@ import io.github.vladimirmi.localradio.data.repository.GeoLocationRepository;
 import io.github.vladimirmi.localradio.data.repository.MediaController;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
+import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import okhttp3.OkHttpClient;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import toothpick.config.Module;
@@ -49,5 +53,10 @@ public class AppModule extends Module {
         bind(GeoLocationRepository.class).singletonInScope();
         bind(StationsRepository.class).singletonInScope();
         bind(MediaController.class).singletonInScope();
+
+        bind(FavoriteInteractor.class).singletonInScope();
+        bind(PlayerControlInteractor.class).singletonInScope();
+        bind(SearchInteractor.class).singletonInScope();
+        bind(StationsInteractor.class).singletonInScope();
     }
 }
