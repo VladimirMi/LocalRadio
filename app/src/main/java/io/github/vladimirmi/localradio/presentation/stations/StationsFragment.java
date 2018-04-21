@@ -81,14 +81,13 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     @Override
     public void setStations(List<Station> stations) {
         stationsAdapter.submitList(stations);
+        scrollToSelectedStation();
     }
 
     @Override
     public void selectStation(Station station) {
-        int stationPosition = stationsAdapter.select(station);
-        if (stationPosition >= 0) {
-            ((RecyclerView) getView()).scrollToPosition(stationPosition);
-        }
+        stationsAdapter.select(station);
+        scrollToSelectedStation();
     }
 
     @Override
@@ -111,5 +110,16 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     public boolean onQueryTextChange(String newText) {
         presenter.filterStations(newText);
         return true;
+    }
+
+    private void scrollToSelectedStation() {
+        int stationPosition = stationsAdapter.getSelectedPosition();
+        if (getView() != null) {
+            getView().postDelayed(() -> {
+                if (stationPosition >= 0) {
+                    ((RecyclerView) getView()).scrollToPosition(stationPosition);
+                }
+            }, 100);
+        }
     }
 }

@@ -33,6 +33,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     private static final String PAYLOAD_FAVORITE_CHANGE = "PAYLOAD_FAVORITE_CHANGE";
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
+    private Station selectedStation;
     private int selectedPosition;
     private boolean playing;
 
@@ -61,6 +62,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     @Override
     public void submitList(List<Station> list) {
         stations = list;
+        selectedPosition = list.indexOf(selectedStation);
         super.submitList(list);
     }
 
@@ -98,18 +100,22 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         });
     }
 
-    public int select(Station station) {
+    public void select(Station station) {
         int oldSelectedPos = selectedPosition;
         int newSelectedPos = stations.indexOf(station);
+        selectedStation = station;
         selectedPosition = newSelectedPos;
         notifyItemChanged(oldSelectedPos, PAYLOAD_SELECTED_CHANGE);
         notifyItemChanged(newSelectedPos, PAYLOAD_SELECTED_CHANGE);
-        return selectedPosition;
     }
 
     public void setPlaying(boolean playing) {
         this.playing = playing;
         notifyItemChanged(selectedPosition, PAYLOAD_SELECTED_CHANGE);
+    }
+
+    public int getSelectedPosition() {
+        return selectedPosition;
     }
 
     static class StationVH extends RecyclerView.ViewHolder {

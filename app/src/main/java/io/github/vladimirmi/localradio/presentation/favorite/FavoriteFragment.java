@@ -62,10 +62,8 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
 
     @Override
     public void selectStation(Station station) {
-        int stationPosition = stationsAdapter.select(station);
-        if (stationPosition >= 0) {
-            ((RecyclerView) getView()).smoothScrollToPosition(stationPosition);
-        }
+        stationsAdapter.select(station);
+        scrollToSelectedStation();
     }
 
     @Override
@@ -90,10 +88,22 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         stationsAdapter.submitList(Collections.emptyList());
+        scrollToSelectedStation();
     }
 
     @Override
     public void onStationClick(Station station) {
         presenter.selectStation(station);
+    }
+
+    private void scrollToSelectedStation() {
+        int stationPosition = stationsAdapter.getSelectedPosition();
+        if (getView() != null) {
+            getView().postDelayed(() -> {
+                if (stationPosition >= 0) {
+                    ((RecyclerView) getView()).scrollToPosition(stationPosition);
+                }
+            }, 100);
+        }
     }
 }
