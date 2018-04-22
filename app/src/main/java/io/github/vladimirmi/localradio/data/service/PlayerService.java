@@ -24,7 +24,10 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.utils.RxUtils;
+import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import toothpick.Toothpick;
 
 /**
@@ -67,10 +70,16 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         setSessionToken(session.getSessionToken());
 
         playback = new Playback(this, playerCallback);
-        notification = new MediaNotification(this, session);
+        notification = new MediaNotification(this, session, stationsInteractor);
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
-                .subscribe(this::handleCurrentStation));
+                .observeOn(Schedulers.io())
+                .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
+                    @Override
+                    public void onNext(Station station) {
+                        handleCurrentStation(station);
+                    }
+                }));
     }
 
     @Override
@@ -156,12 +165,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
-
+        stationsInteractor.previousStation().subscribeWith(new RxUtils.ErrorCompletableObserver(null));
     }
 
     @Override
     public void onSkipToNextCommand() {
-
+        stationsInteractor.nextStation().subscribeWith(new RxUtils.ErrorCompletableObserver(null));
     }
 
     //endregion
@@ -196,7 +205,11 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     .build();
 
             session.setPlaybackState(newPlaybackState);
-            notification.update();
+
+            Completable.fromAction(notification::update)
+                    .subscribeOn(Schedulers.io())
+                    .subscribeWith(new RxUtils.ErrorCompletableObserver(null))
+            ;
         }
 
         @Override
