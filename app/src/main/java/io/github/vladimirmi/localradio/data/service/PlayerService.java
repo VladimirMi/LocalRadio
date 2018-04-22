@@ -44,6 +44,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS).build();
 
     private Playback playback;
+    private MediaNotification notification;
 
     private boolean serviceStarted = false;
     private int currentStationId;
@@ -66,6 +67,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         setSessionToken(session.getSessionToken());
 
         playback = new Playback(this, playerCallback);
+        notification = new MediaNotification(this, session);
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .subscribe(this::handleCurrentStation));
@@ -100,6 +102,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private void handleCurrentStation(Station station) {
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
+        notification.update();
     }
 
     private boolean isPlayed() {
@@ -193,12 +196,14 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     .build();
 
             session.setPlaybackState(newPlaybackState);
+            notification.update();
         }
 
         @Override
         public void onMetadata(Metadata metadata) {
             super.onMetadata(metadata);
             session.setMetadata(metadata.toMediaMetadata());
+            notification.update();
         }
 
         @Override

@@ -21,7 +21,6 @@ public abstract class BasePresenter<V extends BaseView> {
         if (isFirstAttach) {
             onFirstAttach(view, disposablesOnFirstAttach);
             isFirstAttach = false;
-            return;
         }
         onAttach(view);
     }

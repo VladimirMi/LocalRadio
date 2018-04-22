@@ -57,6 +57,7 @@ public class Metadata {
     }
 
     public static Metadata create(MediaMetadataCompat meta) {
+        if (meta == null) return UNSUPPORTED;
         CharSequence subtitle = meta.getDescription().getSubtitle();
         CharSequence title = meta.getDescription().getTitle();
         return new Metadata(

@@ -77,6 +77,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     public void stop() {
         playAgainOnFocus = false;
         playAgainOnHeadset = false;
+        releaseResources();
         if (player != null) {
             player.stop();
         }

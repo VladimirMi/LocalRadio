@@ -22,5 +22,6 @@
     <string name="metadata_buffering">Loading…</string>
 
     <string name="error_specify_location">a more specific location is required</string>
+    <string name="notification_name">Local Radio notofication</string>
 
 </resources>
