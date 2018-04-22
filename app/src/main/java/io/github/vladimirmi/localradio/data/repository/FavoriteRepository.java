@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,6 +23,8 @@ public class FavoriteRepository {
     private final ContentResolver contentResolver;
     private final Preferences preferences;
 
+    private List<Station> favoriteStations = Collections.emptyList();
+
     @Inject
     public FavoriteRepository(ContentResolver contentResolver,
                               Preferences preferences) {
@@ -39,13 +42,22 @@ public class FavoriteRepository {
         return Completable.fromAction(() -> contentResolver.delete(uri, null, null));
     }
 
-    public Station findCurrentFavoriteStation(List<Station> stations) {
+    public Station findCurrentFavoriteStation() {
         int curId = preferences.currentStation.get();
-        for (Station station : stations) {
+        for (Station station : favoriteStations) {
             if (station.getId() == curId) {
                 return station;
             }
         }
         return null;
+    }
+
+
+    public void setFavoriteStations(List<Station> favoriteStations) {
+        this.favoriteStations = favoriteStations;
+    }
+
+    public List<Station> getFavoriteStations() {
+        return favoriteStations;
     }
 }

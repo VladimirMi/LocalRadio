@@ -70,13 +70,15 @@ public class ValuesMapper {
         }
         List<T> list = new ArrayList<>(cursor.getCount());
 
-        while (cursor.moveToNext()) {
+        cursor.moveToFirst();
+        do {
             try {
                 list.add(mapper.apply(cursor));
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        } while (cursor.moveToNext());
+
         return list;
     }
 

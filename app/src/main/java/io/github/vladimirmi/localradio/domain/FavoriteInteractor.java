@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,12 +26,10 @@ public class FavoriteInteractor {
         this.favoriteRepository = favoriteRepository;
     }
 
-    public void initFavorites(List<Station> stations) {
-        stationsRepository.updateFavorites(stations);
-        Station currentFavoriteStation = favoriteRepository.findCurrentFavoriteStation(stations);
-        if (currentFavoriteStation != null) {
-            stationsRepository.currentStation.accept(currentFavoriteStation);
-        }
+    public void setFavorites(List<Station> stations) {
+        favoriteRepository.setFavoriteStations(stations);
+        updateStationsWithFavorites();
+        setCurrentStationIfFavorite();
     }
 
     public Completable switchFavorite(Station station) {
@@ -42,7 +41,20 @@ public class FavoriteInteractor {
         } else {
             switchFavorite = favoriteRepository.removeFavorite(newStation);
         }
-        return switchFavorite.andThen(stationsRepository.setCurrentStation(newStation))
-                .subscribeOn(Schedulers.io());
+        return switchFavorite.subscribeOn(Schedulers.io());
+    }
+
+    private void updateStationsWithFavorites() {
+        List<Station> list = new ArrayList<>(stationsRepository.stations.getValue());
+        boolean updated = stationsRepository.updateStationsIfFavorite(list);
+        if (updated) stationsRepository.stations.accept(list);
+    }
+
+    private void setCurrentStationIfFavorite() {
+        Station currentFavoriteStation = favoriteRepository.findCurrentFavoriteStation();
+        if (currentFavoriteStation != null
+                && !currentFavoriteStation.equals(stationsRepository.currentStation.getValue())) {
+            stationsRepository.currentStation.accept(currentFavoriteStation);
+        }
     }
 }

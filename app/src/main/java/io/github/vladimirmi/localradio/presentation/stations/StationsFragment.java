@@ -17,7 +17,6 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -129,14 +128,13 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         }
 
         if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
+            //workaround on not scrolled when initialized
             getView().postDelayed(() -> layoutManager
-                    .scrollToPositionWithOffset(stationPosition, getView().getHeight() / 3), 10);
+                    .scrollToPositionWithOffset(stationPosition, getView().getHeight() / 2), 10);
+        } else if (stationPosition + offset > lastPosition) {
+            layoutManager.scrollToPosition(stationPosition + offset);
         } else {
-            layoutManager.scrollToPositionWithOffset(stationPosition, getView().getHeight() / 3);
+            layoutManager.scrollToPosition(stationPosition - offset);
         }
-
-        Timber.e("scrollToSelectedStation: %s %s %s", stationPosition,
-                firstPosition,
-                lastPosition);
     }
 }

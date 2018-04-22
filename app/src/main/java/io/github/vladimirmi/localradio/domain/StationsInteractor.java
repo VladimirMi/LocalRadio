@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -17,7 +18,7 @@ import io.reactivex.Observable;
 public class StationsInteractor {
 
     private final StationsRepository stationsRepository;
-    private List<Station> stations;
+    private List<Station> filteredStations;
     private String filter = "";
 
     @Inject
@@ -27,15 +28,20 @@ public class StationsInteractor {
 
     public Observable<List<Station>> getStationsObs() {
         return stationsRepository.stations
-                .map(this::filter)
-                .doOnNext(it -> stations = it);
+                .map(this::filter);
     }
 
-    public Observable<Station> getCurrentStationObs() {
+    public List<Station> getStations() {
+        return stationsRepository.stations.hasValue()
+                ? stationsRepository.stations.getValue()
+                : Collections.emptyList();
+    }
+
+    public Observable<Station> getCurrentStationLoadingObs() {
         return stationsRepository.currentStation;
     }
 
-    public Observable<Station> getCurrentStationWithUrlObs() {
+    public Observable<Station> getCurrentStationObs() {
         return stationsRepository.currentStation.filter(station -> station.getUrl() != null);
     }
 
@@ -48,21 +54,21 @@ public class StationsInteractor {
     }
 
     public Completable previousStation() {
-        int indexOfCurrent = stations.indexOf(getCurrentStation());
+        int indexOfCurrent = filteredStations.indexOf(getCurrentStation());
         if (indexOfCurrent == -1) return Completable.complete();
 
-        int indexOfPrevious = (indexOfCurrent + stations.size() - 1) % stations.size();
+        int indexOfPrevious = (indexOfCurrent + filteredStations.size() - 1) % filteredStations.size();
 
-        return setCurrentStation(stations.get(indexOfPrevious));
+        return setCurrentStation(filteredStations.get(indexOfPrevious));
     }
 
     public Completable nextStation() {
-        int indexOfCurrent = stations.indexOf(getCurrentStation());
+        int indexOfCurrent = filteredStations.indexOf(getCurrentStation());
         if (indexOfCurrent == -1) return Completable.complete();
 
-        int indexOfNext = (indexOfCurrent + 1) % stations.size();
+        int indexOfNext = (indexOfCurrent + 1) % filteredStations.size();
 
-        return setCurrentStation(stations.get(indexOfNext));
+        return setCurrentStation(filteredStations.get(indexOfNext));
     }
 
     public void filterStations(String filter) {
@@ -71,19 +77,21 @@ public class StationsInteractor {
     }
 
     private List<Station> filter(List<Station> stations) {
-        if (filter.isEmpty()) return stations;
-
-        List<Station> filtered = new ArrayList<>();
+        if (filter.isEmpty()) {
+            filteredStations = stations;
+            return filteredStations;
+        }
+        filteredStations = new ArrayList<>();
 
         for (Station station : stations) {
             if (checkCanFilter(station.getCallsign())
                     || checkCanFilter(station.getGenre())
                     || checkCanFilter(station.getDial())
                     || checkCanFilter(station.getBand())) {
-                filtered.add(station);
+                filteredStations.add(station);
             }
         }
-        return filtered;
+        return filteredStations;
     }
 
     private boolean checkCanFilter(String field) {

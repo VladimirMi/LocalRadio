@@ -97,7 +97,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.bind(station);
         holder.setFavorite(station);
         holder.select(position == selectedPosition, playing);
-        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(getItem(position)));
     }
 
     public void select(Station station) {
@@ -123,6 +123,11 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     public int getSelectedPosition() {
         return selectedPosition;
+    }
+
+    @Override
+    protected Station getItem(int position) {
+        return stations.get(position);
     }
 
     static class StationVH extends RecyclerView.ViewHolder {

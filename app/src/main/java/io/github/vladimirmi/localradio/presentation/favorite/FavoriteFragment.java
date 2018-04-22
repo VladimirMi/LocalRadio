@@ -43,9 +43,9 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getActivity().getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override

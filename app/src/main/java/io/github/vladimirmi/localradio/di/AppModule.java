@@ -11,6 +11,7 @@ import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
+import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
 import io.github.vladimirmi.localradio.data.repository.GeoLocationRepository;
 import io.github.vladimirmi.localradio.data.repository.MediaController;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
@@ -52,6 +53,7 @@ public class AppModule extends Module {
 
         bind(GeoLocationRepository.class).singletonInScope();
         bind(StationsRepository.class).singletonInScope();
+        bind(FavoriteRepository.class).singletonInScope();
         bind(MediaController.class).singletonInScope();
 
         bind(FavoriteInteractor.class).singletonInScope();

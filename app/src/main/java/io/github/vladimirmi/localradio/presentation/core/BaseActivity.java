@@ -50,6 +50,12 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     }
 
     @Override
+    protected void onDestroy() {
+        presenter.destroyView();
+        super.onDestroy();
+    }
+
+    @Override
     public Observable<Boolean> resolvePermissions(String... permissions) {
         return new RxPermissions(this).request(permissions);
     }

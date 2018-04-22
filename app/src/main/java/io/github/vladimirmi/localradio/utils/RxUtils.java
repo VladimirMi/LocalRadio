@@ -59,17 +59,16 @@ public class RxUtils {
         }
     }
 
-    public static class ErrorObservableObserver<T> extends DisposableObserver<T> {
+    public static class ErrorObserver<T> extends DisposableObserver<T> {
 
         private final BaseView view;
 
-        public ErrorObservableObserver(BaseView view) {
+        public ErrorObserver(BaseView view) {
             this.view = view;
         }
 
         @Override
         public void onNext(T t) {
-
         }
 
         @Override
@@ -83,7 +82,6 @@ public class RxUtils {
 
         @Override
         public void onComplete() {
-
         }
     }
 }

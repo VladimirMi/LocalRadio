@@ -51,6 +51,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        presenter.destroyView();
         unbinder.unbind();
     }
 
@@ -65,6 +66,12 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     public void onPause() {
         presenter.detachView();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        presenter.destroyView();
+        super.onDestroy();
     }
 
     @SuppressWarnings("all")

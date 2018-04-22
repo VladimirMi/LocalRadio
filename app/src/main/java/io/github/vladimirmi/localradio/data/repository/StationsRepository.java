@@ -3,7 +3,6 @@ package io.github.vladimirmi.localradio.data.repository;
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
-import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -33,6 +31,7 @@ public class StationsRepository {
     private final Preferences preferences;
     private final NetworkChecker networkChecker;
     private final CacheSource cacheSource;
+    private final FavoriteRepository favoriteRepository;
 
     public final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
     public final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
@@ -42,17 +41,25 @@ public class StationsRepository {
                               LocationSource locationSource,
                               Preferences preferences,
                               NetworkChecker networkChecker,
-                              CacheSource cacheSource) {
+                              CacheSource cacheSource, FavoriteRepository favoriteRepository) {
         this.restService = restService;
         this.locationSource = locationSource;
         this.preferences = preferences;
         this.networkChecker = networkChecker;
         this.cacheSource = cacheSource;
-
-        searchStations(false).subscribeWith(new RxUtils.ErrorCompletableObserver(null));
+        this.favoriteRepository = favoriteRepository;
     }
 
-    public Completable searchStations(boolean skipCache) {
+    public Completable searchStations() {
+        return searchStations(false);
+    }
+
+    public Completable refreshStations() {
+        return Completable.fromAction(() -> stations.accept(Collections.emptyList()))
+                .andThen(searchStations(true));
+    }
+
+    private Completable searchStations(boolean skipCache) {
         Single<List<Station>> search;
 
         if (preferences.autodetect.get()) {
@@ -66,14 +73,10 @@ public class StationsRepository {
                     return Collections.emptyList();
                 })
                 .flatMapCompletable(stations -> {
+                    updateStationsIfFavorite(stations);
                     this.stations.accept(stations);
                     return updateCurrentStationFromPreferences(stations);
                 });
-    }
-
-    public Completable refreshStations() {
-        return Completable.fromAction(() -> stations.accept(Collections.emptyList()))
-                .andThen(searchStations(true));
     }
 
     public Completable setCurrentStation(Station station) {
@@ -86,7 +89,7 @@ public class StationsRepository {
                     .map(stationUrlResult -> stationUrlResult.getResult().get(0))
                     .doOnSuccess(stationWithUrl -> {
                         Station copy = station.setUrl(stationWithUrl.getUrl());
-//                        updateStationsWith(copy);
+                        updateStationsWith(copy);
                         currentStation.accept(copy);
                     })
                     .ignoreElement();
@@ -95,26 +98,23 @@ public class StationsRepository {
         }
     }
 
-    public void updateFavorites(List<Station> favoriteStations) {
-        List<Station> list = new ArrayList<>(stations.getValue());
-        if (list.isEmpty()) return;
-
-        for (int i = 0; i < list.size(); i++) {
-            Station oldStation = list.get(i);
+    public boolean updateStationsIfFavorite(List<Station> stations) {
+        boolean updated = false;
+        for (int i = 0; i < stations.size(); i++) {
+            Station station = stations.get(i);
             boolean isFavorite = false;
-
-            for (Station favoriteStation : favoriteStations) {
-                if (oldStation.getId() == favoriteStation.getId()) {
+            for (Station favoriteStation : favoriteRepository.getFavoriteStations()) {
+                if (station.getId() == favoriteStation.getId()) {
                     isFavorite = true;
                     break;
                 }
             }
-            if (oldStation.isFavorite() != isFavorite) {
-                list.set(i, oldStation.setFavorite(isFavorite));
+            if (station.isFavorite() != isFavorite) {
+                stations.set(i, station.setFavorite(isFavorite));
+                updated = true;
             }
         }
-
-        stations.accept(list);
+        return updated;
     }
 
     private Single<List<Station>> searchStationsAuto(boolean skipCache) {
@@ -175,7 +175,13 @@ public class StationsRepository {
                 break;
             }
         }
-        if (!stations.contains(newCurrentStation) && !stations.isEmpty()) {
+        for (Station station : favoriteRepository.getFavoriteStations()) {
+            if (station.getId() == currentId) {
+                newCurrentStation = station;
+                break;
+            }
+        }
+        if (newCurrentStation.isNullStation() && !stations.isEmpty()) {
             newCurrentStation = stations.get(0);
         }
         return setCurrentStation(newCurrentStation);

@@ -71,7 +71,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             countryEt.performValidation();
             if (cityEt.getText().toString().isEmpty()) cityEt.setText(" ");
             cityEt.performValidation();
-            presenter.performSearch(countryEt.getText().toString(),
+            presenter.search(countryEt.getText().toString(),
                     cityEt.getText().toString());
         });
 

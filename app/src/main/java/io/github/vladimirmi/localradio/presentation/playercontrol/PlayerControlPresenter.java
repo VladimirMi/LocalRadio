@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.playercontrol;
 
+import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -36,28 +38,28 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     @Override
-    protected void onAttach(PlayerControlView view) {
-        compDisp.add(stationsInteractor.getCurrentStationWithUrlObs()
+    protected void onFirstAttach(@Nullable PlayerControlView view, CompositeDisposable disposables) {
+        disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObservableObserver<Station>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
                     public void onNext(Station station) {
                         handleCurrentStation(station);
                     }
                 }));
 
-        compDisp.add(controlInteractor.getPlaybackStateObs()
+        disposables.add(controlInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObservableObserver<PlaybackStateCompat>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
                     @Override
                     public void onNext(PlaybackStateCompat playbackStateCompat) {
                         handleState(playbackStateCompat);
                     }
                 }));
 
-        compDisp.add(controlInteractor.getPlaybackMetadataObs()
+        disposables.add(controlInteractor.getPlaybackMetadataObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObservableObserver<Metadata>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<Metadata>(view) {
                     @Override
                     public void onNext(Metadata metadata) {
                         handleMetadata(metadata);
@@ -66,11 +68,13 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     private void handleCurrentStation(Station station) {
+        if (view == null) return;
         currentStation = station;
         view.setStation(station);
     }
 
     private void handleState(PlaybackStateCompat state) {
+        if (view == null) return;
         if (state.getState() == PlaybackStateCompat.STATE_PAUSED
                 || state.getState() == PlaybackStateCompat.STATE_STOPPED) {
             view.showStopped();
@@ -82,6 +86,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     private void handleMetadata(Metadata metadata) {
+        if (view == null) return;
         if (metadata.isSupported) {
             view.setMetadata(metadata.toString());
         } else {
@@ -94,17 +99,17 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void skipToPrevious() {
-        compDisp.add(stationsInteractor.previousStation()
+        disposables.add(stationsInteractor.previousStation()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
     public void skipToNext() {
-        compDisp.add(stationsInteractor.nextStation()
+        disposables.add(stationsInteractor.nextStation()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
     public void switchFavorite() {
-        compDisp.add(favoriteInteractor.switchFavorite(currentStation)
+        disposables.add(favoriteInteractor.switchFavorite(currentStation)
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 

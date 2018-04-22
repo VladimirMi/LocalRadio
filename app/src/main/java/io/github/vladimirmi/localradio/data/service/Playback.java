@@ -145,15 +145,15 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals(AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+            if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
                 service.onPauseCommand(300000); // stop delay - 5 min
                 playAgainOnHeadset = player != null && player.getPlayWhenReady();
 
-            } else if (playAgainOnHeadset && action.equals(Intent.ACTION_HEADSET_PLUG)
+            } else if (playAgainOnHeadset && Intent.ACTION_HEADSET_PLUG.equals(action)
                     && intent.getIntExtra("state", 0) == 1) {
                 service.onPlayCommand();
 
-            } else if (playAgainOnHeadset && action.equals(BluetoothDevice.ACTION_ACL_CONNECTED)) {
+            } else if (playAgainOnHeadset && BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
                 int count = 0;
                 while (!audioManager.isBluetoothA2dpOn() && count < 10) {
                     try {

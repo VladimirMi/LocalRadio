@@ -69,19 +69,18 @@ public class SearchInteractor {
         return city;
     }
 
-    public Completable search(String countryName, String cityName) {
-        saveCountryNameCity(countryName, cityName);
-        return performSearch();
+    public Completable searchStations() {
+        return stationsRepository.searchStations();
     }
 
-    public Completable performSearch() {
+    public Completable refreshStations() {
         if (locationRepository.getCountryCode().isEmpty() && locationRepository.getCity().isEmpty()) {
             return Completable.error(new MessageException(R.string.error_specify_location));
         }
         return stationsRepository.refreshStations();
     }
 
-    private void saveCountryNameCity(String countryName, String cityName) {
+    public void saveCountryNameCity(String countryName, String cityName) {
         String countryCode = "";
         for (Country country : getCountries()) {
             if (country.getName().equals(countryName) && !country.equals(anyCountry)) {
