@@ -31,8 +31,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     private final String anyCity = anyCountry.getCities().get(0);
 
     @Inject
-    public SearchPresenter(SearchInteractor searchInteractor,
-                           StationsInteractor stationsInteractor) {
+    SearchPresenter(SearchInteractor searchInteractor,
+                    StationsInteractor stationsInteractor) {
         this.searchInteractor = searchInteractor;
         this.stationsInteractor = stationsInteractor;
     }

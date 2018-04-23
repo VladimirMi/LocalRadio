@@ -27,9 +27,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     private final Preferences preferences;
 
     @Inject
-    public MainPresenter(PlayerControlInteractor controlInteractor,
-                         StationsInteractor stationsInteractor,
-                         SearchInteractor searchInteractor, Preferences preferences) {
+    MainPresenter(PlayerControlInteractor controlInteractor,
+                  StationsInteractor stationsInteractor,
+                  SearchInteractor searchInteractor, Preferences preferences) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
         this.searchInteractor = searchInteractor;

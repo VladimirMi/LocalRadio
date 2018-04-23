@@ -25,7 +25,7 @@ public class StationsPresenter extends BasePresenter<StationsView> {
     private final PlayerControlInteractor controlInteractor;
 
     @Inject
-    public StationsPresenter(StationsInteractor stationsInteractor, PlayerControlInteractor controlInteractor) {
+    StationsPresenter(StationsInteractor stationsInteractor, PlayerControlInteractor controlInteractor) {
         this.stationsInteractor = stationsInteractor;
         this.controlInteractor = controlInteractor;
     }
@@ -41,7 +41,7 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                     }
                 }));
 
-        disposables.add(stationsInteractor.getCurrentStationLoadingObs()
+        disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
@@ -63,9 +63,7 @@ public class StationsPresenter extends BasePresenter<StationsView> {
     }
 
     public void selectStation(Station station) {
-        disposables.add(stationsInteractor.setCurrentStation(station)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+        stationsInteractor.setCurrentStation(station);
     }
 
     public void filterStations(String filter) {

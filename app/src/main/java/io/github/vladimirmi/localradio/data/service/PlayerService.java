@@ -126,8 +126,13 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
-        playingStationId = station.getId();
-        playback.play(Uri.parse(station.getUrl()));
+        if (station.getUrl() == null) {
+            playerCallback.onPlayerStateChanged(true, Player.STATE_BUFFERING);
+            stationsInteractor.getCurrentStationWithUrl().subscribe();
+        } else {
+            playingStationId = station.getId();
+            playback.play(Uri.parse(station.getUrl()));
+        }
     }
 
     //region =============== Session callbacks ==============
@@ -165,12 +170,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
-        stationsInteractor.previousStation().subscribeWith(new RxUtils.ErrorCompletableObserver(null));
+        stationsInteractor.previousStation();
     }
 
     @Override
     public void onSkipToNextCommand() {
-        stationsInteractor.nextStation().subscribeWith(new RxUtils.ErrorCompletableObserver(null));
+        stationsInteractor.nextStation();
     }
 
     //endregion

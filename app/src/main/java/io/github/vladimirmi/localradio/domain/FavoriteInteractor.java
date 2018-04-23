@@ -9,6 +9,7 @@ import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -32,16 +33,17 @@ public class FavoriteInteractor {
         setCurrentStationIfFavorite();
     }
 
-    public Completable switchFavorite(Station station) {
-        Station newStation = station.setFavorite(!station.isFavorite());
-        Completable switchFavorite;
-
-        if (newStation.isFavorite()) {
-            switchFavorite = favoriteRepository.addFavorite(newStation);
-        } else {
-            switchFavorite = favoriteRepository.removeFavorite(newStation);
-        }
-        return switchFavorite.subscribeOn(Schedulers.io());
+    public Completable switchCurrentFavorite() {
+        return stationsRepository.loadUrlForCurrentStation()
+                .andThen(Single.fromCallable(stationsRepository.currentStation::getValue))
+                .flatMapCompletable(station -> {
+                    Station newStation = station.setFavorite(!station.isFavorite());
+                    if (newStation.isFavorite()) {
+                        return favoriteRepository.addFavorite(newStation);
+                    } else {
+                        return favoriteRepository.removeFavorite(newStation);
+                    }
+                }).subscribeOn(Schedulers.io());
     }
 
     private void updateStationsWithFavorites() {

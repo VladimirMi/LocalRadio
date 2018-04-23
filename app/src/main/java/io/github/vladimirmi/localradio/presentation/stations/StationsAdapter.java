@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -31,7 +30,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     private static final String PAYLOAD_SELECTED_CHANGE = "PAYLOAD_SELECTED_CHANGE";
     private static final String PAYLOAD_FAVORITE_CHANGE = "PAYLOAD_FAVORITE_CHANGE";
-    private static final String PAYLOAD_LOADING = "PAYLOAD_LOADING";
+
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
     private int selectedPosition;
@@ -78,10 +77,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
         if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
             holder.select(position == selectedPosition, playing);
-            holder.showLoading(false);
-
-        } else if (payloads.contains(PAYLOAD_LOADING)) {
-            holder.showLoading(true);
 
         } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
             holder.setFavorite(getItem(position));
@@ -102,11 +97,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     public void select(Station station) {
         int newSelectedPos = stations.indexOf(station);
-
-        if (station.getUrl() == null) {
-            notifyItemChanged(newSelectedPos, PAYLOAD_LOADING);
-            return;
-        }
         int oldSelectedPos = stations.indexOf(selectedStation);
 
         selectedPosition = newSelectedPos;
@@ -137,7 +127,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         @BindView(R.id.bandTv) TextView bandTv;
         @BindView(R.id.favoriteIv) ImageView favoriteIv;
         @BindView(R.id.genresTv) TextView genresTv;
-        @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
         StationVH(View itemView) {
             super(itemView);
@@ -177,10 +166,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
                 color = ContextCompat.getColor(itemView.getContext(), android.R.color.transparent);
             }
             itemView.setBackgroundColor(color);
-        }
-
-        void showLoading(boolean loading) {
-            loadingPb.setVisibility(loading ? View.VISIBLE : View.GONE);
         }
     }
 

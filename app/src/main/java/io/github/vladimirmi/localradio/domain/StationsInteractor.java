@@ -8,8 +8,8 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
-import io.reactivex.Completable;
 import io.reactivex.Observable;
+import io.reactivex.Single;
 
 /**
  * Created by Vladimir Mikhalev 07.04.2018.
@@ -37,38 +37,37 @@ public class StationsInteractor {
                 : Collections.emptyList();
     }
 
-    public Observable<Station> getCurrentStationLoadingObs() {
-        return stationsRepository.currentStation;
-    }
-
     public Observable<Station> getCurrentStationObs() {
-        return stationsRepository.currentStation.filter(station -> station.getUrl() != null);
+        return stationsRepository.currentStation;
     }
 
     public Station getCurrentStation() {
         return stationsRepository.currentStation.getValue();
     }
 
-    public Completable setCurrentStation(Station station) {
-        return stationsRepository.setCurrentStation(station);
+    public Single<Station> getCurrentStationWithUrl() {
+        return stationsRepository.loadUrlForCurrentStation()
+                .andThen(Single.fromCallable(this::getCurrentStation));
     }
 
-    public Completable previousStation() {
+    public void setCurrentStation(Station station) {
+        stationsRepository.setCurrentStation(station);
+    }
+
+    public void previousStation() {
         int indexOfCurrent = filteredStations.indexOf(getCurrentStation());
-        if (indexOfCurrent == -1) return Completable.complete();
+        if (indexOfCurrent == -1) return;
 
         int indexOfPrevious = (indexOfCurrent + filteredStations.size() - 1) % filteredStations.size();
-
-        return setCurrentStation(filteredStations.get(indexOfPrevious));
+        setCurrentStation(filteredStations.get(indexOfPrevious));
     }
 
-    public Completable nextStation() {
+    public void nextStation() {
         int indexOfCurrent = filteredStations.indexOf(getCurrentStation());
-        if (indexOfCurrent == -1) return Completable.complete();
+        if (indexOfCurrent == -1) return;
 
         int indexOfNext = (indexOfCurrent + 1) % filteredStations.size();
-
-        return setCurrentStation(filteredStations.get(indexOfNext));
+        setCurrentStation(filteredStations.get(indexOfNext));
     }
 
     public void filterStations(String filter) {

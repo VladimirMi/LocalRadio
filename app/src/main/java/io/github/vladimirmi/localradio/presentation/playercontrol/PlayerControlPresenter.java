@@ -26,12 +26,11 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     private final StationsInteractor stationsInteractor;
     private final FavoriteInteractor favoriteInteractor;
 
-    private Station currentStation;
 
     @Inject
-    public PlayerControlPresenter(PlayerControlInteractor controlInteractor,
-                                  StationsInteractor stationsInteractor,
-                                  FavoriteInteractor favoriteInteractor) {
+    PlayerControlPresenter(PlayerControlInteractor controlInteractor,
+                           StationsInteractor stationsInteractor,
+                           FavoriteInteractor favoriteInteractor) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
         this.favoriteInteractor = favoriteInteractor;
@@ -69,7 +68,6 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     private void handleCurrentStation(Station station) {
         if (view == null) return;
-        currentStation = station;
         view.setStation(station);
     }
 
@@ -99,17 +97,15 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void skipToPrevious() {
-        disposables.add(stationsInteractor.previousStation()
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+        stationsInteractor.previousStation();
     }
 
     public void skipToNext() {
-        disposables.add(stationsInteractor.nextStation()
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+        stationsInteractor.nextStation();
     }
 
     public void switchFavorite() {
-        disposables.add(favoriteInteractor.switchFavorite(currentStation)
+        disposables.add(favoriteInteractor.switchCurrentFavorite()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 

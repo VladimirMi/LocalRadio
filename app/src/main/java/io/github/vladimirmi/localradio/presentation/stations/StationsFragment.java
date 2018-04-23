@@ -88,9 +88,7 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     @Override
     public void selectStation(Station station) {
         stationsAdapter.select(station);
-        if (station.getUrl() != null) {
-            scrollToSelectedStation();
-        }
+        scrollToSelectedStation();
     }
 
     @Override

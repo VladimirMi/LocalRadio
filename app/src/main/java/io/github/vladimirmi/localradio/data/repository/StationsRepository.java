@@ -72,18 +72,17 @@ public class StationsRepository {
                     Timber.w(throwable);
                     return Collections.emptyList();
                 })
-                .flatMapCompletable(stations -> {
+                .doOnSuccess(stations -> {
                     updateStationsIfFavorite(stations);
+                    updateCurrentStationFromPreferences(stations);
                     this.stations.accept(stations);
-                    return updateCurrentStationFromPreferences(stations);
-                });
+                })
+                .toCompletable();
     }
 
-    public Completable setCurrentStation(Station station) {
-        preferences.currentStation.put(station.getId());
-        currentStation.accept(station);
-
-        if (!station.isNullStation() && station.getUrl() == null) {
+    public Completable loadUrlForCurrentStation() {
+        Station station = currentStation.getValue();
+        if (station.getUrl() == null) {
             return restService.getStationUrl(station.getId())
                     .filter(stationUrlResult -> stationUrlResult.isSuccess() && !stationUrlResult.getResult().isEmpty())
                     .map(stationUrlResult -> stationUrlResult.getResult().get(0))
@@ -98,6 +97,13 @@ public class StationsRepository {
         }
     }
 
+
+    public void setCurrentStation(Station station) {
+        preferences.currentStation.put(station.getId());
+        currentStation.accept(station);
+    }
+
+    //todo move to fav repo
     public boolean updateStationsIfFavorite(List<Station> stations) {
         boolean updated = false;
         for (int i = 0; i < stations.size(); i++) {
@@ -166,7 +172,7 @@ public class StationsRepository {
         return result;
     }
 
-    private Completable updateCurrentStationFromPreferences(List<Station> stations) {
+    private void updateCurrentStationFromPreferences(List<Station> stations) {
         Station newCurrentStation = Station.nullStation();
         Integer currentId = preferences.currentStation.get();
         for (Station station : stations) {
@@ -184,7 +190,7 @@ public class StationsRepository {
         if (newCurrentStation.isNullStation() && !stations.isEmpty()) {
             newCurrentStation = stations.get(0);
         }
-        return setCurrentStation(newCurrentStation);
+        setCurrentStation(newCurrentStation);
     }
 
     private void updateStationsWith(Station station) {
