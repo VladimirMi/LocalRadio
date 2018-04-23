@@ -27,6 +27,7 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import toothpick.Toothpick;
 
@@ -124,11 +125,19 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         return session.getController().getPlaybackState().getState() == PlaybackStateCompat.STATE_PAUSED;
     }
 
+    private Disposable urlLoading;
+
     private void playCurrent() {
+        if (urlLoading != null) {
+            urlLoading.dispose();
+            urlLoading = null;
+        }
         Station station = stationsInteractor.getCurrentStation();
+
         if (station.getUrl() == null) {
             playerCallback.onPlayerStateChanged(true, Player.STATE_BUFFERING);
-            stationsInteractor.getCurrentStationWithUrl().subscribe();
+            urlLoading = stationsInteractor.loadUrlForCurrentStation()
+                    .subscribeWith(new RxUtils.ErrorCompletableObserver(PlayerService.this));
         } else {
             playingStationId = station.getId();
             playback.play(Uri.parse(station.getUrl()));
@@ -213,8 +222,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
             Completable.fromAction(notification::update)
                     .subscribeOn(Schedulers.io())
-                    .subscribeWith(new RxUtils.ErrorCompletableObserver(null))
-            ;
+                    .subscribeWith(new RxUtils.ErrorCompletableObserver(null));
         }
 
         @Override

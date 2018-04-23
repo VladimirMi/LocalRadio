@@ -70,13 +70,13 @@ public class SearchInteractor {
     }
 
     public Completable searchStations() {
+        if (locationRepository.getCountryCode().isEmpty() && locationRepository.getCity().isEmpty()) {
+            return Completable.error(new MessageException(R.string.error_specify_location));
+        }
         return stationsRepository.searchStations();
     }
 
     public Completable refreshStations() {
-        if (locationRepository.getCountryCode().isEmpty() && locationRepository.getCity().isEmpty()) {
-            return Completable.error(new MessageException(R.string.error_specify_location));
-        }
         return stationsRepository.refreshStations();
     }
 

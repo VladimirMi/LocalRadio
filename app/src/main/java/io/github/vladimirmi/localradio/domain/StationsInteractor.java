@@ -8,8 +8,8 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.reactivex.Completable;
 import io.reactivex.Observable;
-import io.reactivex.Single;
 
 /**
  * Created by Vladimir Mikhalev 07.04.2018.
@@ -45,9 +45,8 @@ public class StationsInteractor {
         return stationsRepository.currentStation.getValue();
     }
 
-    public Single<Station> getCurrentStationWithUrl() {
-        return stationsRepository.loadUrlForCurrentStation()
-                .andThen(Single.fromCallable(this::getCurrentStation));
+    public Completable loadUrlForCurrentStation() {
+        return stationsRepository.loadUrlForCurrentStation();
     }
 
     public void setCurrentStation(Station station) {

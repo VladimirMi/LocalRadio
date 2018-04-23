@@ -21,8 +21,10 @@
     <string name="new_search">New search</string>
     <string name="metadata_buffering">Loading…</string>
 
-    <string name="error_specify_location">a more specific location is required</string>
-    <string name="notification_name">Local Radio notofication</string>
+    <string name="notification_name">Local Radio notification</string>
     <string name="metadata_not_available">Metadata not available</string>
+
+    <string name="error_specify_location">a more specific location is required</string>
+    <string name="error_network">Connection error</string>
 
 </resources>
