@@ -48,7 +48,7 @@ public class FavoriteInteractor {
 
     private void updateStationsWithFavorites() {
         List<Station> list = new ArrayList<>(stationsRepository.stations.getValue());
-        boolean updated = stationsRepository.updateStationsIfFavorite(list);
+        boolean updated = favoriteRepository.updateStationsIfFavorite(list);
         if (updated) stationsRepository.stations.accept(list);
     }
 

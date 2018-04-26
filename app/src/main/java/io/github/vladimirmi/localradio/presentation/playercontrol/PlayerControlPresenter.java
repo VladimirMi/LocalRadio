@@ -97,6 +97,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void skipToPrevious() {
+        // TODO: 4/26/18 use control interactor
         stationsInteractor.previousStation();
     }
 

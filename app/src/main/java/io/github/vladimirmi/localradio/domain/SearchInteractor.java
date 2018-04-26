@@ -1,22 +1,15 @@
 package io.github.vladimirmi.localradio.domain;
 
-import android.support.annotation.NonNull;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Country;
-import io.github.vladimirmi.localradio.data.repository.GeoLocationRepository;
+import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
+import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
-import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
+import io.reactivex.Single;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -24,99 +17,59 @@ import io.reactivex.Completable;
 
 public class SearchInteractor {
 
-    private final GeoLocationRepository locationRepository;
     private final StationsRepository stationsRepository;
-
-    private Country anyCountry = Country.any(Scopes.appContext());
-    private String anyCity = anyCountry.getCities().get(0);
+    private final LocationRepository locationRepository;
+    private final FavoriteRepository favoriteRepository;
 
     @Inject
-    public SearchInteractor(GeoLocationRepository locationRepository,
-                            StationsRepository stationsRepository) {
-        this.locationRepository = locationRepository;
+    public SearchInteractor(StationsRepository stationsRepository,
+                            LocationRepository locationRepository,
+                            FavoriteRepository favoriteRepository) {
         this.stationsRepository = stationsRepository;
+        this.locationRepository = locationRepository;
+        this.favoriteRepository = favoriteRepository;
     }
 
-    public List<Country> getCountries() {
-        return locationRepository.getCountries();
-    }
-
-    public Completable saveAutodetect(boolean enabled) {
-        locationRepository.saveAutodetect(enabled);
-        if (!enabled) locationRepository.saveCountryCodeCity("", "");
-        return stationsRepository.refreshStations();
-    }
-
-    public boolean isAutodetect() {
-        return locationRepository.isAutodetect();
-    }
-
-    public boolean isDone() {
-        return isAutodetect() || !locationRepository.getCountryCode().isEmpty();
-    }
-
-    public String getCountryName() {
-        String countryCode = locationRepository.getCountryCode();
-        if (countryCode.isEmpty()) {
-            return anyCountry.getName();
-        }
-        return new Locale("", countryCode).getDisplayCountry();
-    }
-
-    public String getCity() {
-        String city = locationRepository.getCity();
-        if (city.isEmpty()) return anyCity;
-        return city;
+    public boolean isCanSearch() {
+        return stationsRepository.isCanSearch();
     }
 
     public Completable searchStations() {
-        if (locationRepository.getCountryCode().isEmpty() && locationRepository.getCity().isEmpty()) {
-            return Completable.error(new MessageException(R.string.error_specify_location));
-        }
-        return stationsRepository.searchStations();
+        return performSearch(false);
     }
 
     public Completable refreshStations() {
-        return stationsRepository.refreshStations();
+        return performSearch(true);
     }
 
-    public void saveCountryNameCity(String countryName, String cityName) {
-        String countryCode = "";
-        for (Country country : getCountries()) {
-            if (country.getName().equals(countryName) && !country.equals(anyCountry)) {
-                countryCode = country.getIsoCode();
-                break;
-            }
+    private Completable performSearch(boolean skipCache) {
+        Single<List<Station>> search;
+
+        if (locationRepository.isAutodetect()) {
+            search = searchStationsAuto(skipCache);
+        } else {
+            search = searchStationsManual(skipCache);
         }
-        if (cityName.equals(anyCity)) cityName = "";
-        locationRepository.saveCountryCodeCity(countryCode, cityName);
+
+        return search
+                .doOnError(e -> stationsRepository.setCanSearch(false))
+                .doOnSuccess(stations -> {
+                    favoriteRepository.updateStationsIfFavorite(stations);
+                    stationsRepository.updateCurrentStationFromPreferences(stations);
+                    stationsRepository.stations.accept(stations);
+                    stationsRepository.setCanSearch(true);
+                }).toCompletable();
     }
 
-    @NonNull
-    public Country findCountry(String city) {
-        for (Country country : locationRepository.getCountries()) {
-            if (country.getCities().contains(city)) {
-                return country;
-            }
-        }
-        throw new IllegalStateException();
+    private Single<List<Station>> searchStationsManual(boolean skipCache) {
+        return stationsRepository.searchStationsManual(skipCache);
     }
 
-    public List<String> findCities(List<Country> countries) {
-        Set<String> cities = new TreeSet<>();
-
-        if (countries.size() == 1 && countries.get(0).equals(anyCountry)) {
-            countries = locationRepository.getCountries();
-        }
-
-        for (Country country : countries) {
-            cities.addAll(country.getCities());
-        }
-        cities.remove(anyCity);
-        ArrayList<String> cityList = new ArrayList<>(cities);
-        if (cities.size() > 1 || cities.size() == 0) {
-            cityList.add(0, anyCity);
-        }
-        return cityList;
+    private Single<List<Station>> searchStationsAuto(boolean skipCache) {
+        return stationsRepository.searchStationsAuto(skipCache)
+                .doOnSuccess(stations -> {
+                    // TODO: 4/24/18 save more specific location
+                    locationRepository.saveCountryCodeCity(stations.get(0).getCountryCode(), "");
+                });
     }
 }

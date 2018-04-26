@@ -12,7 +12,7 @@ import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
-import io.github.vladimirmi.localradio.data.repository.GeoLocationRepository;
+import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.MediaController;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
@@ -51,7 +51,7 @@ public class AppModule extends Module {
 
         bind(Preferences.class).singletonInScope();
 
-        bind(GeoLocationRepository.class).singletonInScope();
+        bind(LocationRepository.class).singletonInScope();
         bind(StationsRepository.class).singletonInScope();
         bind(FavoriteRepository.class).singletonInScope();
         bind(MediaController.class).singletonInScope();

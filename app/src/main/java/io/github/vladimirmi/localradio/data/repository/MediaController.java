@@ -24,14 +24,12 @@ public class MediaController {
     private MediaBrowserCompat mediaBrowser;
     private MediaControllerCompat mediaController;
 
-    private final MediaBrowserCompat.ConnectionCallback connectionCallback;
-
     public BehaviorRelay<PlaybackStateCompat> playbackState = BehaviorRelay.create();
     public BehaviorRelay<MediaMetadataCompat> playbackMetadata = BehaviorRelay.create();
 
     @Inject
     public MediaController(Context context) {
-        connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
+        MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
 
             @Override
             public void onConnected() {

@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.entity.StationsResult;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
@@ -15,10 +16,10 @@ import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
+import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -31,7 +32,6 @@ public class StationsRepository {
     private final Preferences preferences;
     private final NetworkChecker networkChecker;
     private final CacheSource cacheSource;
-    private final FavoriteRepository favoriteRepository;
 
     public final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
     public final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
@@ -41,43 +41,12 @@ public class StationsRepository {
                               LocationSource locationSource,
                               Preferences preferences,
                               NetworkChecker networkChecker,
-                              CacheSource cacheSource, FavoriteRepository favoriteRepository) {
+                              CacheSource cacheSource) {
         this.restService = restService;
         this.locationSource = locationSource;
         this.preferences = preferences;
         this.networkChecker = networkChecker;
         this.cacheSource = cacheSource;
-        this.favoriteRepository = favoriteRepository;
-    }
-
-    public Completable searchStations() {
-        return searchStations(false);
-    }
-
-    public Completable refreshStations() {
-        return Completable.fromAction(() -> stations.accept(Collections.emptyList()))
-                .andThen(searchStations(true));
-    }
-
-    private Completable searchStations(boolean skipCache) {
-        Single<List<Station>> search;
-
-        if (preferences.autodetect.get()) {
-            search = searchStationsAuto(skipCache);
-        } else {
-            search = searchStationsManual(skipCache);
-        }
-        return search
-                .onErrorReturn(throwable -> {
-                    Timber.w(throwable);
-                    return Collections.emptyList();
-                })
-                .doOnSuccess(stations -> {
-                    updateStationsIfFavorite(stations);
-                    updateCurrentStationFromPreferences(stations);
-                    this.stations.accept(stations);
-                })
-                .toCompletable();
     }
 
     public Completable loadUrlForCurrentStation() {
@@ -97,33 +66,20 @@ public class StationsRepository {
         }
     }
 
+    public boolean isCanSearch() {
+        return preferences.isCanSearch.get();
+    }
+
+    public void setCanSearch(boolean canSearch) {
+        preferences.isCanSearch.put(canSearch);
+    }
 
     public void setCurrentStation(Station station) {
         preferences.currentStation.put(station.getId());
         currentStation.accept(station);
     }
 
-    //todo move to fav repo
-    public boolean updateStationsIfFavorite(List<Station> stations) {
-        boolean updated = false;
-        for (int i = 0; i < stations.size(); i++) {
-            Station station = stations.get(i);
-            boolean isFavorite = false;
-            for (Station favoriteStation : favoriteRepository.getFavoriteStations()) {
-                if (station.getId() == favoriteStation.getId()) {
-                    isFavorite = true;
-                    break;
-                }
-            }
-            if (station.isFavorite() != isFavorite) {
-                stations.set(i, station.setFavorite(isFavorite));
-                updated = true;
-            }
-        }
-        return updated;
-    }
-
-    private Single<List<Station>> searchStationsAuto(boolean skipCache) {
+    public Single<List<Station>> searchStationsAuto(boolean skipCache) {
         return getStationsByCoordinates(skipCache)
                 .flatMap(stationsResult -> {
                     if (!stationsResult.isSuccess()) {
@@ -132,11 +88,37 @@ public class StationsRepository {
                         return Single.just(stationsResult);
                     }
                 })
-                .map(StationsResult::getStations)
-                .doOnSuccess(stations -> {
-                    preferences.countryCode.put(stations.get(0).getCountryCode());
-                    preferences.city.put("");
-                });
+                .map(StationsResult::getStations);
+    }
+
+    public Single<List<Station>> searchStationsManual(boolean skipCache) {
+        Single<List<Station>> result;
+        String countryCode = preferences.countryCode.get();
+        String city = preferences.city.get();
+        if (countryCode.isEmpty() && city.isEmpty()) {
+            result = Single.error(new MessageException(R.string.error_specify_location));
+        } else {
+            if (skipCache) cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
+            result = restService.getStationsByLocation(countryCode, city, 1)
+                    .map(StationsResult::getStations);
+        }
+        return result;
+    }
+
+    // TODO: 4/26/18 move logic to search interactor
+    public void updateCurrentStationFromPreferences(List<Station> stations) {
+        Station newCurrentStation = Station.nullStation();
+        Integer currentId = preferences.currentStation.get();
+        for (Station station : stations) {
+            if (station.getId() == currentId) {
+                newCurrentStation = station;
+                break;
+            }
+        }
+        if (newCurrentStation.isNullStation() && !stations.isEmpty()) {
+            newCurrentStation = stations.get(0);
+        }
+        setCurrentStation(newCurrentStation);
     }
 
     private Single<StationsResult> getStationsByCoordinates(boolean skipCache) {
@@ -158,46 +140,10 @@ public class StationsRepository {
         return restService.getStationsByIp(ip);
     }
 
-    private Single<List<Station>> searchStationsManual(boolean skipCache) {
-        Single<List<Station>> result;
-        String countryCode = preferences.countryCode.get();
-        String city = preferences.city.get();
-        if (countryCode.isEmpty() && city.isEmpty()) {
-            result = Single.just(Collections.emptyList());
-        } else {
-            if (skipCache) cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
-            result = restService.getStationsByLocation(countryCode, city, 1)
-                    .map(StationsResult::getStations);
-        }
-        return result;
-    }
-
-    private void updateCurrentStationFromPreferences(List<Station> stations) {
-        Station newCurrentStation = Station.nullStation();
-        Integer currentId = preferences.currentStation.get();
-        for (Station station : stations) {
-            if (station.getId() == currentId) {
-                newCurrentStation = station;
-                break;
-            }
-        }
-        for (Station station : favoriteRepository.getFavoriteStations()) {
-            if (station.getId() == currentId) {
-                newCurrentStation = station;
-                break;
-            }
-        }
-        if (newCurrentStation.isNullStation() && !stations.isEmpty()) {
-            newCurrentStation = stations.get(0);
-        }
-        setCurrentStation(newCurrentStation);
-    }
-
     private void updateStationsWith(Station station) {
         List<Station> stationList = stations.getValue();
         int index = stationList.indexOf(station);
         stationList.set(index, station);
         stations.accept(stationList);
     }
-
 }

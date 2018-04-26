@@ -52,12 +52,31 @@ public class FavoriteRepository {
         return null;
     }
 
-
     public void setFavoriteStations(List<Station> favoriteStations) {
         this.favoriteStations = favoriteStations;
     }
 
     public List<Station> getFavoriteStations() {
         return favoriteStations;
+    }
+
+    // TODO: 4/26/18 move logic to favorite interactor
+    public boolean updateStationsIfFavorite(List<Station> stations) {
+        boolean updated = false;
+        for (int i = 0; i < stations.size(); i++) {
+            Station station = stations.get(i);
+            boolean isFavorite = false;
+            for (Station favoriteStation : getFavoriteStations()) {
+                if (station.getId() == favoriteStation.getId()) {
+                    isFavorite = true;
+                    break;
+                }
+            }
+            if (station.isFavorite() != isFavorite) {
+                stations.set(i, station.setFavorite(isFavorite));
+                updated = true;
+            }
+        }
+        return updated;
     }
 }

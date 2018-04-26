@@ -24,6 +24,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     private final PlayerControlInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final SearchInteractor searchInteractor;
+    //// TODO: 4/26/18 move preferences through interactor
     private final Preferences preferences;
 
     @Inject
@@ -49,8 +50,19 @@ public class MainPresenter extends BasePresenter<MainView> {
                     }
                 }));
 
-        disposables.add(searchInteractor.searchStations()
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+        // TODO: 4/26/18 show progress bar
+        if (searchInteractor.isCanSearch()) {
+            disposables.add(searchInteractor.searchStations()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
+                        @Override
+                        public void onComplete() {
+                            // TODO: 4/26/18 hide progress bar
+                        }
+                    }));
+        } else {
+            selectPage(MainActivity.PAGE_SEARCH);
+        }
     }
 
     @Override
