@@ -119,27 +119,31 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        isFragmentVisible = isVisibleToUser;
         if (getView() != null && isVisibleToUser) {
-            setAutodetect(isAutodetect);
+            initAutoDetectCheckBox();
         }
     }
 
-    private boolean isFragmentVisible;
     private boolean isAutodetect;
+    private boolean autoDetectInitialized;
+
+    private void initAutoDetectCheckBox() {
+        if (!autoDetectInitialized) {
+            autodetectCb.setChecked(!isAutodetect);
+            autodetectCb.setChecked(isAutodetect);
+            autoDetectInitialized = true;
+        }
+    }
 
     @Override
     public void setAutodetect(boolean enabled) {
         isAutodetect = enabled;
-        if (!isFragmentVisible) return;
-        autodetectCb.setChecked(enabled);
-        enableView(countryEt, !enabled);
-        enableView(cityEt, !enabled);
+        autodetectCb.setChecked(isAutodetect);
+
+        setNewSearch(!enabled);
+
         setVisible(cityLabelTv, !enabled);
         setVisible(cityEt, !enabled);
-        setVisible(searchBt, !enabled);
-        setVisible(newSearchBt, !enabled);
-        setVisible(refreshBt, enabled);
     }
 
     @Override
@@ -153,11 +157,17 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public void setSearchResult(int foundStations) {
-        if (foundStations == -1) {
-            searchResultTv.setText("");
-        } else {
-            //todo plurals
-            searchResultTv.setText(String.format("Found %d stations", foundStations));
+//        if (foundStations > 0) {
+        String text = getResources().getQuantityString(R.plurals.search_result, foundStations,
+                foundStations);
+        searchResultTv.setText(text);
+//        }
+    }
+
+    @Override
+    public void setSearching(boolean enabled) {
+        if (enabled) {
+            searchResultTv.setText(getString(R.string.searching));
         }
     }
 

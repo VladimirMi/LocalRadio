@@ -19,12 +19,20 @@
     <string name="filter">Filter</string>
     <string name="refresh">Refresh</string>
     <string name="new_search">New search</string>
-    <string name="metadata_buffering">Loading…</string>
+    <string name="searching">Searching…</string>
+
+    <string name="need_permission">Need permission for the action</string>
 
     <string name="notification_name">Local Radio notification</string>
     <string name="metadata_not_available">Metadata not available</string>
+    <string name="metadata_buffering">Loading…</string>
 
     <string name="error_specify_location">A more specific location is required</string>
     <string name="error_network">Connection error</string>
+
+    <plurals name="search_result">
+        <item quantity="one">%d station found</item>
+        <item quantity="other">%d stations found</item>
+    </plurals>
 
 </resources>

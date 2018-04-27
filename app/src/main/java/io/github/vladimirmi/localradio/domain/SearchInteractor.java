@@ -4,11 +4,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
 import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
-import io.reactivex.Completable;
+import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Single;
 
 /**
@@ -34,15 +35,16 @@ public class SearchInteractor {
         return stationsRepository.isCanSearch();
     }
 
-    public Completable searchStations() {
+    public Single<List<Station>> searchStations() {
         return performSearch(false);
     }
 
-    public Completable refreshStations() {
+    public Single<List<Station>> refreshStations() {
+        stationsRepository.resetStations();
         return performSearch(true);
     }
 
-    private Completable performSearch(boolean skipCache) {
+    private Single<List<Station>> performSearch(boolean skipCache) {
         Single<List<Station>> search;
 
         if (locationRepository.isAutodetect()) {
@@ -58,10 +60,15 @@ public class SearchInteractor {
                     stationsRepository.updateCurrentStationFromPreferences(stations);
                     stationsRepository.stations.accept(stations);
                     stationsRepository.setCanSearch(true);
-                }).toCompletable();
+                });
     }
 
     private Single<List<Station>> searchStationsManual(boolean skipCache) {
+        String countryCode = locationRepository.getCountryCode();
+        String city = locationRepository.getCity();
+        if (countryCode.isEmpty() && city.isEmpty()) {
+            return Single.error(new MessageException(R.string.error_specify_location));
+        }
         return stationsRepository.searchStationsManual(skipCache);
     }
 

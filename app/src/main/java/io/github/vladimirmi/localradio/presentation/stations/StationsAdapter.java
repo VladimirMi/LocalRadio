@@ -115,11 +115,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         return selectedPosition;
     }
 
-    @Override
-    protected Station getItem(int position) {
-        return stations.get(position);
-    }
-
     static class StationVH extends RecyclerView.ViewHolder {
 
         @BindView(R.id.imageIv) ImageView imageIv;

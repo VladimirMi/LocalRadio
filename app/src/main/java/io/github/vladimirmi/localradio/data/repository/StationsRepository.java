@@ -8,7 +8,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.entity.StationsResult;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
@@ -16,7 +15,6 @@ import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
-import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
@@ -92,17 +90,19 @@ public class StationsRepository {
     }
 
     public Single<List<Station>> searchStationsManual(boolean skipCache) {
-        Single<List<Station>> result;
         String countryCode = preferences.countryCode.get();
         String city = preferences.city.get();
-        if (countryCode.isEmpty() && city.isEmpty()) {
-            result = Single.error(new MessageException(R.string.error_specify_location));
-        } else {
-            if (skipCache) cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
-            result = restService.getStationsByLocation(countryCode, city, 1)
-                    .map(StationsResult::getStations);
+        if (skipCache) cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
+        return restService.getStationsByLocation(countryCode, city, 1)
+                .map(StationsResult::getStations)
+                .onErrorReturn(throwable -> Collections.emptyList());
+    }
+
+    public void resetStations() {
+        stations.accept(Collections.emptyList());
+        if (!currentStation.getValue().isFavorite()) {
+            currentStation.accept(Station.nullStation());
         }
-        return result;
     }
 
     // TODO: 4/26/18 move logic to search interactor

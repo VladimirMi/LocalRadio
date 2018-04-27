@@ -24,4 +24,6 @@ public interface SearchView extends BaseView {
     void setNewSearch(boolean enabled);
 
     void setSearchResult(int foundStations);
+
+    void setSearching(boolean enabled);
 }
