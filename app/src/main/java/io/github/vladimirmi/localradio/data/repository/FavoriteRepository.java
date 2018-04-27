@@ -73,7 +73,7 @@ public class FavoriteRepository {
                 }
             }
             if (station.isFavorite() != isFavorite) {
-                stations.set(i, station.setFavorite(isFavorite));
+                stations.set(i, station.copy(isFavorite));
                 updated = true;
             }
         }

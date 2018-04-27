@@ -34,10 +34,9 @@ public class FavoriteInteractor {
     }
 
     public Completable switchCurrentFavorite() {
-        return stationsRepository.loadUrlForCurrentStation()
-                .andThen(Single.fromCallable(stationsRepository.currentStation::getValue))
+        return Single.fromCallable(stationsRepository.currentStation::getValue)
                 .flatMapCompletable(station -> {
-                    Station newStation = station.setFavorite(!station.isFavorite());
+                    Station newStation = station.copy(!station.isFavorite());
                     if (newStation.isFavorite()) {
                         return favoriteRepository.addFavorite(newStation);
                     } else {

@@ -129,7 +129,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         }
 
         void bind(Station station) {
-            titleTv.setText(station.getCallsign());
+            titleTv.setText(station.getName());
             genresTv.setText(station.getGenre());
             String band;
             if (station.getBand().equals("net")) {
@@ -140,7 +140,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
             bandTv.setText(band);
 
             Glide.with(itemView.getContext())
-                    .load(station.getImageurl())
+                    .load(station.getImageUrl())
                     .skipMemoryCache(true)
                     .diskCacheStrategy(DiskCacheStrategy.RESULT)
                     .error(R.drawable.ic_radio)

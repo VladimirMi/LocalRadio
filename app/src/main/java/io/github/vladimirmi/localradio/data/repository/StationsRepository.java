@@ -15,7 +15,6 @@ import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
-import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 
@@ -45,23 +44,6 @@ public class StationsRepository {
         this.preferences = preferences;
         this.networkChecker = networkChecker;
         this.cacheSource = cacheSource;
-    }
-
-    public Completable loadUrlForCurrentStation() {
-        Station station = currentStation.getValue();
-        if (station.getUrl() == null) {
-            return restService.getStationUrl(station.getId())
-                    .filter(stationUrlResult -> stationUrlResult.isSuccess() && !stationUrlResult.getResult().isEmpty())
-                    .map(stationUrlResult -> stationUrlResult.getResult().get(0))
-                    .doOnSuccess(stationWithUrl -> {
-                        Station copy = station.setUrl(stationWithUrl.getUrl());
-                        updateStationsWith(copy);
-                        currentStation.accept(copy);
-                    })
-                    .ignoreElement();
-        } else {
-            return Completable.complete();
-        }
     }
 
     public boolean isCanSearch() {

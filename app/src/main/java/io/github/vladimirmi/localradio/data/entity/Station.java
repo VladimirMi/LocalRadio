@@ -2,6 +2,8 @@ package io.github.vladimirmi.localradio.data.entity;
 
 import com.squareup.moshi.Json;
 
+import io.github.vladimirmi.localradio.data.net.Api;
+
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
  */
@@ -9,12 +11,12 @@ import com.squareup.moshi.Json;
 public class Station {
 
     @Json(name = "station_id") private int id;
-    @Json(name = "callsign") private String callsign;
+    @Json(name = "callsign") private String name;
     @Json(name = "band") private String band;
     @Json(name = "ubergenre") private String genre;
     @Json(name = "language") private String language;
-    @Json(name = "websiteurl") private String websiteurl;
-    @Json(name = "imageurl") private String imageurl;
+    @Json(name = "websiteurl") private String websiteUrl;
+    @Json(name = "imageurl") private String imageUrl;
     @Json(name = "description") private String description;
     @Json(name = "encoding") private String encoding;
     @Json(name = "status") private String status;
@@ -24,23 +26,23 @@ public class Station {
     @Json(name = "email") private String email;
     @Json(name = "dial") private String dial;
     @Json(name = "slogan") private String slogan;
-    @Json(name = "url") private String url;
     private boolean isFavorite;
+    private String url;
 
     public Station() {
     }
 
-    public Station(int id, String callsign, String band, String genre, String language,
-                   String websiteurl, String imageurl, String description, String encoding,
+    public Station(int id, String name, String band, String genre, String language,
+                   String websiteUrl, String imageUrl, String description, String encoding,
                    String status, String countryCode, String city, String phone, String email,
-                   String dial, String slogan, String url, boolean isFavorite) {
+                   String dial, String slogan, boolean isFavorite) {
         this.id = id;
-        this.callsign = callsign;
+        this.name = name;
         this.band = band;
         this.genre = genre;
         this.language = language;
-        this.websiteurl = websiteurl;
-        this.imageurl = imageurl;
+        this.websiteUrl = websiteUrl;
+        this.imageUrl = imageUrl;
         this.description = description;
         this.encoding = encoding;
         this.status = status;
@@ -50,7 +52,6 @@ public class Station {
         this.email = email;
         this.dial = dial;
         this.slogan = slogan;
-        this.url = url;
         this.isFavorite = isFavorite;
     }
 
@@ -66,12 +67,12 @@ public class Station {
         return language;
     }
 
-    public String getWebsiteurl() {
-        return websiteurl;
+    public String getWebsiteUrl() {
+        return websiteUrl;
     }
 
-    public String getImageurl() {
-        return imageurl;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public String getDescription() {
@@ -102,8 +103,8 @@ public class Station {
         return email;
     }
 
-    public String getCallsign() {
-        return callsign;
+    public String getName() {
+        return name;
     }
 
     public String getDial() {
@@ -118,12 +119,13 @@ public class Station {
         return slogan;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     public boolean isFavorite() {
         return isFavorite;
+    }
+
+    public String getUrl() {
+        if (url == null) url = Api.STREAM_BASE_URL + id;
+        return url;
     }
 
     @Override
@@ -145,12 +147,12 @@ public class Station {
     public String toString() {
         return "Station{" +
                 "id=" + id +
-                ", callsign='" + callsign + '\'' +
+                ", name='" + name + '\'' +
                 ", band='" + band + '\'' +
                 ", genre='" + genre + '\'' +
                 ", language='" + language + '\'' +
-                ", websiteurl='" + websiteurl + '\'' +
-                ", imageurl='" + imageurl + '\'' +
+                ", websiteUrl='" + websiteUrl + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
                 ", description='" + description + '\'' +
                 ", encoding='" + encoding + '\'' +
                 ", status='" + status + '\'' +
@@ -160,7 +162,6 @@ public class Station {
                 ", email='" + email + '\'' +
                 ", dial='" + dial + '\'' +
                 ", slogan='" + slogan + '\'' +
-                ", url='" + url + '\'' +
                 ", isFavorite=" + isFavorite +
                 '}';
     }
@@ -173,13 +174,8 @@ public class Station {
         return id == 0;
     }
 
-    public Station setFavorite(boolean isFavorite) {
-        return new Station(id, callsign, band, genre, language, websiteurl, imageurl, description,
-                encoding, status, countryCode, city, phone, email, dial, slogan, url, isFavorite);
-    }
-
-    public Station setUrl(String url) {
-        return new Station(id, callsign, band, genre, language, websiteurl, imageurl, description,
-                encoding, status, countryCode, city, phone, email, dial, slogan, url, isFavorite);
+    public Station copy(boolean isFavorite) {
+        return new Station(id, name, band, genre, language, websiteUrl, imageUrl, description,
+                encoding, status, countryCode, city, phone, email, dial, slogan, isFavorite);
     }
 }

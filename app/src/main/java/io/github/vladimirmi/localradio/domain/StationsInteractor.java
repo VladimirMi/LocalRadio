@@ -8,7 +8,6 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
-import io.reactivex.Completable;
 import io.reactivex.Observable;
 
 /**
@@ -45,10 +44,6 @@ public class StationsInteractor {
         return stationsRepository.currentStation.getValue();
     }
 
-    public Completable loadUrlForCurrentStation() {
-        return stationsRepository.loadUrlForCurrentStation();
-    }
-
     public void setCurrentStation(Station station) {
         stationsRepository.setCurrentStation(station);
     }
@@ -82,7 +77,7 @@ public class StationsInteractor {
         filteredStations = new ArrayList<>();
 
         for (Station station : stations) {
-            if (checkCanFilter(station.getCallsign())
+            if (checkCanFilter(station.getName())
                     || checkCanFilter(station.getGenre())
                     || checkCanFilter(station.getDial())
                     || checkCanFilter(station.getBand())) {

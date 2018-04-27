@@ -82,7 +82,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationTv"
         tools:autoLink="web"
-        tools:text="www.websiteurl.com"
+        tools:text="www.websiteUrl.com"
         style="@style/IconText"
         />
 

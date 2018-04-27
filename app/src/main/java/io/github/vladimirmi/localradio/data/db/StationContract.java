@@ -24,8 +24,7 @@ public final class StationContract {
                 .appendPath(PATH_STATIONS).build();
 
         public static final String TABLE_NAME = "favorites";
-        public static final String COLUMN_URL = "url";
-        public static final String COLUMN_CALLSIGN = "callsign";
+        public static final String COLUMN_NAME = "name";
         public static final String COLUMN_DESCRIPTION = "description";
         public static final String COLUMN_SLOGAN = "slogan";
         public static final String COLUMN_GENRE = "genre";

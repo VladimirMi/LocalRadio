@@ -17,8 +17,7 @@ public final class StationDbHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_STATIONS_TABLE = "CREATE TABLE " +
             StationEntry.TABLE_NAME + " (" +
             StationEntry._ID + " INTEGER PRIMARY KEY," +
-            StationEntry.COLUMN_URL + " TEXT NOT NULL," +
-            StationEntry.COLUMN_CALLSIGN + " TEXT NOT NULL," +
+            StationEntry.COLUMN_NAME + " TEXT NOT NULL," +
             StationEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL," +
             StationEntry.COLUMN_SLOGAN + " TEXT NOT NULL," +
             StationEntry.COLUMN_GENRE + " TEXT NOT NULL," +

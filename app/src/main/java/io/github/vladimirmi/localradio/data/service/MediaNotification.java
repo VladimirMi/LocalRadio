@@ -31,8 +31,8 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
  */
 public class MediaNotification {
 
-    public static final String CHANNEL_ID = "local_radio_channel";
-    public static final int PLAYER_NOTIFICATION_ID = 73;
+    private static final String CHANNEL_ID = "local_radio_channel";
+    private static final int PLAYER_NOTIFICATION_ID = 73;
 
     private final PlayerService service;
     private final MediaSessionCompat session;
@@ -98,7 +98,7 @@ public class MediaNotification {
         PlaybackStateCompat playbackState = session.getController().getPlaybackState();
         Metadata metadata = Metadata.create(session.getController().getMetadata());
 
-        builder.setSubText(stationsInteractor.getCurrentStation().getCallsign());
+        builder.setSubText(stationsInteractor.getCurrentStation().getName());
 
         if (metadata.isSupported) {
             builder.setContentTitle(metadata.title)
@@ -112,7 +112,7 @@ public class MediaNotification {
         int height = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
 
         FutureTarget<Bitmap> futureTarget = Glide.with(service)
-                .load(stationsInteractor.getCurrentStation().getImageurl())
+                .load(stationsInteractor.getCurrentStation().getImageUrl())
                 .asBitmap()
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)

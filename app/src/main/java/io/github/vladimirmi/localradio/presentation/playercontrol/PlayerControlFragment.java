@@ -59,9 +59,9 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     public void setStation(Station station) {
-        metadataTv.setText(station.getCallsign());
-        if (iconUrl == null || !iconUrl.equals(station.getImageurl())) {
-            iconUrl = station.getImageurl();
+        metadataTv.setText(station.getName());
+        if (iconUrl == null || !iconUrl.equals(station.getImageUrl())) {
+            iconUrl = station.getImageUrl();
 
             Glide.with(getContext())
                     .load(iconUrl)
@@ -73,12 +73,12 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
         favoriteBt.setBackgroundResource(station.isFavorite() ? R.drawable.ic_star : R.drawable.ic_star_empty);
 
-        setTextOrHideIfEmpty(titleTv, station.getCallsign());
+        setTextOrHideIfEmpty(titleTv, station.getName());
         setTextOrHideIfEmpty(sloganTv, station.getSlogan());
         setTextOrHideIfEmpty(descriptionTv, station.getDescription());
         setTextOrHideIfEmpty(genreTv, station.getGenre());
         setTextOrHideIfEmpty(locationTv, String.format("%s, %s", station.getCity(), station.getCountryCode()));
-        setTextOrHideIfEmpty(websiteTv, station.getWebsiteurl());
+        setTextOrHideIfEmpty(websiteTv, station.getWebsiteUrl());
         setTextOrHideIfEmpty(emailTv, station.getEmail());
         setTextOrHideIfEmpty(phoneTv, station.getPhone());
     }
