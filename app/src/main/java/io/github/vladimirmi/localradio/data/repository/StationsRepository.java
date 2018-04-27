@@ -121,11 +121,4 @@ public class StationsRepository {
         if (skipCache) cacheSource.cleanCache(ip);
         return restService.getStationsByIp(ip);
     }
-
-    private void updateStationsWith(Station station) {
-        List<Station> stationList = stations.getValue();
-        int index = stationList.indexOf(station);
-        stationList.set(index, station);
-        stations.accept(stationList);
-    }
 }
