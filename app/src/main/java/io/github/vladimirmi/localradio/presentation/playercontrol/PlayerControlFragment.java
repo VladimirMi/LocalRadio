@@ -59,7 +59,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     public void setStation(Station station) {
-        metadataTv.setText(station.getName());
+        setMetadata(station.getName());
         if (iconUrl == null || !iconUrl.equals(station.getImageUrl())) {
             iconUrl = station.getImageUrl();
 

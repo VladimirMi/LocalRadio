@@ -7,6 +7,8 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 
+import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.utils.MessageException;
 import timber.log.Timber;
 
 /**
@@ -49,15 +51,20 @@ public class PlayerCallback implements Player.EventListener {
     public void onPlayerError(ExoPlaybackException error) {
         switch (error.type) {
             case ExoPlaybackException.TYPE_SOURCE:
-                Timber.e("SOURCE error occurred: %s", error.getSourceException());
+                Timber.w("SOURCE error occurred: %s", error.getSourceException());
                 break;
             case ExoPlaybackException.TYPE_RENDERER:
-                Timber.e("RENDERER error occurred: %s", error.getRendererException());
+                Timber.w("RENDERER error occurred: %s", error.getRendererException());
                 break;
             case ExoPlaybackException.TYPE_UNEXPECTED:
-                Timber.e("UNEXPECTED error occurred: %s", error.getUnexpectedException());
+                Timber.w("UNEXPECTED error occurred: %s", error.getUnexpectedException());
                 break;
         }
+        onPlayerError(transformToMessage(error));
+    }
+
+    public void onPlayerError(MessageException error) {
+
     }
 
     @Override
@@ -77,5 +84,21 @@ public class PlayerCallback implements Player.EventListener {
 
     public void onMetadata(Metadata metadata) {
 
+    }
+
+    private MessageException transformToMessage(ExoPlaybackException error) {
+        MessageException exception;
+        switch (error.type) {
+            case ExoPlaybackException.TYPE_SOURCE:
+                exception = new MessageException(R.string.error_connection);
+                break;
+            case ExoPlaybackException.TYPE_RENDERER:
+                exception = new MessageException(R.string.error_renderer);
+                break;
+            default:
+                exception = new MessageException(R.string.error_unexpected);
+                break;
+        }
+        return exception;
     }
 }

@@ -73,13 +73,20 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     private void handleState(PlaybackStateCompat state) {
         if (view == null) return;
-        if (state.getState() == PlaybackStateCompat.STATE_PAUSED
-                || state.getState() == PlaybackStateCompat.STATE_STOPPED) {
-            view.showStopped();
-        } else if (state.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            view.showPlaying();
-        } else if (state.getState() == PlaybackStateCompat.STATE_BUFFERING) {
-            view.setMetadata(R.string.metadata_buffering);
+        switch (state.getState()) {
+            case PlaybackStateCompat.STATE_PLAYING:
+                view.showPlaying();
+                break;
+            case PlaybackStateCompat.STATE_BUFFERING:
+                view.setMetadata(R.string.metadata_buffering);
+                break;
+            case PlaybackStateCompat.STATE_PAUSED:
+                view.showStopped();
+                break;
+            case PlaybackStateCompat.STATE_STOPPED:
+                view.showStopped();
+                view.setMetadata(stationsInteractor.getCurrentStation().getName());
+                break;
         }
     }
 
@@ -88,7 +95,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         if (metadata.isSupported) {
             view.setMetadata(metadata.toString());
         } else {
-            //todo show station name instead
+            view.setMetadata(stationsInteractor.getCurrentStation().getName());
         }
     }
 
@@ -97,20 +104,15 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void skipToPrevious() {
-        // TODO: 4/26/18 use control interactor
-        stationsInteractor.previousStation();
+        controlInteractor.skipToPrevious();
     }
 
     public void skipToNext() {
-        stationsInteractor.nextStation();
+        controlInteractor.skipToNext();
     }
 
     public void switchFavorite() {
         disposables.add(favoriteInteractor.switchCurrentFavorite()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
-    }
-
-    public void showStation() {
-
     }
 }

@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
@@ -21,10 +20,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
 
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 22.04.2018.
@@ -120,11 +120,9 @@ public class MediaNotification {
                 .into(width, height);
 
         try {
-            builder.setLargeIcon(futureTarget.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+            builder.setLargeIcon(futureTarget.get(3000, TimeUnit.MILLISECONDS));
+        } catch (Exception e) {
+            Timber.w("error loading notification icon");
         } finally {
             Glide.clear(futureTarget);
         }
@@ -163,8 +161,6 @@ public class MediaNotification {
                 .setContentIntent(session.getController().getSessionActivity())
                 .setDeleteIntent(stopIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                // TODO: 4/22/18 play with color
-                .setColor(Color.RED)
                 .setStyle(mediaStyle);
     }
 

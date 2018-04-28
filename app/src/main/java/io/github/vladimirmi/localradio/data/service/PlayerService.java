@@ -10,7 +10,6 @@ import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
 
 import java.util.Collections;
@@ -24,10 +23,14 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -159,9 +162,9 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     @Override
     public void onStopCommand() {
         playback.stop();
+        session.setActive(false);
         stopSelf();
         serviceStarted = false;
-        session.setActive(false);
     }
 
     @Override
@@ -195,34 +198,43 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     else state = PlaybackStateCompat.STATE_PAUSED;
                     break;
                 case Player.STATE_ENDED:
-                    state = PlaybackStateCompat.STATE_PAUSED;
+                    state = PlaybackStateCompat.STATE_STOPPED;
                     break;
                 default:
                     state = PlaybackStateCompat.STATE_NONE;
             }
+
+            Timber.e("onPlayerStateChanged: %s %d %s", playWhenReady, playbackState, state);
 
             PlaybackStateCompat newPlaybackState = new PlaybackStateCompat.Builder(PlayerService.this.playbackState)
                     .setState(state, 0, 1f)
                     .build();
 
             session.setPlaybackState(newPlaybackState);
-
-            Completable.fromAction(notification::update)
-                    .subscribeOn(Schedulers.io())
-                    .subscribeWith(new RxUtils.ErrorCompletableObserver(null));
+            updateNotification();
         }
 
         @Override
         public void onMetadata(Metadata metadata) {
             super.onMetadata(metadata);
             session.setMetadata(metadata.toMediaMetadata());
-            notification.update();
+            updateNotification();
         }
 
         @Override
-        public void onPlayerError(ExoPlaybackException error) {
+        public void onPlayerError(MessageException error) {
             super.onPlayerError(error);
             onStopCommand();
+            UiUtils.handleError(PlayerService.this, error);
         }
     };
+
+    private Disposable notificationUpdate;
+
+    private void updateNotification() {
+        if (notificationUpdate != null) notificationUpdate.dispose();
+        notificationUpdate = Completable.fromAction(notification::update)
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(null));
+    }
 }
