@@ -8,9 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
+import io.github.vladimirmi.localradio.data.net.Api;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Protocol;
@@ -28,7 +28,6 @@ public class CacheSource implements Interceptor {
 
     private static final String CACHE_PREFIX = "cache";
     private static final String SEARCH_PREFIX = "cache_search";
-    private static final String URL_PREFIX = "cache_url";
     private static final String SUFFIX = "json";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.ENGLISH);
 
@@ -49,9 +48,6 @@ public class CacheSource implements Interceptor {
             cacheFile = createIpSearchCache(chain.request().url());
         }
         if (cacheFile == null) {
-            cacheFile = createUrlQueryCache(chain.request().url());
-        }
-        if (cacheFile == null) {
             return chain.proceed(chain.request());
         }
 
@@ -61,6 +57,7 @@ public class CacheSource implements Interceptor {
             Response response = chain.proceed(chain.request());
             if (response.isSuccessful()) {
                 FileWriter fileWriter = new FileWriter(cacheFile);
+                //noinspection ConstantConditions
                 fileWriter.write(response.body().string());
                 fileWriter.close();
             } else {
@@ -98,8 +95,8 @@ public class CacheSource implements Interceptor {
     }
 
     private File createLocationSearchCache(HttpUrl url) {
-        String country = url.queryParameter("country");
-        String city = url.queryParameter("city");
+        String country = url.queryParameter(Api.QUERY_COUNTRY);
+        String city = url.queryParameter(Api.QUERY_CITY);
 
         if (country == null || city == null) {
             return null;
@@ -111,8 +108,8 @@ public class CacheSource implements Interceptor {
     }
 
     private File createCoordinatesSearchCache(HttpUrl url) {
-        String latitude = url.queryParameter("latitude");
-        String longitude = url.queryParameter("longitude");
+        String latitude = url.queryParameter(Api.QUERY_LATITUDE);
+        String longitude = url.queryParameter(Api.QUERY_LONGITUDE);
 
         if (latitude == null || longitude == null) {
             return null;
@@ -124,23 +121,10 @@ public class CacheSource implements Interceptor {
     }
 
     private File createIpSearchCache(HttpUrl url) {
-        String ip = url.queryParameter("ip");
+        String ip = url.queryParameter(Api.QUERY_IP);
 
         if (ip == null) return null;
         String fileName = String.format("%s_%s_%s.%s", SEARCH_PREFIX, dateFormat.format(new Date()), ip, SUFFIX);
-
-        return new File(cacheDir, fileName);
-    }
-
-    private File createUrlQueryCache(HttpUrl url) {
-        List<String> pathSegments = url.pathSegments();
-        String id = url.queryParameter("station_id");
-
-        if (id == null || !pathSegments.get(pathSegments.size() - 1).equals("uberstationurl.php")) {
-            return null;
-        }
-
-        String fileName = String.format("%s_%s_%s.%s", URL_PREFIX, dateFormat.format(new Date()), id, SUFFIX);
 
         return new File(cacheDir, fileName);
     }
