@@ -125,13 +125,13 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     }
 
     private boolean isAutodetect;
-    private boolean autoDetectInitialized;
+    private boolean autodetectInitialized;
 
     private void initAutoDetectCheckBox() {
-        if (!autoDetectInitialized) {
+        if (!autodetectInitialized) {
             autodetectCb.setChecked(!isAutodetect);
             autodetectCb.setChecked(isAutodetect);
-            autoDetectInitialized = true;
+            autodetectInitialized = true;
         }
     }
 
@@ -139,29 +139,37 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setAutodetect(boolean enabled) {
         isAutodetect = enabled;
         autodetectCb.setChecked(isAutodetect);
-
-        setNewSearch(!enabled);
-
-        setVisible(cityLabelTv, !enabled);
-        setVisible(cityEt, !enabled);
     }
 
     @Override
-    public void setNewSearch(boolean enabled) {
-        enableView(countryEt, enabled);
-        enableView(cityEt, enabled);
-        setVisible(searchBt, enabled);
-        setVisible(newSearchBt, !enabled);
-        setVisible(refreshBt, !enabled);
+    public void setAutoSearchDone(boolean done) {
+        enableView(countryEt, !done);
+        enableView(cityEt, !done);
+        setVisible(cityLabelTv, !done);
+        setVisible(cityEt, !done);
+        setVisible(searchBt, !done);
+        setVisible(newSearchBt, !done);
+        setVisible(refreshBt, done);
+    }
+
+    @Override
+    public void setManualSearchDone(boolean done) {
+        enableView(countryEt, !done);
+        enableView(cityEt, !done);
+        setVisible(searchBt, !done);
+        setVisible(newSearchBt, done);
+        setVisible(refreshBt, done);
     }
 
     @Override
     public void setSearchResult(int foundStations) {
-//        if (foundStations > 0) {
-        String text = getResources().getQuantityString(R.plurals.search_result, foundStations,
-                foundStations);
+        String text = getResources().getQuantityString(R.plurals.search_result, foundStations, foundStations);
         searchResultTv.setText(text);
-//        }
+    }
+
+    @Override
+    public void resetSearchResult() {
+        searchResultTv.setText("");
     }
 
     @Override

@@ -46,12 +46,12 @@ public class StationsRepository {
         this.cacheSource = cacheSource;
     }
 
-    public boolean isCanSearch() {
-        return preferences.isCanSearch.get();
+    public boolean isSearchDone() {
+        return preferences.isSearchDone.get();
     }
 
-    public void setCanSearch(boolean canSearch) {
-        preferences.isCanSearch.put(canSearch);
+    public void setSearchDone(boolean done) {
+        preferences.isSearchDone.put(done);
     }
 
     public void setCurrentStation(Station station) {

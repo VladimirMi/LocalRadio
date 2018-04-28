@@ -21,9 +21,13 @@ public interface SearchView extends BaseView {
 
     void setAutodetect(boolean enabled);
 
-    void setNewSearch(boolean enabled);
+    void setAutoSearchDone(boolean done);
+
+    void setManualSearchDone(boolean done);
 
     void setSearchResult(int foundStations);
+
+    void resetSearchResult();
 
     void setSearching(boolean enabled);
 }

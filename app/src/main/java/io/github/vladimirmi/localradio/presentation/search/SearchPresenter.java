@@ -46,7 +46,11 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     @Override
     protected void onFirstAttach(@Nullable SearchView view, CompositeDisposable disposables) {
         view.setCountries(locationInteractor.getCountries());
-        view.setNewSearch(!searchInteractor.isCanSearch());
+        if (locationInteractor.isAutodetect()) {
+            view.setAutoSearchDone(searchInteractor.isSearchDone());
+        } else {
+            view.setManualSearchDone(searchInteractor.isSearchDone());
+        }
         view.setAutodetect(locationInteractor.isAutodetect());
 
         view.setCountryName(locationInteractor.getCountryName());
@@ -91,11 +95,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .map(enabled -> enabled && autodetect)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(enabled -> {
-                    locationInteractor.saveAutodetect(enabled);
-                    view.setAutodetect(enabled);
-                    view.setSearching(enabled);
-                })
+                .doOnNext(this::enableAutodetect)
                 .filter(enabled -> enabled)
                 .flatMapSingle(enabled -> searchInteractor.searchStations())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -104,6 +104,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     public void onNext(List<Station> stations) {
                         view.setCountryName(locationInteractor.getCountryName());
                         view.setSearchResult(stations.size());
+                        view.setAutoSearchDone(true);
                     }
                 });
     }
@@ -117,6 +118,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     @Override
                     public void onSuccess(List<Station> stations) {
                         view.setSearchResult(stations.size());
+                        view.setManualSearchDone(true);
                     }
                 }));
     }
@@ -134,6 +136,19 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void newSearch() {
-        view.setNewSearch(true);
+        view.setManualSearchDone(false);
+        view.resetSearchResult();
+        searchInteractor.resetSearch();
+    }
+
+    private void enableAutodetect(boolean enabled) {
+        locationInteractor.saveAutodetect(enabled);
+        view.setAutodetect(enabled);
+        view.setSearching(enabled);
+        if (!enabled) {
+            view.setAutoSearchDone(false);
+            view.resetSearchResult();
+            searchInteractor.resetSearch();
+        }
     }
 }

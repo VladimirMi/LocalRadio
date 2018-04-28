@@ -53,7 +53,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                 }));
 
         // TODO: 4/26/18 show progress bar
-        if (searchInteractor.isCanSearch()) {
+        if (searchInteractor.isSearchDone()) {
             disposables.add(searchInteractor.searchStations()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {

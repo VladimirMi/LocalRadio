@@ -31,11 +31,17 @@ public class SearchInteractor {
         this.favoriteRepository = favoriteRepository;
     }
 
-    public boolean isCanSearch() {
-        return stationsRepository.isCanSearch();
+    public boolean isSearchDone() {
+        return stationsRepository.isSearchDone();
+    }
+
+    public void resetSearch() {
+        stationsRepository.resetStations();
+        stationsRepository.setSearchDone(false);
     }
 
     public Single<List<Station>> searchStations() {
+        resetSearch();
         return performSearch(false);
     }
 
@@ -53,14 +59,12 @@ public class SearchInteractor {
             search = searchStationsManual(skipCache);
         }
 
-        return search
-                .doOnError(e -> stationsRepository.setCanSearch(false))
-                .doOnSuccess(stations -> {
-                    favoriteRepository.updateStationsIfFavorite(stations);
-                    stationsRepository.updateCurrentStationFromPreferences(stations);
-                    stationsRepository.stations.accept(stations);
-                    stationsRepository.setCanSearch(true);
-                });
+        return search.doOnSuccess(stations -> {
+            favoriteRepository.updateStationsIfFavorite(stations);
+            stationsRepository.updateCurrentStationFromPreferences(stations);
+            stationsRepository.stations.accept(stations);
+            stationsRepository.setSearchDone(true);
+        });
     }
 
     private Single<List<Station>> searchStationsManual(boolean skipCache) {
