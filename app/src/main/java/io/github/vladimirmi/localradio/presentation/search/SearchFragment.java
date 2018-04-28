@@ -48,13 +48,11 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     protected void setupView(View view) {
         autodetectCb.setOnClickListener(v -> presenter.setAutodetect(!autodetectCb.isChecked()));
 
-        countryEt.setOnItemClickListener((parent, v, position, id) -> {
-            presenter.selectCountry((Country) parent.getItemAtPosition(position));
-        });
+        countryEt.setOnItemClickListener((parent, v, position, id) ->
+                presenter.selectCountry((Country) parent.getItemAtPosition(position)));
 
-        cityEt.setOnItemClickListener((parent, v, position, id) -> {
-            presenter.selectCity((String) parent.getItemAtPosition(position));
-        });
+        cityEt.setOnItemClickListener((parent, v, position, id) ->
+                presenter.selectCity((String) parent.getItemAtPosition(position)));
 
         cityEt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {

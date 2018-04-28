@@ -24,13 +24,16 @@ import timber.log.Timber;
 public class LocationInteractor {
 
     private final LocationRepository locationRepository;
+    private final SearchInteractor searchInteractor;
 
     private Country anyCountry = Country.any(Scopes.appContext());
     private String anyCity = anyCountry.getCities().get(0);
 
     @Inject
-    public LocationInteractor(LocationRepository locationRepository) {
+    public LocationInteractor(LocationRepository locationRepository,
+                              SearchInteractor searchInteractor) {
         this.locationRepository = locationRepository;
+        this.searchInteractor = searchInteractor;
     }
 
     public List<Country> getCountries() {
@@ -103,9 +106,12 @@ public class LocationInteractor {
     }
 
     public Completable checkCanSearch(String countryName, String city) {
+        Completable check;
         if (countryName.equals(anyCountry.getName()) && city.equals(anyCity)) {
-            return Completable.error(new MessageException(R.string.error_specify_location));
+            check = Completable.error(new MessageException(R.string.error_specify_location));
+        } else {
+            check = Completable.complete();
         }
-        return Completable.complete();
+        return searchInteractor.checkCanSearch().andThen(check);
     }
 }

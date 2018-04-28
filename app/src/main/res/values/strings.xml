@@ -28,7 +28,8 @@
     <string name="metadata_buffering">Loading…</string>
 
     <string name="error_specify_location">A more specific location is required</string>
-    <string name="error_network">Connection error</string>
+    <string name="error_network">Network not available</string>
+    <string name="error_connection">Connection error</string>
 
     <plurals name="search_result">
         <item quantity="one">%d station found</item>

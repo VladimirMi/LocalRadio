@@ -52,14 +52,16 @@ public class MainPresenter extends BasePresenter<MainView> {
                     }
                 }));
 
-        // TODO: 4/26/18 show progress bar
+        disposables.add(searchInteractor.checkCanSearch()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+
         if (searchInteractor.isSearchDone()) {
-            disposables.add(searchInteractor.searchStations()
+            disposables.add(searchInteractor.searchStations(false)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {
                         @Override
                         public void onSuccess(List<Station> stations) {
-                            // TODO: 4/26/18 hide progress bar
+                            // TODO: 4/26/18 progress bar
                         }
                     }));
         } else {

@@ -84,7 +84,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     @SuppressLint("CheckResult")
     public void setAutodetect(boolean autodetect) {
-        view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+        searchInteractor.checkCanSearch()
+                .andThen(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION))
                 .doOnNext(enabled -> {
                     // TODO: 4/27/18 action with settings to snackbar
                     if (!enabled) view.showMessage(R.string.need_permission);
@@ -94,7 +95,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(this::enableAutodetect)
                 .filter(enabled -> enabled)
-                .flatMapSingle(enabled -> searchInteractor.searchStations())
+                .flatMapSingle(enabled -> searchInteractor.searchStations(true))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
@@ -111,7 +112,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
         disposables.add(locationInteractor.checkCanSearch(countryName, city)
                 .doOnComplete(() -> view.setSearching(true))
-                .andThen(searchInteractor.searchStations())
+                .andThen(searchInteractor.checkCanSearch())
+                .andThen(searchInteractor.searchStations(true))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {
                     @Override
@@ -129,8 +131,9 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void refreshSearch() {
-        view.setSearching(true);
-        disposables.add(searchInteractor.refreshStations()
+        disposables.add(searchInteractor.checkCanSearch()
+                .doOnComplete(() -> view.setSearching(true))
+                .andThen(searchInteractor.refreshStations())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {
                     @Override
