@@ -30,6 +30,7 @@ public class StationsRepository {
     private final NetworkChecker networkChecker;
     private final CacheSource cacheSource;
 
+    // TODO: 4/28/18 make private
     public final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
     public final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
 

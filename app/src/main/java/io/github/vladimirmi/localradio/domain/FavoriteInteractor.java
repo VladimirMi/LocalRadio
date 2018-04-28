@@ -46,6 +46,24 @@ public class FavoriteInteractor {
                 }).subscribeOn(Schedulers.io());
     }
 
+    public void previousStation() {
+        List<Station> source = favoriteRepository.getFavoriteStations();
+        int indexOfCurrent = source.indexOf(stationsRepository.currentStation.getValue());
+        if (indexOfCurrent == -1) return;
+
+        int indexOfPrevious = (indexOfCurrent + source.size() - 1) % source.size();
+        stationsRepository.setCurrentStation(source.get(indexOfPrevious));
+    }
+
+    public void nextStation() {
+        List<Station> source = favoriteRepository.getFavoriteStations();
+        int indexOfCurrent = source.indexOf(stationsRepository.currentStation.getValue());
+        if (indexOfCurrent == -1) return;
+
+        int indexOfNext = (indexOfCurrent + 1) % source.size();
+        stationsRepository.setCurrentStation(source.get(indexOfNext));
+    }
+
     private void updateStationsWithFavorites() {
         if (!stationsRepository.stations.hasValue()) return;
         List<Station> list = new ArrayList<>(stationsRepository.stations.getValue());

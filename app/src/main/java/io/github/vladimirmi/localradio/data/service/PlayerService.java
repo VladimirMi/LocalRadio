@@ -22,6 +22,8 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.MainInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
@@ -39,6 +41,8 @@ import toothpick.Toothpick;
 public class PlayerService extends MediaBrowserServiceCompat implements SessionCallback.Interface {
 
     @Inject StationsInteractor stationsInteractor;
+    @Inject FavoriteInteractor favoriteInteractor;
+    @Inject MainInteractor mainInteractor;
 
     private MediaSessionCompat session;
     private PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
@@ -168,12 +172,20 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
-        stationsInteractor.previousStation();
+        if (mainInteractor.isFavoritePage()) {
+            favoriteInteractor.previousStation();
+        } else {
+            stationsInteractor.previousStation();
+        }
     }
 
     @Override
     public void onSkipToNextCommand() {
-        stationsInteractor.nextStation();
+        if (mainInteractor.isFavoritePage()) {
+            favoriteInteractor.nextStation();
+        } else {
+            stationsInteractor.nextStation();
+        }
     }
 
     //endregion
