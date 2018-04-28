@@ -30,7 +30,6 @@ import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -203,9 +202,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                 default:
                     state = PlaybackStateCompat.STATE_NONE;
             }
-
-            Timber.e("onPlayerStateChanged: %s %d %s", playWhenReady, playbackState, state);
-
             PlaybackStateCompat newPlaybackState = new PlaybackStateCompat.Builder(PlayerService.this.playbackState)
                     .setState(state, 0, 1f)
                     .build();

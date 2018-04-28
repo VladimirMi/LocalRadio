@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import io.github.vladimirmi.localradio.com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import io.github.vladimirmi.localradio.data.service.Metadata;
 import io.github.vladimirmi.localradio.data.service.PlayerCallback;
 import timber.log.Timber;
 
@@ -36,6 +37,7 @@ public class IcyDataSource extends DefaultHttpDataSource {
             return new IcyInputStream(connection.getInputStream(), metaWindow, playerCallback);
         } else {
             Timber.d("stream does not support icy metadata");
+            playerCallback.onMetadata(Metadata.UNSUPPORTED);
             return super.getInputStream(connection);
         }
     }

@@ -46,7 +46,10 @@ public class IcyInputStream extends FilterInputStream {
     private void readMetadata() throws IOException {
         bytesBeforeMetadata = window;
         int size = super.read() * 16;
-        if (size < 1) return;
+        if (size < 1) {
+            playerCallback.onMetadata(Metadata.UNSUPPORTED);
+            return;
+        }
         if (size > buffer.length) {
             buffer = new byte[size];
         }
