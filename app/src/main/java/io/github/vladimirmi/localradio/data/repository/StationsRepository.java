@@ -56,7 +56,8 @@ public class StationsRepository {
     }
 
     public void setCurrentStation(Station station) {
-        preferences.currentStation.put(station.getId());
+        preferences.currentStationIsFavorite.put(station.isFavorite());
+        preferences.currentStationId.put(station.getId());
         currentStation.accept(station);
     }
 
@@ -88,10 +89,11 @@ public class StationsRepository {
         }
     }
 
-    // TODO: 4/26/18 move logic to search interactor
     public void updateCurrentStationFromPreferences(List<Station> stations) {
+        if (preferences.currentStationIsFavorite.get()) return;
+
         Station newCurrentStation = Station.nullStation();
-        Integer currentId = preferences.currentStation.get();
+        Integer currentId = preferences.currentStationId.get();
         for (Station station : stations) {
             if (station.getId() == currentId) {
                 newCurrentStation = station;

@@ -19,8 +19,11 @@ public class Preferences {
     private static final String KEY_SEARCH_DONE = "SEARCH_DONE";
     public final Preference<Boolean> isSearchDone;
 
-    private static final String KEY_CURRENT_STATION = "CURRENT_STATION";
-    public final Preference<Integer> currentStation;
+    private static final String KEY_CURRENT_STATION_ID = "CURRENT_STATION_ID";
+    public final Preference<Integer> currentStationId;
+
+    private static final String KEY_CURRENT_STATION_IS_FAVORITE = "CURRENT_STATION_IS_FAVORITE";
+    public final Preference<Boolean> currentStationIsFavorite;
 
     private static final String KEY_PAGE = "PAGE";
     public final Preference<Integer> pagePosition;
@@ -33,7 +36,8 @@ public class Preferences {
         countryCode = new Preference<>(prefs, KEY_COUNTRY_CODE, "");
         city = new Preference<>(prefs, KEY_CITY, "");
         isSearchDone = new Preference<>(prefs, KEY_SEARCH_DONE, false);
-        currentStation = new Preference<>(prefs, KEY_CURRENT_STATION, 0);
+        currentStationId = new Preference<>(prefs, KEY_CURRENT_STATION_ID, 0);
+        currentStationIsFavorite = new Preference<>(prefs, KEY_CURRENT_STATION_IS_FAVORITE, false);
         pagePosition = new Preference<>(prefs, KEY_PAGE, 2);
     }
 }

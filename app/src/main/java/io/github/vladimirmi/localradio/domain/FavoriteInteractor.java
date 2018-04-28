@@ -11,6 +11,7 @@ import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 13.04.2018.
@@ -72,10 +73,10 @@ public class FavoriteInteractor {
     }
 
     private void setCurrentStationIfFavorite() {
+        Timber.e("setCurrentStationIfFavorite: ");
         Station currentFavoriteStation = favoriteRepository.findCurrentFavoriteStation();
-        if (currentFavoriteStation != null
-                && !currentFavoriteStation.equals(stationsRepository.currentStation.getValue())) {
-            stationsRepository.currentStation.accept(currentFavoriteStation);
+        if (currentFavoriteStation != null) {
+            stationsRepository.setCurrentStation(currentFavoriteStation);
         }
     }
 }

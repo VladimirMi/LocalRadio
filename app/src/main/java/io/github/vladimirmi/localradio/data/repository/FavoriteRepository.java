@@ -43,7 +43,7 @@ public class FavoriteRepository {
     }
 
     public Station findCurrentFavoriteStation() {
-        int curId = preferences.currentStation.get();
+        int curId = preferences.currentStationId.get();
         for (Station station : favoriteStations) {
             if (station.getId() == curId) {
                 return station;
