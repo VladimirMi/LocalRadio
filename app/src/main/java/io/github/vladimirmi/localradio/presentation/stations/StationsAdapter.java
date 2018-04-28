@@ -55,6 +55,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     };
 
     public StationsAdapter(onStationListener listener) {
+        //noinspection unchecked
         super(CALLBACK);
         this.listener = listener;
     }
@@ -92,7 +93,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.bind(station);
         holder.setFavorite(station);
         holder.select(position == selectedPosition, playing);
-        holder.itemView.setOnClickListener(view -> listener.onStationClick(getItem(position)));
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
     }
 
     public void select(Station station) {
