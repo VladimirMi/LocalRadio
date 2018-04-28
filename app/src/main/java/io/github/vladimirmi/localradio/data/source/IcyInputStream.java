@@ -58,6 +58,7 @@ public class IcyInputStream extends FilterInputStream {
                 break;
             }
         }
+        // TODO: 4/28/18 try to determine charset
         String meta = new String(buffer, 0, actualSize);
         playerCallback.onMetadata(Metadata.create(meta));
     }

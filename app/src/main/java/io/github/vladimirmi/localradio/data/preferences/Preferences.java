@@ -23,7 +23,7 @@ public class Preferences {
     public final Preference<Integer> currentStation;
 
     private static final String KEY_PAGE = "PAGE";
-    public final Preference<Integer> page;
+    public final Preference<Integer> pagePosition;
 
     @Inject
     public Preferences(Context context) {
@@ -34,6 +34,6 @@ public class Preferences {
         city = new Preference<>(prefs, KEY_CITY, "");
         isSearchDone = new Preference<>(prefs, KEY_SEARCH_DONE, false);
         currentStation = new Preference<>(prefs, KEY_CURRENT_STATION, 0);
-        page = new Preference<>(prefs, KEY_PAGE, 2);
+        pagePosition = new Preference<>(prefs, KEY_PAGE, 2);
     }
 }

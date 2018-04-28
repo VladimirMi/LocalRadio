@@ -8,7 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
-import io.github.vladimirmi.localradio.data.preferences.Preferences;
+import io.github.vladimirmi.localradio.domain.MainInteractor;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
@@ -26,22 +26,21 @@ public class MainPresenter extends BasePresenter<MainView> {
     private final PlayerControlInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final SearchInteractor searchInteractor;
-    //// TODO: 4/26/18 move preferences through interactor
-    private final Preferences preferences;
+    private final MainInteractor mainInteractor;
 
     @Inject
     MainPresenter(PlayerControlInteractor controlInteractor,
                   StationsInteractor stationsInteractor,
-                  SearchInteractor searchInteractor, Preferences preferences) {
+                  SearchInteractor searchInteractor, MainInteractor mainInteractor) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
         this.searchInteractor = searchInteractor;
-        this.preferences = preferences;
+        this.mainInteractor = mainInteractor;
     }
 
     @Override
     protected void onFirstAttach(@Nullable MainView view, CompositeDisposable disposables) {
-        initPage(preferences.page.get());
+        initPage(mainInteractor.getPagePosition());
 
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -80,7 +79,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     public void selectPage(int position) {
-        preferences.page.put(position);
+        mainInteractor.savePagePosition(position);
         initPage(position);
     }
 
