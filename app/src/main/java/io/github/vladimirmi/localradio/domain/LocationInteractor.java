@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.domain;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +10,12 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.utils.MessageException;
+import io.reactivex.Completable;
 import timber.log.Timber;
 
 /**
@@ -69,8 +72,10 @@ public class LocationInteractor {
         locationRepository.saveCountryCodeCity(countryCode, cityName);
     }
 
-    @NonNull
+    @Nullable
     public Country findCountry(String city) {
+        if (city.equals(anyCity)) return null;
+
         for (Country country : locationRepository.getCountries()) {
             if (country.getCities().contains(city)) {
                 return country;
@@ -95,5 +100,12 @@ public class LocationInteractor {
             cityList.add(0, anyCity);
         }
         return cityList;
+    }
+
+    public Completable checkCanSearch(String countryName, String city) {
+        if (countryName.equals(anyCountry.getName()) && city.equals(anyCity)) {
+            return Completable.error(new MessageException(R.string.error_specify_location));
+        }
+        return Completable.complete();
     }
 }

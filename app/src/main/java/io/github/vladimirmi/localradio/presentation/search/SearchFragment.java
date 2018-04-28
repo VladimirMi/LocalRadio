@@ -176,6 +176,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setSearching(boolean enabled) {
         if (enabled) {
             searchResultTv.setText(getString(R.string.searching));
+        } else {
+            resetSearchResult();
         }
     }
 

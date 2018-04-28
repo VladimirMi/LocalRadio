@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.data.entity.Station;
-import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
@@ -31,9 +30,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     private final LocationInteractor locationInteractor;
     private final SearchInteractor searchInteractor;
     private final StationsInteractor stationsInteractor;
-
-    private final Country anyCountry = Country.any(Scopes.appContext());
-    private final String anyCity = anyCountry.getCities().get(0);
 
     @Inject
     SearchPresenter(LocationInteractor locationInteractor, SearchInteractor searchInteractor,
@@ -57,7 +53,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCity(locationInteractor.getCity());
 
         disposables.add(stationsInteractor.getStationsObs()
-                .map(List::size).skip(1).firstOrError()
+                .map(List::size).firstOrError()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorSingleObserver<Integer>(view) {
                     @Override
@@ -79,8 +75,9 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void selectCity(String city) {
-        if (!city.equals(anyCity)) {
-            view.setCountryName(locationInteractor.findCountry(city).getName());
+        Country country = locationInteractor.findCountry(city);
+        if (country != null) {
+            view.setCountryName(country.getName());
         }
         view.setCity(city);
     }
@@ -109,16 +106,24 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 });
     }
 
-    public void search(String country, String city) {
-        view.setSearching(true);
-        locationInteractor.saveCountryNameCity(country, city);
-        disposables.add(searchInteractor.searchStations()
+    public void search(String countryName, String city) {
+        locationInteractor.saveCountryNameCity(countryName, city);
+
+        disposables.add(locationInteractor.checkCanSearch(countryName, city)
+                .doOnComplete(() -> view.setSearching(true))
+                .andThen(searchInteractor.searchStations())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {
                     @Override
                     public void onSuccess(List<Station> stations) {
                         view.setSearchResult(stations.size());
                         view.setManualSearchDone(true);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        view.setSearching(false);
                     }
                 }));
     }
@@ -131,6 +136,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     @Override
                     public void onSuccess(List<Station> stations) {
                         view.setSearchResult(stations.size());
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        view.setSearching(false);
                     }
                 }));
     }

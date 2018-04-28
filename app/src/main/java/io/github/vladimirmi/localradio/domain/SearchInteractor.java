@@ -4,12 +4,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
 import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
-import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Single;
 
 /**
@@ -68,11 +66,6 @@ public class SearchInteractor {
     }
 
     private Single<List<Station>> searchStationsManual(boolean skipCache) {
-        String countryCode = locationRepository.getCountryCode();
-        String city = locationRepository.getCity();
-        if (countryCode.isEmpty() && city.isEmpty()) {
-            return Single.error(new MessageException(R.string.error_specify_location));
-        }
         return stationsRepository.searchStationsManual(skipCache);
     }
 
