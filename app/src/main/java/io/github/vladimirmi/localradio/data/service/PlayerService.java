@@ -58,10 +58,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private final Timer stopTimer = new Timer();
     private TimerTask stopTask;
 
+    private volatile boolean appInitialized;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Timber.e("onCreate: ");
         Toothpick.inject(this, Scopes.getAppScope());
 
         session = new MediaSessionCompat(this, getClass().getSimpleName());
@@ -74,8 +76,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         playback = new Playback(this, playerCallback);
         notification = new MediaNotification(this, session, stationsInteractor);
 
+        compDisp.add(mainInteractor.initApp()
+                .doOnComplete(() -> appInitialized = true)
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
+
         compDisp.add(stationsInteractor.getCurrentStationObs()
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
                     @Override
                     public void onNext(Station station) {
@@ -86,14 +92,13 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Timber.e("onStartCommand: ");
-        serviceStarted = true;
-        session.setActive(true);
+        playerCallback.onPlayerStateChanged(PlaybackStateCompat.STATE_PLAYING);
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
+        Timber.e("onDestroy: ");
         compDisp.dispose();
         onStopCommand();
         playback.releasePlayer();
@@ -110,19 +115,22 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         result.sendResult(Collections.emptyList());
     }
 
-    private void startService() {
+    private void startPlayingService() {
         if (!serviceStarted) {
             Intent startPlayerService = new Intent(this, PlayerService.class);
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(startPlayerService);
             } else {
                 startService(startPlayerService);
             }
+            serviceStarted = true;
+            session.setActive(true);
         }
     }
 
     private void handleCurrentStation(Station station) {
+        Timber.e("handleCurrentStation: " + station.getName());
+        // TODO: 4/29/18 pass bitmap to metadata 
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
         updateRemoteViews();
@@ -141,7 +149,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
-        Timber.e("playCurrent: " + station);
+        if (station.isNullStation()) return;
         playingStationId = station.getId();
         playback.play(Uri.parse(station.getUrl()));
     }
@@ -150,12 +158,23 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onPlayCommand() {
+        Timber.e("onPlayCommand: " + serviceStarted);
         if (stopTask != null) stopTask.cancel();
-        startService();
+        startPlayingService();
         if (isPaused() && currentStationId == playingStationId) {
             playback.resume();
         } else {
             playCurrent();
+        }
+    }
+
+    private void waitAppInit() {
+        while (!appInitialized) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -181,6 +200,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
+        waitAppInit();
         if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.previousStation();
         } else {
@@ -190,6 +210,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToNextCommand() {
+        waitAppInit();
         if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.nextStation();
         } else {

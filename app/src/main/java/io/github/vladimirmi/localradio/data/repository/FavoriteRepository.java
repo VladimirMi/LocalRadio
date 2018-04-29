@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.data.repository;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.database.Cursor;
 import android.net.Uri;
 
 import java.util.Collections;
@@ -32,6 +33,14 @@ public class FavoriteRepository {
         this.preferences = preferences;
     }
 
+    public Completable initFavorites() {
+        Uri uri = StationContract.StationEntry.CONTENT_URI;
+        return Completable.fromAction(() -> {
+            Cursor cursor = contentResolver.query(uri, null, null, null, null);
+            favoriteStations = ValuesMapper.getList(cursor, ValuesMapper::cursorToStation);
+        });
+    }
+
     public Completable addFavorite(Station station) {
         Uri uri = StationContract.StationEntry.CONTENT_URI;
         return Completable.fromAction(() -> contentResolver.insert(uri, ValuesMapper.createValue(station)));
@@ -60,7 +69,6 @@ public class FavoriteRepository {
         return favoriteStations;
     }
 
-    // TODO: 4/26/18 move logic to favorite interactor
     public boolean updateStationsIfFavorite(List<Station> stations) {
         boolean updated = false;
         for (int i = 0; i < stations.size(); i++) {

@@ -27,6 +27,14 @@ public class FavoriteInteractor {
         this.favoriteRepository = favoriteRepository;
     }
 
+    public Completable initFavorites() {
+        return favoriteRepository.initFavorites()
+                .doOnComplete(() -> {
+                    updateStationsWithFavorites();
+                    setCurrentStationIfFavorite();
+                });
+    }
+
     public void setFavorites(List<Station> stations) {
         favoriteRepository.setFavoriteStations(stations);
         updateStationsWithFavorites();

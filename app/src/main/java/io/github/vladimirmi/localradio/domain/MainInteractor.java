@@ -3,6 +3,8 @@ package io.github.vladimirmi.localradio.domain;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
+import io.reactivex.Completable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 28.04.2018.
@@ -10,10 +12,30 @@ import io.github.vladimirmi.localradio.data.preferences.Preferences;
 public class MainInteractor {
 
     private final Preferences preferences;
+    private final FavoriteInteractor favoriteInteractor;
+    private final SearchInteractor searchInteractor;
 
     @Inject
-    public MainInteractor(Preferences preferences) {
+    public MainInteractor(Preferences preferences,
+                          FavoriteInteractor favoriteInteractor,
+                          SearchInteractor searchInteractor) {
         this.preferences = preferences;
+        this.favoriteInteractor = favoriteInteractor;
+        this.searchInteractor = searchInteractor;
+    }
+
+    public Completable initApp() {
+        Completable initStations;
+        if (searchInteractor.isSearchDone()) {
+            initStations = searchInteractor.checkCanSearch().andThen(
+                    searchInteractor.searchStations(false).toCompletable());
+        } else {
+            initStations = Completable.complete();
+        }
+        return Completable.mergeArrayDelayError(
+                initStations,
+                favoriteInteractor.initFavorites()
+        ).subscribeOn(Schedulers.io());
     }
 
     public int getPagePosition() {

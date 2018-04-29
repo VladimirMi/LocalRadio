@@ -110,7 +110,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     public void search(String countryName, String city) {
         locationInteractor.saveCountryNameCity(countryName, city);
 
-        disposables.add(locationInteractor.checkCanSearch(countryName, city)
+        disposables.add(locationInteractor.checkCanSearch()
                 .doOnComplete(() -> view.setSearching(true))
                 .andThen(searchInteractor.checkCanSearch())
                 .andThen(searchInteractor.searchStations(true))

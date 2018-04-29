@@ -3,8 +3,6 @@ package io.github.vladimirmi.localradio.presentation.main;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
@@ -54,16 +52,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         disposables.add(searchInteractor.checkCanSearch()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
 
-        if (searchInteractor.isSearchDone()) {
-            disposables.add(searchInteractor.searchStations(false)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {
-                        @Override
-                        public void onSuccess(List<Station> stations) {
-                            // TODO: 4/26/18 progress bar
-                        }
-                    }));
-        } else {
+        if (!searchInteractor.isSearchDone()) {
             selectPage(MainActivity.PAGE_SEARCH);
         }
     }

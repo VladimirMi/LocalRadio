@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,24 +43,35 @@ public class StationsInteractor {
     }
 
     public void previousStation() {
-        int indexOfCurrent = filteredStations.indexOf(getCurrentStation());
+        List<Station> source = getFilteredStations();
+        int indexOfCurrent = source.indexOf(getCurrentStation());
         if (indexOfCurrent == -1) return;
 
-        int indexOfPrevious = (indexOfCurrent + filteredStations.size() - 1) % filteredStations.size();
-        setCurrentStation(filteredStations.get(indexOfPrevious));
+        int indexOfPrevious = (indexOfCurrent + source.size() - 1) % source.size();
+        setCurrentStation(source.get(indexOfPrevious));
     }
 
     public void nextStation() {
-        int indexOfCurrent = filteredStations.indexOf(getCurrentStation());
+        List<Station> source = getFilteredStations();
+        int indexOfCurrent = source.indexOf(getCurrentStation());
         if (indexOfCurrent == -1) return;
 
-        int indexOfNext = (indexOfCurrent + 1) % filteredStations.size();
-        setCurrentStation(filteredStations.get(indexOfNext));
+        int indexOfNext = (indexOfCurrent + 1) % source.size();
+        setCurrentStation(source.get(indexOfNext));
     }
 
     public void filterStations(String filter) {
         this.filter = filter.toLowerCase();
         stationsRepository.stations.accept(stationsRepository.stations.getValue());
+    }
+
+    private List<Station> getFilteredStations() {
+        if (filteredStations != null) {
+            return filteredStations;
+        }
+        filteredStations = stationsRepository.stations.hasValue() ?
+                stationsRepository.stations.getValue() : Collections.emptyList();
+        return filteredStations;
     }
 
     private List<Station> filter(List<Station> stations) {

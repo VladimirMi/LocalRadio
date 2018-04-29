@@ -105,13 +105,11 @@ public class LocationInteractor {
         return cityList;
     }
 
-    public Completable checkCanSearch(String countryName, String city) {
-        Completable check;
-        if (countryName.equals(anyCountry.getName()) && city.equals(anyCity)) {
-            check = Completable.error(new MessageException(R.string.error_specify_location));
+    public Completable checkCanSearch() {
+        if (getCountryName().equals(anyCountry.getName()) && getCity().equals(anyCity)) {
+            return Completable.error(new MessageException(R.string.error_specify_location));
         } else {
-            check = Completable.complete();
+            return Completable.complete();
         }
-        return searchInteractor.checkCanSearch().andThen(check);
     }
 }

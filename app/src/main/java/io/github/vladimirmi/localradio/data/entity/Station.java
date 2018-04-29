@@ -124,6 +124,7 @@ public class Station {
     }
 
     public String getUrl() {
+        if (id == 0) return null;
         if (url == null) url = Api.STREAM_BASE_URL + id;
         return url;
     }

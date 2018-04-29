@@ -3,6 +3,7 @@ package io.github.vladimirmi.localradio.data.service;
 import android.support.v4.media.MediaMetadataCompat;
 
 import io.github.vladimirmi.localradio.utils.StringUtils;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 07.04.2018.
@@ -25,6 +26,7 @@ public class Metadata {
     public static Metadata UNSUPPORTED = new Metadata(unsupported, unsupported);
 
     public static Metadata create(String meta) {
+        Timber.e("create: " + meta);
         String artistTitle = new StringUtils.Builder(meta).substringAfter("StreamTitle=", unsupported)
                 .substringBefore(";")
                 .trim(' ', '\'')
