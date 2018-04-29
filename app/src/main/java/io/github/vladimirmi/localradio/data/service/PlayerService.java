@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.data.service;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,8 +10,6 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-
-import com.google.android.exoplayer2.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +20,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.data.reciever.PlayerWidget;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.MainInteractor;
@@ -28,10 +28,9 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.github.vladimirmi.localradio.utils.UiUtils;
-import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -47,10 +46,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private MediaSessionCompat session;
     private PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
             .setState(PlaybackStateCompat.STATE_STOPPED, 0, 1F)
-            .setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE
-                    | PlaybackStateCompat.ACTION_STOP
-                    | PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-                    | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS).build();
+            .setActions(PlayerActions.defaultActions).build();
 
     private Playback playback;
     private MediaNotification notification;
@@ -89,6 +85,14 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Timber.e("onStartCommand: ");
+        serviceStarted = true;
+        session.setActive(true);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
     public void onDestroy() {
         compDisp.dispose();
         onStopCommand();
@@ -108,16 +112,20 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void startService() {
         if (!serviceStarted) {
-            startService(new Intent(getApplicationContext(), PlayerService.class));
-            serviceStarted = true;
-            session.setActive(true);
+            Intent startPlayerService = new Intent(this, PlayerService.class);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(startPlayerService);
+            } else {
+                startService(startPlayerService);
+            }
         }
     }
 
     private void handleCurrentStation(Station station) {
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
-        notification.update();
+        updateRemoteViews();
     }
 
     private boolean isPlayed() {
@@ -133,6 +141,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
+        Timber.e("playCurrent: " + station);
         playingStationId = station.getId();
         playback.play(Uri.parse(station.getUrl()));
     }
@@ -166,8 +175,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     public void onStopCommand() {
         playback.stop();
         session.setActive(false);
-        stopSelf();
         serviceStarted = false;
+        stopSelf();
     }
 
     @Override
@@ -193,40 +202,19 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private PlayerCallback playerCallback = new PlayerCallback() {
 
         @Override
-        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            super.onPlayerStateChanged(playWhenReady, playbackState);
-            int state;
-            switch (playbackState) {
-                case Player.STATE_IDLE:
-                    state = PlaybackStateCompat.STATE_STOPPED;
-                    break;
-                case Player.STATE_BUFFERING:
-                    if (playWhenReady) state = PlaybackStateCompat.STATE_BUFFERING;
-                    else state = PlaybackStateCompat.STATE_PAUSED;
-                    break;
-                case Player.STATE_READY:
-                    if (playWhenReady) state = PlaybackStateCompat.STATE_PLAYING;
-                    else state = PlaybackStateCompat.STATE_PAUSED;
-                    break;
-                case Player.STATE_ENDED:
-                    state = PlaybackStateCompat.STATE_STOPPED;
-                    break;
-                default:
-                    state = PlaybackStateCompat.STATE_NONE;
-            }
+        public void onPlayerStateChanged(int playbackState) {
             PlaybackStateCompat newPlaybackState = new PlaybackStateCompat.Builder(PlayerService.this.playbackState)
-                    .setState(state, 0, 1f)
+                    .setState(playbackState, 0, 1f)
                     .build();
-
             session.setPlaybackState(newPlaybackState);
-            updateNotification();
+            updateRemoteViews();
         }
 
         @Override
         public void onMetadata(Metadata metadata) {
             super.onMetadata(metadata);
             session.setMetadata(metadata.toMediaMetadata());
-            updateNotification();
+            updateRemoteViews();
         }
 
         @Override
@@ -237,12 +225,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         }
     };
 
-    private Disposable notificationUpdate;
-
-    private void updateNotification() {
-        if (notificationUpdate != null) notificationUpdate.dispose();
-        notificationUpdate = Completable.fromAction(notification::update)
-                .subscribeOn(Schedulers.io())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(null));
+    private void updateRemoteViews() {
+        notification.update();
+        PlayerWidget.update(getApplicationContext(), session);
     }
 }

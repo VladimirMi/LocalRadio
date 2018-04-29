@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.data.service;
 
+import android.support.v4.media.session.PlaybackStateCompat;
+
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
@@ -34,6 +36,29 @@ public class PlayerCallback implements Player.EventListener {
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        int state;
+        switch (playbackState) {
+            case Player.STATE_IDLE:
+                state = PlaybackStateCompat.STATE_STOPPED;
+                break;
+            case Player.STATE_BUFFERING:
+                if (playWhenReady) state = PlaybackStateCompat.STATE_BUFFERING;
+                else state = PlaybackStateCompat.STATE_PAUSED;
+                break;
+            case Player.STATE_READY:
+                if (playWhenReady) state = PlaybackStateCompat.STATE_PLAYING;
+                else state = PlaybackStateCompat.STATE_PAUSED;
+                break;
+            case Player.STATE_ENDED:
+                state = PlaybackStateCompat.STATE_STOPPED;
+                break;
+            default:
+                state = PlaybackStateCompat.STATE_NONE;
+        }
+        onPlayerStateChanged(state);
+    }
+
+    public void onPlayerStateChanged(int playbackState) {
 
     }
 

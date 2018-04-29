@@ -8,11 +8,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.support.annotation.MainThread;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
-import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -24,6 +24,10 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.utils.RxUtils;
+import io.reactivex.Completable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -45,6 +49,7 @@ public class MediaNotification {
     private final PendingIntent nextIntent;
     private final PendingIntent previousIntent;
 
+    private Disposable notificationUpdate;
 
     public MediaNotification(PlayerService service, MediaSessionCompat session, StationsInteractor stationsInteractor) {
         this.service = service;
@@ -53,14 +58,10 @@ public class MediaNotification {
 
         notificationManager = ((NotificationManager) service.getSystemService(Context.NOTIFICATION_SERVICE));
 
-        playPauseIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(service,
-                PlaybackStateCompat.ACTION_PLAY_PAUSE);
-        stopIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(service,
-                PlaybackStateCompat.ACTION_STOP);
-        nextIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(service,
-                PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
-        previousIntent = MediaButtonReceiver.buildMediaButtonPendingIntent(service,
-                PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
+        playPauseIntent = PlayerActions.playPauseIntent(service.getApplicationContext());
+        stopIntent = PlayerActions.stopIntent(service.getApplicationContext());
+        nextIntent = PlayerActions.nextIntent(service.getApplicationContext());
+        previousIntent = PlayerActions.previousIntent(service.getApplicationContext());
 
         mediaStyle = new MediaStyle()
                 .setMediaSession(session.getSessionToken())
@@ -74,8 +75,16 @@ public class MediaNotification {
         }
     }
 
-    @WorkerThread
+    @MainThread
     public void update() {
+        if (notificationUpdate != null) notificationUpdate.dispose();
+        notificationUpdate = Completable.fromAction(this::updateInBackground)
+                .subscribeOn(Schedulers.io())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(null));
+    }
+
+    @WorkerThread
+    private void updateInBackground() {
         int state = session.getController().getPlaybackState().getState();
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             service.startForeground(PLAYER_NOTIFICATION_ID, createNotification());
@@ -96,6 +105,7 @@ public class MediaNotification {
     private Notification createNotification() {
         NotificationCompat.Builder builder = createStandardBuilder();
         PlaybackStateCompat playbackState = session.getController().getPlaybackState();
+        // TODO: 4/29/18 extract bitmap
         Metadata metadata = Metadata.create(session.getController().getMetadata());
 
         builder.setSubText(stationsInteractor.getCurrentStation().getName());
@@ -111,7 +121,7 @@ public class MediaNotification {
         int width = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width);
         int height = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
 
-        FutureTarget<Bitmap> futureTarget = Glide.with(service)
+        FutureTarget<Bitmap> futureTarget = Glide.with(service.getApplicationContext())
                 .load(stationsInteractor.getCurrentStation().getImageUrl())
                 .asBitmap()
                 .skipMemoryCache(true)
