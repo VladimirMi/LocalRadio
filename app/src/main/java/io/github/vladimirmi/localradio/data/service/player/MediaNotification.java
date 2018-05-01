@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.service;
+package io.github.vladimirmi.localradio.data.service.player;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

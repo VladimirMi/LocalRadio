@@ -10,8 +10,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.widget.RemoteViews;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.service.Metadata;
-import io.github.vladimirmi.localradio.data.service.PlayerActions;
+import io.github.vladimirmi.localradio.data.service.player.Metadata;
+import io.github.vladimirmi.localradio.data.service.player.PlayerActions;
 
 public class PlayerWidget extends AppWidgetProvider {
 

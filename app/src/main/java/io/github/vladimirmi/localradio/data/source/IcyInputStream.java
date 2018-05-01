@@ -6,8 +6,8 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import io.github.vladimirmi.localradio.data.service.Metadata;
-import io.github.vladimirmi.localradio.data.service.PlayerCallback;
+import io.github.vladimirmi.localradio.data.service.player.Metadata;
+import io.github.vladimirmi.localradio.data.service.player.PlayerCallback;
 
 /**
  * Created by Vladimir Mikhalev 07.04.2018.

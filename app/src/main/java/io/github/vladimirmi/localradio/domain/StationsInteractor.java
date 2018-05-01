@@ -1,7 +1,6 @@
 package io.github.vladimirmi.localradio.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,16 +25,16 @@ public class StationsInteractor {
     }
 
     public Observable<List<Station>> getStationsObs() {
-        return stationsRepository.stations
+        return stationsRepository.getStationsObs()
                 .map(this::filter);
     }
 
     public Observable<Station> getCurrentStationObs() {
-        return stationsRepository.currentStation;
+        return stationsRepository.getCurrentStationObs();
     }
 
     public Station getCurrentStation() {
-        return stationsRepository.currentStation.getValue();
+        return stationsRepository.getCurrentStation();
     }
 
     public void setCurrentStation(Station station) {
@@ -60,17 +59,17 @@ public class StationsInteractor {
         setCurrentStation(source.get(indexOfNext));
     }
 
+    // TODO: 4/30/18 return list to presentation
     public void filterStations(String filter) {
         this.filter = filter.toLowerCase();
-        stationsRepository.stations.accept(stationsRepository.stations.getValue());
+        stationsRepository.setStations(stationsRepository.getStations());
     }
 
     private List<Station> getFilteredStations() {
         if (filteredStations != null) {
             return filteredStations;
         }
-        filteredStations = stationsRepository.stations.hasValue() ?
-                stationsRepository.stations.getValue() : Collections.emptyList();
+        filteredStations = stationsRepository.getStations();
         return filteredStations;
     }
 

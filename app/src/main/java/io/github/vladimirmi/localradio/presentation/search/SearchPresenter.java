@@ -12,7 +12,6 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Country;
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.domain.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
@@ -53,11 +52,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCity(locationInteractor.getCity());
 
         disposables.add(stationsInteractor.getStationsObs()
-                .map(List::size).firstOrError()
+                .map(List::size)
+                .filter(size -> searchInteractor.isSearchDone())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorSingleObserver<Integer>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
                     @Override
-                    public void onSuccess(Integer integer) {
+                    public void onNext(Integer integer) {
                         view.setSearchResult(integer);
                     }
                 }));
@@ -93,15 +93,15 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .map(enabled -> enabled && autodetect)
                 .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(this::enableAutodetect)
-                .filter(enabled -> enabled)
-                .flatMapSingle(enabled -> searchInteractor.searchStations(true))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
+                .doOnNext(enabled -> {
+                    enableAutodetect(enabled);
+                    if (enabled) searchInteractor.searchStations();
+                })
+                .ignoreElements()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
                     @Override
-                    public void onNext(List<Station> stations) {
-                        view.setCountryName(locationInteractor.getCountryName());
-                        view.setSearchResult(stations.size());
+                    public void onComplete() {
+//                        view.setCountryName(locationInteractor.getCountryName());
                         view.setAutoSearchDone(true);
                     }
                 });
@@ -111,14 +111,16 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         locationInteractor.saveCountryNameCity(countryName, city);
 
         disposables.add(locationInteractor.checkCanSearch()
-                .doOnComplete(() -> view.setSearching(true))
                 .andThen(searchInteractor.checkCanSearch())
-                .andThen(searchInteractor.searchStations(true))
+                .doOnComplete(() -> {
+                    view.setSearching(true);
+                    searchInteractor.resetSearch();
+                    searchInteractor.searchStations();
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
                     @Override
-                    public void onSuccess(List<Station> stations) {
-                        view.setSearchResult(stations.size());
+                    public void onComplete() {
                         view.setManualSearchDone(true);
                     }
 
@@ -132,14 +134,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     public void refreshSearch() {
         disposables.add(searchInteractor.checkCanSearch()
-                .doOnComplete(() -> view.setSearching(true))
-                .andThen(searchInteractor.refreshStations())
+                .doOnComplete(() -> {
+                    view.setSearching(true);
+                    searchInteractor.refreshStations();
+                })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorSingleObserver<List<Station>>(view) {
-                    @Override
-                    public void onSuccess(List<Station> stations) {
-                        view.setSearchResult(stations.size());
-                    }
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
 
                     @Override
                     public void onError(Throwable e) {

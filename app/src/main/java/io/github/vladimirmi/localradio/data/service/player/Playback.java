@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.service;
+package io.github.vladimirmi.localradio.data.service.player;
 
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -171,7 +171,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         }
     };
 
-    private boolean audioNoisyReceiverRegistered = false;
+    private volatile boolean audioNoisyReceiverRegistered = false;
 
     private void registerAudioNoisyReceiver() {
         if (!audioNoisyReceiverRegistered) {

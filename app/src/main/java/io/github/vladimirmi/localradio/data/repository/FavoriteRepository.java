@@ -68,23 +68,4 @@ public class FavoriteRepository {
     public List<Station> getFavoriteStations() {
         return favoriteStations;
     }
-
-    public boolean updateStationsIfFavorite(List<Station> stations) {
-        boolean updated = false;
-        for (int i = 0; i < stations.size(); i++) {
-            Station station = stations.get(i);
-            boolean isFavorite = false;
-            for (Station favoriteStation : getFavoriteStations()) {
-                if (station.getId() == favoriteStation.getId()) {
-                    isFavorite = true;
-                    break;
-                }
-            }
-            if (station.isFavorite() != isFavorite) {
-                stations.set(i, station.copy(isFavorite));
-                updated = true;
-            }
-        }
-        return updated;
-    }
 }

@@ -12,7 +12,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.service.PlayerService;
+import io.github.vladimirmi.localradio.data.service.player.PlayerService;
 import timber.log.Timber;
 
 /**

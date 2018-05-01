@@ -2,21 +2,14 @@ package io.github.vladimirmi.localradio.data.repository;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
-import io.github.vladimirmi.localradio.data.entity.StationsResult;
-import io.github.vladimirmi.localradio.data.net.NetworkChecker;
-import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
-import io.github.vladimirmi.localradio.data.source.CacheSource;
-import io.github.vladimirmi.localradio.data.source.LocationSource;
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
+import io.reactivex.Observable;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -24,27 +17,15 @@ import io.reactivex.SingleSource;
 
 public class StationsRepository {
 
-    private final RestService restService;
-    private final LocationSource locationSource;
-    private final Preferences preferences;
-    private final NetworkChecker networkChecker;
-    private final CacheSource cacheSource;
 
-    // TODO: 4/28/18 make private
-    public final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
-    public final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
+    private final Preferences preferences;
+
+    private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
+    private final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
 
     @Inject
-    public StationsRepository(RestService restService,
-                              LocationSource locationSource,
-                              Preferences preferences,
-                              NetworkChecker networkChecker,
-                              CacheSource cacheSource) {
-        this.restService = restService;
-        this.locationSource = locationSource;
+    public StationsRepository(Preferences preferences) {
         this.preferences = preferences;
-        this.networkChecker = networkChecker;
-        this.cacheSource = cacheSource;
     }
 
     public boolean isSearchDone() {
@@ -55,41 +36,47 @@ public class StationsRepository {
         preferences.isSearchDone.put(done);
     }
 
-    public void setCurrentStation(Station station) {
-        preferences.currentStationIsFavorite.put(station.isFavorite());
-        preferences.currentStationId.put(station.getId());
-        currentStation.accept(station);
-    }
-
-    public Single<List<Station>> searchStationsAuto(boolean skipCache) {
-        return getStationsByCoordinates(skipCache)
-                .flatMap(stationsResult -> {
-                    if (!stationsResult.isSuccess()) {
-                        return getStationsByIp(skipCache);
-                    } else {
-                        return Single.just(stationsResult);
-                    }
-                })
-                .map(StationsResult::getStations);
-    }
-
-    public Single<List<Station>> searchStationsManual(boolean skipCache) {
-        String countryCode = preferences.countryCode.get();
-        String city = preferences.city.get();
-        if (skipCache) cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
-        return restService.getStationsByLocation(countryCode, city, 1)
-                .map(StationsResult::getStations)
-                .onErrorReturn(throwable -> Collections.emptyList());
-    }
-
-    public void resetStations() {
+    public void resetSearch() {
+        setSearchDone(false);
         stations.accept(Collections.emptyList());
         if (!currentStation.getValue().isFavorite()) {
             currentStation.accept(Station.nullStation());
         }
     }
 
-    public void updateCurrentStationFromPreferences(List<Station> stations) {
+    public void setSearchResult(List<Station> stations) {
+        setSearchDone(true);
+        updateCurrentStationFromPreferences(stations);
+        this.stations.accept(stations);
+    }
+
+    public void setStations(List<Station> stations) {
+        this.stations.accept(stations);
+    }
+
+    public List<Station> getStations() {
+        return stations.hasValue() ? stations.getValue() : Collections.emptyList();
+    }
+
+    public Observable<List<Station>> getStationsObs() {
+        return stations;
+    }
+
+    public void setCurrentStation(Station station) {
+        preferences.currentStationIsFavorite.put(station.isFavorite());
+        preferences.currentStationId.put(station.getId());
+        currentStation.accept(station);
+    }
+
+    public Station getCurrentStation() {
+        return currentStation.getValue();
+    }
+
+    public Observable<Station> getCurrentStationObs() {
+        return currentStation;
+    }
+
+    private void updateCurrentStationFromPreferences(List<Station> stations) {
         if (preferences.currentStationIsFavorite.get()) return;
 
         Station newCurrentStation = Station.nullStation();
@@ -104,24 +91,5 @@ public class StationsRepository {
             newCurrentStation = stations.get(0);
         }
         setCurrentStation(newCurrentStation);
-    }
-
-    private Single<StationsResult> getStationsByCoordinates(boolean skipCache) {
-        return locationSource.getLastLocation()
-                .flatMap(location -> {
-                    double latitude = Math.round(location.getLatitude() * 100.0) / 100.0;
-                    double longitude = Math.round(location.getLongitude() * 100.0) / 100.0;
-
-                    if (skipCache) {
-                        cacheSource.cleanCache(String.format("%s_%s", latitude, longitude));
-                    }
-                    return restService.getStationsByCoordinates(latitude, longitude);
-                });
-    }
-
-    private SingleSource<? extends StationsResult> getStationsByIp(boolean skipCache) throws IOException {
-        String ip = networkChecker.getIp();
-        if (skipCache) cacheSource.cleanCache(ip);
-        return restService.getStationsByIp(ip);
     }
 }

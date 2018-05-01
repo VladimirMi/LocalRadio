@@ -27,8 +27,8 @@ public class MainInteractor {
     public Completable initApp() {
         Completable initStations;
         if (searchInteractor.isSearchDone()) {
-            initStations = searchInteractor.checkCanSearch().andThen(
-                    searchInteractor.searchStations(false).toCompletable());
+            initStations = searchInteractor.checkCanSearch()
+                    .doOnComplete(searchInteractor::searchStations);
         } else {
             initStations = Completable.complete();
         }

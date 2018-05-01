@@ -42,7 +42,7 @@ public class FavoriteInteractor {
     }
 
     public Completable switchCurrentFavorite() {
-        return Single.fromCallable(stationsRepository.currentStation::getValue)
+        return Single.fromCallable(stationsRepository::getCurrentStation)
                 .flatMapCompletable(station -> {
                     Station newStation = station.copy(!station.isFavorite());
                     stationsRepository.setCurrentStation(newStation);
@@ -56,7 +56,7 @@ public class FavoriteInteractor {
 
     public void previousStation() {
         List<Station> source = favoriteRepository.getFavoriteStations();
-        int indexOfCurrent = source.indexOf(stationsRepository.currentStation.getValue());
+        int indexOfCurrent = source.indexOf(stationsRepository.getCurrentStation());
         if (indexOfCurrent == -1) return;
 
         int indexOfPrevious = (indexOfCurrent + source.size() - 1) % source.size();
@@ -65,18 +65,17 @@ public class FavoriteInteractor {
 
     public void nextStation() {
         List<Station> source = favoriteRepository.getFavoriteStations();
-        int indexOfCurrent = source.indexOf(stationsRepository.currentStation.getValue());
+        int indexOfCurrent = source.indexOf(stationsRepository.getCurrentStation());
         if (indexOfCurrent == -1) return;
 
         int indexOfNext = (indexOfCurrent + 1) % source.size();
         stationsRepository.setCurrentStation(source.get(indexOfNext));
     }
 
-    private void updateStationsWithFavorites() {
-        if (!stationsRepository.stations.hasValue()) return;
-        List<Station> list = new ArrayList<>(stationsRepository.stations.getValue());
-        boolean updated = favoriteRepository.updateStationsIfFavorite(list);
-        if (updated) stationsRepository.stations.accept(list);
+    public void updateStationsWithFavorites() {
+        List<Station> list = new ArrayList<>(stationsRepository.getStations());
+        boolean updated = updateStationsIfFavorite(list);
+        if (updated) stationsRepository.setStations(list);
     }
 
     private void setCurrentStationIfFavorite() {
@@ -84,5 +83,24 @@ public class FavoriteInteractor {
         if (currentFavoriteStation != null) {
             stationsRepository.setCurrentStation(currentFavoriteStation);
         }
+    }
+
+    private boolean updateStationsIfFavorite(List<Station> stations) {
+        boolean updated = false;
+        for (int i = 0; i < stations.size(); i++) {
+            Station station = stations.get(i);
+            boolean isFavorite = false;
+            for (Station favoriteStation : favoriteRepository.getFavoriteStations()) {
+                if (station.getId() == favoriteStation.getId()) {
+                    isFavorite = true;
+                    break;
+                }
+            }
+            if (station.isFavorite() != isFavorite) {
+                stations.set(i, station.copy(isFavorite));
+                updated = true;
+            }
+        }
+        return updated;
     }
 }

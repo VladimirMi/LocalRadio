@@ -28,12 +28,16 @@
         </activity>
 
         <service
-            android:name=".data.service.PlayerService"
+            android:name=".data.service.player.PlayerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
+
+        <service
+            android:name=".data.service.search.SearchService"
+            android:exported="false"/>
 
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>

@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.service;
+package io.github.vladimirmi.localradio.data.service.player;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -92,7 +92,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        playerCallback.onPlayerStateChanged(PlaybackStateCompat.STATE_PLAYING);
+        playerCallback.onPlayerStateChanged(PlaybackStateCompat.STATE_BUFFERING);
         return super.onStartCommand(intent, flags, startId);
     }
 

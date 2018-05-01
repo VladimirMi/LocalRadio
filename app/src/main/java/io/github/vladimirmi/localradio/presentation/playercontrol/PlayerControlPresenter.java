@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
-import io.github.vladimirmi.localradio.data.service.Metadata;
+import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;

@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.repository.MediaController;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
-import io.github.vladimirmi.localradio.data.service.Metadata;
+import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.reactivex.Observable;
 
 /**

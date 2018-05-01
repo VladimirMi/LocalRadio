@@ -2,7 +2,7 @@ package io.github.vladimirmi.localradio.data.source;
 
 import com.google.android.exoplayer2.upstream.DataSource;
 
-import io.github.vladimirmi.localradio.data.service.PlayerCallback;
+import io.github.vladimirmi.localradio.data.service.player.PlayerCallback;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.

@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 
 import io.github.vladimirmi.localradio.com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import io.github.vladimirmi.localradio.data.service.Metadata;
-import io.github.vladimirmi.localradio.data.service.PlayerCallback;
+import io.github.vladimirmi.localradio.data.service.player.Metadata;
+import io.github.vladimirmi.localradio.data.service.player.PlayerCallback;
 import timber.log.Timber;
 
 /**
