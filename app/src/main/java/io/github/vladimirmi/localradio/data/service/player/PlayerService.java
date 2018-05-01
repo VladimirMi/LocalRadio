@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.data.service.player;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -47,6 +49,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
             .setState(PlaybackStateCompat.STATE_STOPPED, 0, 1F)
             .setActions(PlayerActions.defaultActions).build();
+    private MediaMetadataCompat mediaMetadata = Metadata.UNSUPPORTED.toMediaMetadata();
 
     private Playback playback;
     private MediaNotification notification;
@@ -71,17 +74,18 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         session.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         session.setPlaybackState(playbackState);
+        session.setMetadata(mediaMetadata);
         setSessionToken(session.getSessionToken());
 
         playback = new Playback(this, playerCallback);
-        notification = new MediaNotification(this, session, stationsInteractor);
+        notification = new MediaNotification(this, session);
 
         compDisp.add(mainInteractor.initApp()
                 .doOnComplete(() -> appInitialized = true)
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
-                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
                     @Override
                     public void onNext(Station station) {
@@ -130,9 +134,16 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void handleCurrentStation(Station station) {
         Timber.e("handleCurrentStation: " + station.getName());
-        // TODO: 4/29/18 pass bitmap to metadata 
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
+
+        Bitmap icon = UiUtils.loadBitmap(this, station.getImageUrl());
+
+        mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.getName())
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, icon)
+                .build();
+        session.setMetadata(mediaMetadata);
         updateRemoteViews();
     }
 
@@ -223,18 +234,21 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private PlayerCallback playerCallback = new PlayerCallback() {
 
         @Override
-        public void onPlayerStateChanged(int playbackState) {
-            PlaybackStateCompat newPlaybackState = new PlaybackStateCompat.Builder(PlayerService.this.playbackState)
-                    .setState(playbackState, 0, 1f)
+        public void onPlayerStateChanged(int state) {
+            playbackState = new PlaybackStateCompat.Builder(playbackState)
+                    .setState(state, 0, 1f)
                     .build();
-            session.setPlaybackState(newPlaybackState);
+            session.setPlaybackState(playbackState);
             updateRemoteViews();
         }
 
         @Override
         public void onMetadata(Metadata metadata) {
-            super.onMetadata(metadata);
-            session.setMetadata(metadata.toMediaMetadata());
+            mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
+                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, metadata.artist)
+                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, metadata.title)
+                    .build();
+            session.setMetadata(mediaMetadata);
             updateRemoteViews();
         }
 

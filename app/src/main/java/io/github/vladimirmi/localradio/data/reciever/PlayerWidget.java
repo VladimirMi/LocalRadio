@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -32,11 +33,16 @@ public class PlayerWidget extends AppWidgetProvider {
     }
 
     public static void update(Context context, MediaSessionCompat session) {
-        MediaMetadataCompat metadataCompat = session.getController().getMetadata();
-        Metadata metadata = Metadata.create(metadataCompat);
-        PlaybackStateCompat playbackState = session.getController().getPlaybackState();
-
         RemoteViews views = createRemoteViews(context);
+
+        PlaybackStateCompat playbackState = session.getController().getPlaybackState();
+        MediaMetadataCompat mediaMetadata = session.getController().getMetadata();
+        Metadata metadata = Metadata.create(mediaMetadata);
+
+        String stationName = mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+        Bitmap stationIcon = mediaMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART);
+
+        views.setImageViewBitmap(R.id.iconIv, stationIcon);
 
         if (metadata.isSupported) {
             views.setTextViewText(R.id.titleTv, metadata.title);
