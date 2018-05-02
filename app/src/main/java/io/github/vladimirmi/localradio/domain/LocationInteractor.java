@@ -16,24 +16,24 @@ import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 24.04.2018.
  */
 public class LocationInteractor {
 
-    private final LocationRepository locationRepository;
-    private final SearchInteractor searchInteractor;
+    private static final String UNLISTED_CITY = "{unlisted}";
 
-    private Country anyCountry = Country.any(Scopes.appContext());
+    private final LocationRepository locationRepository;
+
+    private Country anyCountry = Country.any();
     private String anyCity = anyCountry.getCities().get(0);
+    // TODO: 5/2/18 Create resource manager
+    private String unlistedCity = Scopes.appContext().getString(R.string.unlisted_city);
 
     @Inject
-    public LocationInteractor(LocationRepository locationRepository,
-                              SearchInteractor searchInteractor) {
+    public LocationInteractor(LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
-        this.searchInteractor = searchInteractor;
     }
 
     public List<Country> getCountries() {
@@ -59,25 +59,28 @@ public class LocationInteractor {
     public String getCity() {
         String city = locationRepository.getCity();
         if (city.isEmpty()) return anyCity;
+        if (city.equals(UNLISTED_CITY)) return unlistedCity;
         return city;
     }
 
     public void saveCountryNameCity(String countryName, String cityName) {
-        Timber.e("saveCountryNameCity: %s, %s", countryName, cityName);
         String countryCode = "";
-        for (Country country : getCountries()) {
-            if (country.getName().equals(countryName) && !country.equals(anyCountry)) {
-                countryCode = country.getIsoCode();
-                break;
+        if (!countryName.equals(anyCountry.getName())) {
+            for (Country country : getCountries()) {
+                if (country.getName().equals(countryName)) {
+                    countryCode = country.getIsoCode();
+                    break;
+                }
             }
         }
         if (cityName.equals(anyCity)) cityName = "";
+        if (cityName.equals(unlistedCity)) cityName = UNLISTED_CITY;
         locationRepository.saveCountryCodeCity(countryCode, cityName);
     }
 
     @Nullable
     public Country findCountry(String city) {
-        if (city.equals(anyCity)) return null;
+        if (city.equals(anyCity) || city.equals(unlistedCity)) return null;
 
         for (Country country : locationRepository.getCountries()) {
             if (country.getCities().contains(city)) {
@@ -93,15 +96,17 @@ public class LocationInteractor {
         if (countries.size() == 1 && countries.get(0).equals(anyCountry)) {
             countries = locationRepository.getCountries();
         }
-
         for (Country country : countries) {
             cities.addAll(country.getCities());
         }
         cities.remove(anyCity);
-        ArrayList<String> cityList = new ArrayList<>(cities);
-        if (cities.size() > 1 || cities.size() == 0) {
-            cityList.add(0, anyCity);
-        }
+        // TODO: 5/2/18 change "" to "{unlisted}" in countries.json
+        boolean hasUnlistedCity = cities.remove("");
+
+        ArrayList<String> cityList = new ArrayList<>(cities.size() + 2);
+        if (cities.size() > 1) cityList.add(anyCity);
+        if (hasUnlistedCity) cityList.add(unlistedCity);
+        cityList.addAll(cities);
         return cityList;
     }
 

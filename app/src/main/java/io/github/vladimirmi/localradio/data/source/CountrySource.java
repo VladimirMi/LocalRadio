@@ -47,7 +47,7 @@ public class CountrySource {
             JsonAdapter<List<Country>> adapter =
                     moshi.adapter(Types.newParameterizedType(List.class, Country.class));
             countries = adapter.fromJson(sb.toString());
-            countries.add(0, Country.any(context));
+            countries.add(0, Country.any());
 
         } catch (IOException e) {
             e.printStackTrace();

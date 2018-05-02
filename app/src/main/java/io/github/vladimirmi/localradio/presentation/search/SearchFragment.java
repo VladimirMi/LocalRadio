@@ -82,7 +82,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setCountries(List<Country> countries) {
         CustomArrayAdapter<Country> countryAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, countries);
-        countryAdapter.setDefaultValue(Country.any(getContext()));
+        countryAdapter.setDefaultValue(Country.any());
 
         countryEt.setAdapter(countryAdapter);
         countryEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(countries));
@@ -95,7 +95,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setCities(List<String> cities) {
         CustomArrayAdapter<String> cityAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, cities);
-        cityAdapter.setDefaultValue(Country.any(getContext()).getCities().get(0));
+        cityAdapter.setDefaultValue(Country.any().getCities().get(0));
 
         cityEt.setAdapter(cityAdapter);
         cityEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(cities));

@@ -8,8 +8,6 @@ import android.widget.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import timber.log.Timber;
-
 /**
  * Created by Vladimir Mikhalev 05.04.2018.
  */
@@ -56,7 +54,6 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
 
     public void setData(List<T> data) {
         this.data = data;
-        Timber.e("setData: " + this.data.size());
         notifyDataSetChanged();
     }
 
@@ -114,7 +111,6 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
                         }
                     }
                 }
-
                 results.values = newValues;
                 results.count = newValues.size();
             }
