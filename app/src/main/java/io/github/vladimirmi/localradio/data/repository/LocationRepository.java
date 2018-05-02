@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.data.repository;
 
+import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Country;
+import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CountrySource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
@@ -51,17 +53,42 @@ public class LocationRepository {
         return preferences.city.get();
     }
 
-    public void saveCountryCodeCity(String country, String city) {
-        preferences.countryCode.put(country);
+    public void saveCountryCodeCity(String countryCode, String city) {
+        preferences.countryCode.put(countryCode);
         preferences.city.put(city);
     }
 
+    public void saveCountryCodeCity(List<Station> stations) {
+        if (!stations.isEmpty()) {
+            saveCountryCodeCity(stations.get(0).getCountryCode(), "");
+        }
+    }
+
+    public void saveCountryCodeCity(Pair<String, String> countryCity) {
+        String countryCode = countryCity.first;
+        String city = hasCountryCity(countryCity) ? countryCity.second : "";
+        saveCountryCodeCity(countryCode, city);
+    }
+
     public Single<Pair<Float, Float>> getCoordinates() {
-        return locationSource.getLastLocation()
-                .map(location -> {
-                    float latitude = Math.round(location.getLatitude() * 100.0) / 100.0f;
-                    float longitude = Math.round(location.getLongitude() * 100.0) / 100.0f;
-                    return new Pair<>(latitude, longitude);
-                });
+        return locationSource.getCoordinates();
+    }
+
+    @Nullable
+    public Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates) {
+        return locationSource.getCountryCodeCity(coordinates);
+    }
+
+    private boolean hasCountryCity(Pair<String, String> countryCity) {
+        for (Country country : getCountries()) {
+            if (country.getIsoCode().equals(countryCity.first)) {
+                for (String city : country.getCities()) {
+                    if (city.equals(countryCity.second)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

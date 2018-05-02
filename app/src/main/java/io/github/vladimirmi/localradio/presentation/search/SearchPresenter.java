@@ -2,7 +2,6 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.support.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,17 +38,9 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     @Override
-    protected void onFirstAttach(@Nullable SearchView view, CompositeDisposable disposables) {
+    protected void onFirstAttach(SearchView view, CompositeDisposable disposables) {
         view.setCountries(locationInteractor.getCountries());
-        if (locationInteractor.isAutodetect()) {
-            view.setAutoSearchDone(searchInteractor.isSearchDone());
-        } else {
-            view.setManualSearchDone(searchInteractor.isSearchDone());
-        }
         view.setAutodetect(locationInteractor.isAutodetect());
-
-        view.setCountryName(locationInteractor.getCountryName());
-        view.setCity(locationInteractor.getCity());
 
         disposables.add(stationsInteractor.getStationsObs()
                 .map(List::size)
@@ -58,7 +49,16 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
                     @Override
                     public void onNext(Integer integer) {
-                        view.setSearchResult(integer);
+                        if (hasView()) {
+                            getView().setSearchResult(integer);
+                            getView().setCountryName(locationInteractor.getCountryName());
+                            getView().setCity(locationInteractor.getCity());
+                            if (locationInteractor.isAutodetect()) {
+                                getView().setAutoSearchDone(searchInteractor.isSearchDone());
+                            } else {
+                                getView().setManualSearchDone(searchInteractor.isSearchDone());
+                            }
+                        }
                     }
                 }));
     }
@@ -95,14 +95,17 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(enabled -> {
                     enableAutodetect(enabled);
-                    if (enabled) searchInteractor.searchStations();
+                    if (enabled) {
+                        view.setSearching(true);
+                        searchInteractor.searchStations();
+                    }
                 })
                 .ignoreElements()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
                     @Override
-                    public void onComplete() {
-//                        view.setCountryName(locationInteractor.getCountryName());
-                        view.setAutoSearchDone(true);
+                    public void onError(Throwable e) {
+                        super.onError(e);
+                        view.setSearching(false);
                     }
                 });
     }
@@ -120,11 +123,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
                     @Override
-                    public void onComplete() {
-                        view.setManualSearchDone(true);
-                    }
-
-                    @Override
                     public void onError(Throwable e) {
                         super.onError(e);
                         view.setSearching(false);
@@ -140,7 +138,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
-
                     @Override
                     public void onError(Throwable e) {
                         super.onError(e);

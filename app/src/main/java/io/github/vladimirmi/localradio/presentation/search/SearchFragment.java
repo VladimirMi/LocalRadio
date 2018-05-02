@@ -143,11 +143,10 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setAutoSearchDone(boolean done) {
         enableView(countryEt, !done);
         enableView(cityEt, !done);
-        setVisible(cityLabelTv, !done);
-        setVisible(cityEt, !done);
         setVisible(searchBt, !done);
         setVisible(newSearchBt, !done);
         setVisible(refreshBt, done);
+        hideCity(done);
     }
 
     @Override
@@ -157,6 +156,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         setVisible(searchBt, !done);
         setVisible(newSearchBt, done);
         setVisible(refreshBt, done);
+        hideCity(false);
     }
 
     @Override
@@ -176,6 +176,16 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             searchResultTv.setText(getString(R.string.searching));
         } else {
             resetSearchResult();
+        }
+    }
+
+    private void hideCity(boolean hide) {
+        if (hide && cityEt.getText().toString().equals(getString(R.string.any_city))) {
+            setVisible(cityLabelTv, false);
+            setVisible(cityEt, false);
+        } else {
+            setVisible(cityLabelTv, true);
+            setVisible(cityEt, true);
         }
     }
 

@@ -64,7 +64,6 @@ public class UiUtils {
         Resources resources = context.getResources();
         int width = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width);
         int height = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
-        Timber.e("loadBitmap: " + imageUrl);
 
         FutureTarget<Bitmap> futureTarget = Glide.with(context.getApplicationContext())
                 .load(imageUrl)

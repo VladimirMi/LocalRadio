@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.util.Pair;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +13,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.entity.StationsResult;
+import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
@@ -32,9 +34,10 @@ public class SearchService extends IntentService {
 
     @Inject RestService restService;
     @Inject CacheSource cacheSource;
-    @Inject LocationRepository locationRepository;
     @Inject StationsRepository stationsRepository;
+    @Inject LocationRepository locationRepository;
     @Inject FavoriteInteractor favoriteInteractor;
+    @Inject NetworkChecker networkChecker;
 
     public SearchService() {
         super("SearchService");
@@ -80,35 +83,50 @@ public class SearchService extends IntentService {
     }
 
     private Single<List<Station>> searchStationsAuto(boolean skipCache) {
-        return getStationsByCoordinates(skipCache)
-                .doOnSuccess(stations -> {
-                    // TODO: 4/24/18 save more specific location
-                    locationRepository.saveCountryCodeCity(stations.get(0).getCountryCode(), "");
-                });
+        return locationRepository.getCoordinates()
+                .flatMap(coordinates -> {
+                    Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(coordinates);
+                    Timber.e("searchStationsAuto: " + countryCodeCity);
+
+                    if (countryCodeCity == null) {
+                        return getStationsByIp(skipCache)
+                                .doOnSuccess(locationRepository::saveCountryCodeCity);
+                    }
+                    locationRepository.saveCountryCodeCity(countryCodeCity);
+
+                    if (countryCodeCity.first.equals("US")) {
+                        return getStationsByCoordinates(skipCache, coordinates);
+                    } else {
+                        return searchStationsManual(skipCache);
+                    }
+                })
+                .onErrorReturn(throwable -> Collections.emptyList());
     }
 
     private Single<List<Station>> searchStationsManual(boolean skipCache) {
         String countryCode = locationRepository.getCountryCode();
         String city = locationRepository.getCity();
-        if (skipCache) cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
+        if (skipCache) {
+            cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
+        }
         return restService.getStationsByLocation(countryCode, city, 1)
                 .map(StationsResult::getStations)
                 .onErrorReturn(throwable -> Collections.emptyList());
     }
 
-    private Single<List<Station>> getStationsByCoordinates(boolean skipCache) {
-        return locationRepository.getCoordinates()
-                .flatMap(coordinates -> {
-                    if (skipCache) {
-                        cacheSource.cleanCache(String.format("%s_%s", coordinates.first, coordinates.second));
-                    }
-                    return restService.getStationsByCoordinates(coordinates.first, coordinates.second);
-                }).map(StationsResult::getStations);
+    private Single<List<Station>> getStationsByCoordinates(boolean skipCache, Pair<Float, Float> coordinates) {
+        if (skipCache) {
+            cacheSource.cleanCache(String.format("%s_%s", coordinates.first, coordinates.second));
+        }
+        return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
+                .map(StationsResult::getStations);
     }
 
-//    private Single<StationsResult> getStationsByIp(boolean skipCache) throws IOException {
-//        String ip = networkChecker.getIp();
-//        if (skipCache) cacheSource.cleanCache(ip);
-//        return restService.getStationsByIp(ip);
-//    }
+    private Single<List<Station>> getStationsByIp(boolean skipCache) {
+        return Single.fromCallable(() -> networkChecker.getIp())
+                .flatMap(ip -> {
+                    if (skipCache) cacheSource.cleanCache(ip);
+                    return restService.getStationsByIp(ip);
+                }).map(StationsResult::getStations);
+    }
 }

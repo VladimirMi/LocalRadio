@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.presentation.core;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -37,15 +36,24 @@ public abstract class BasePresenter<V extends BaseView> {
         isFirstAttach = true;
     }
 
-    protected void onFirstAttach(@Nullable V view, CompositeDisposable disposables) {
+    protected void onFirstAttach(V view, CompositeDisposable disposables) {
     }
 
-    protected void onAttach(@NonNull V view) {
+    protected void onAttach(V view) {
     }
 
     protected void onDetach() {
     }
 
     protected void onDestroy() {
+    }
+
+    @Nullable
+    protected V getView() {
+        return view;
+    }
+
+    protected boolean hasView() {
+        return getView() != null;
     }
 }
