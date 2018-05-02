@@ -3,6 +3,12 @@ package io.github.vladimirmi.localradio.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -42,6 +48,16 @@ public class UiUtils {
         } else {
             Timber.e(e);
         }
+    }
+
+    public static void setLinkStyle(TextView textView) {
+        Context context = textView.getContext();
+        String string = textView.getText().toString();
+        int color = ContextCompat.getColor(context, R.color.blue_500);
+        SpannableString spannable = new SpannableString(string);
+        spannable.setSpan(new URLSpan(string), 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannable.setSpan(new ForegroundColorSpan(color), 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        textView.setText(spannable);
     }
 
     public static Bitmap loadBitmap(Context context, String imageUrl) {

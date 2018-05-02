@@ -77,10 +77,15 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         setTextOrHideIfEmpty(sloganTv, station.getSlogan());
         setTextOrHideIfEmpty(descriptionTv, station.getDescription());
         setTextOrHideIfEmpty(genreTv, station.getGenre());
-        setTextOrHideIfEmpty(locationTv, String.format("%s, %s", station.getCity(), station.getCountryCode()));
         setTextOrHideIfEmpty(websiteTv, station.getWebsiteUrl());
         setTextOrHideIfEmpty(emailTv, station.getEmail());
         setTextOrHideIfEmpty(phoneTv, station.getPhone());
+
+        if ("{unlisted}".equals(station.getCity())) {
+            locationTv.setText(station.getCountryCode());
+        } else {
+            setTextOrHideIfEmpty(locationTv, String.format("%s, %s", station.getCity(), station.getCountryCode()));
+        }
     }
 
     private void setTextOrHideIfEmpty(TextView tv, String text) {

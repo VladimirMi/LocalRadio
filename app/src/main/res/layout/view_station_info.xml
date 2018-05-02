@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:padding="16dp"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:showIn="@layout/fragment_player_controls"
     >
 
@@ -25,8 +25,8 @@
         android:id="@+id/sloganTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
         android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleTv"
@@ -38,8 +38,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:textColor="@color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/sloganTv"
@@ -51,8 +51,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:textColor="@color/white"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/descriptionTv"
         tools:text="Music, Rock"
@@ -60,6 +60,7 @@
 
     <TextView
         android:id="@+id/locationTv"
+        style="@style/IconText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -69,39 +70,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/genreTv"
         tools:text="Columbia, US"
-        style="@style/IconText"
         />
 
     <TextView
         android:id="@+id/websiteTv"
+        style="@style/IconText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:autoLink="web"
         android:drawableStart="@drawable/ic_web"
+        android:textColorLink="@color/blue_500"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationTv"
-        tools:autoLink="web"
         tools:text="www.websiteUrl.com"
-        style="@style/IconText"
         />
 
     <TextView
         android:id="@+id/emailTv"
+        style="@style/IconText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:autoLink="email"
         android:drawableStart="@drawable/ic_mail"
+        android:textColorLink="@color/blue_500"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/websiteTv"
-        tools:autoLink="email"
         tools:text="some.email@mail.com"
-        style="@style/IconText"
         />
 
     <TextView
         android:id="@+id/phoneTv"
+        style="@style/IconText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -110,6 +113,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/emailTv"
         tools:text="123.456.789"
-        style="@style/IconText"
         />
 </android.support.constraint.ConstraintLayout>
