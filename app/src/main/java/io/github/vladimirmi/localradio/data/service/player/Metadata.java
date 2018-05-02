@@ -32,13 +32,7 @@ public class Metadata {
                 .trim(' ', '\'')
                 .toString();
 
-
-        String[] strings;
-        if (artistTitle.contains(" - ")) {
-            strings = artistTitle.split(" - ", 2);
-        } else {
-            strings = new String[]{"", artistTitle};
-        }
+        String[] strings = splitOnArtistTitle(artistTitle);
 
         String artist = strings[0];
         String title = strings[1];
@@ -100,5 +94,24 @@ public class Metadata {
         int result = artist.hashCode();
         result = 31 * result + title.hashCode();
         return result;
+    }
+
+    private static String[] splitOnArtistTitle(String artistTitle) {
+        String[] strings;
+        int i = artistTitle.indexOf('-');
+        int j = artistTitle.indexOf(':');
+
+        if (i == -1 && j == -1) {
+            strings = new String[]{"", artistTitle};
+        } else if (i == -1) {
+            strings = artistTitle.split(":", 2);
+        } else if (j == -1) {
+            strings = artistTitle.split(" - ", 2);
+        } else if (i < j) {
+            strings = artistTitle.split(" - ", 2);
+        } else {
+            strings = artistTitle.split(":", 2);
+        }
+        return strings;
     }
 }
