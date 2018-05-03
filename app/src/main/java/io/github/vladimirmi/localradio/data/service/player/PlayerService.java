@@ -243,7 +243,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerError(MessageException error) {
-            super.onPlayerError(error);
             onStopCommand();
             UiUtils.handleError(PlayerService.this, error);
         }

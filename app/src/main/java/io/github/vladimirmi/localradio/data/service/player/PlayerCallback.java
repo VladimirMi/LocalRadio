@@ -17,21 +17,18 @@ import timber.log.Timber;
  * Created by Vladimir Mikhalev 07.04.2018.
  */
 
-public class PlayerCallback implements Player.EventListener {
+public abstract class PlayerCallback implements Player.EventListener {
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
-
     }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-
     }
 
     @Override
     public void onLoadingChanged(boolean isLoading) {
-
     }
 
     @Override
@@ -58,10 +55,6 @@ public class PlayerCallback implements Player.EventListener {
         onPlayerStateChanged(state);
     }
 
-    public void onPlayerStateChanged(int playbackState) {
-
-    }
-
     @Override
     public void onRepeatModeChanged(int repeatMode) {
 
@@ -69,61 +62,43 @@ public class PlayerCallback implements Player.EventListener {
 
     @Override
     public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-
     }
 
     @Override
     public void onPlayerError(ExoPlaybackException error) {
+        MessageException exception;
         switch (error.type) {
             case ExoPlaybackException.TYPE_SOURCE:
                 Timber.w("SOURCE error occurred: %s", error.getSourceException());
+                exception = new MessageException(R.string.error_connection);
                 break;
             case ExoPlaybackException.TYPE_RENDERER:
                 Timber.w("RENDERER error occurred: %s", error.getRendererException());
+                exception = new MessageException(R.string.error_renderer);
                 break;
-            case ExoPlaybackException.TYPE_UNEXPECTED:
+            default:
                 Timber.w("UNEXPECTED error occurred: %s", error.getUnexpectedException());
+                exception = new MessageException(R.string.error_unexpected);
                 break;
         }
-        onPlayerError(transformToMessage(error));
-    }
-
-    public void onPlayerError(MessageException error) {
-
+        onPlayerError(exception);
     }
 
     @Override
     public void onPositionDiscontinuity(int reason) {
-
     }
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
     }
 
     @Override
     public void onSeekProcessed() {
-
     }
 
-    public void onMetadata(Metadata metadata) {
+    public abstract void onPlayerStateChanged(int playbackState);
 
-    }
+    public abstract void onMetadata(Metadata metadata);
 
-    private MessageException transformToMessage(ExoPlaybackException error) {
-        MessageException exception;
-        switch (error.type) {
-            case ExoPlaybackException.TYPE_SOURCE:
-                exception = new MessageException(R.string.error_connection);
-                break;
-            case ExoPlaybackException.TYPE_RENDERER:
-                exception = new MessageException(R.string.error_renderer);
-                break;
-            default:
-                exception = new MessageException(R.string.error_unexpected);
-                break;
-        }
-        return exception;
-    }
+    public abstract void onPlayerError(MessageException error);
 }
