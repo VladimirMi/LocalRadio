@@ -86,7 +86,6 @@ public class SearchService extends IntentService {
                 .subscribeOn(Schedulers.io())
                 .flatMap(coordinates -> {
                     Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(coordinates);
-                    Timber.e("searchStationsAuto: " + countryCodeCity);
 
                     if (countryCodeCity == null) {
                         return getStationsByIp(skipCache)

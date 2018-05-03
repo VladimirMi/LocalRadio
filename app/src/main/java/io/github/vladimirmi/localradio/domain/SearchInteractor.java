@@ -11,7 +11,6 @@ import io.github.vladimirmi.localradio.data.service.search.SearchService;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -38,7 +37,6 @@ public class SearchInteractor {
     }
 
     public void searchStations() {
-        Timber.e("searchStations: ");
         SearchService.performSearch(false);
     }
 

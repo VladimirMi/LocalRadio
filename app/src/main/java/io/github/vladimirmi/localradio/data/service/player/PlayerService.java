@@ -96,7 +96,11 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         notification.startForeground();
-        // TODO: 5/3/18 if paused reschedule stop
+        serviceStarted = true;
+        session.setActive(true);
+        if (isPaused()) {
+            scheduleStopTask(SessionCallback.STOP_DELAY);
+        }
 
         if (!appInitialized) {
             compDisp.add(mainInteractor.initApp()
@@ -116,6 +120,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     @Override
     public void onDestroy() {
         compDisp.dispose();
+        serviceStarted = false;
+        session.setActive(false);
         onStopCommand();
         playback.releasePlayer();
     }
@@ -135,8 +141,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         if (!serviceStarted) {
             Intent startPlayerService = new Intent(this, PlayerService.class);
             startService(startPlayerService);
-            serviceStarted = true;
-            session.setActive(true);
         }
     }
 
@@ -187,20 +191,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     @Override
     public void onPauseCommand(long stopDelay) {
         playback.pause();
-        stopTask = new TimerTask() {
-            @Override
-            public void run() {
-                onStopCommand();
-            }
-        };
-        stopTimer.schedule(stopTask, stopDelay);
+        scheduleStopTask(stopDelay);
     }
 
     @Override
     public void onStopCommand() {
         playback.stop();
-        session.setActive(false);
-        serviceStarted = false;
         stopSelf();
     }
 
@@ -256,5 +252,16 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private void updateRemoteViews() {
         notification.update();
         PlayerWidget.update(getApplicationContext(), session);
+    }
+
+    private void scheduleStopTask(long stopDelay) {
+        if (stopTask != null) stopTask.cancel();
+        stopTask = new TimerTask() {
+            @Override
+            public void run() {
+                onStopCommand();
+            }
+        };
+        stopTimer.schedule(stopTask, stopDelay);
     }
 }

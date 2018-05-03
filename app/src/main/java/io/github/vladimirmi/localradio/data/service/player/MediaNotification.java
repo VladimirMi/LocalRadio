@@ -64,7 +64,6 @@ public class MediaNotification {
         }
     }
 
-
     public void startForeground() {
         service.startForeground(PLAYER_NOTIFICATION_ID, createNotification());
     }
