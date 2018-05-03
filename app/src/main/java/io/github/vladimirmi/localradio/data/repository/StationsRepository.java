@@ -21,7 +21,7 @@ public class StationsRepository {
     private final Preferences preferences;
 
     private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
-    private final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullStation());
+    private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
 
     @Inject
     public StationsRepository(Preferences preferences) {

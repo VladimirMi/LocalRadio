@@ -52,6 +52,9 @@ public class MainPresenter extends BasePresenter<MainView> {
         disposables.add(searchInteractor.checkCanSearch()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
 
+        disposables.add(mainInteractor.initApp()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+
         if (!searchInteractor.isSearchDone()) {
             selectPage(MainActivity.PAGE_SEARCH);
         }

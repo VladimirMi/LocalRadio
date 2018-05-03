@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.domain;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
@@ -8,6 +10,8 @@ import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.service.search.SearchService;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -34,6 +38,7 @@ public class SearchInteractor {
     }
 
     public void searchStations() {
+        Timber.e("searchStations: ");
         SearchService.performSearch(false);
     }
 
@@ -48,5 +53,11 @@ public class SearchInteractor {
         } else {
             return Completable.complete();
         }
+    }
+
+    public Observable<Integer> getSearchResults() {
+        return stationsRepository.getStationsObs()
+                .map(List::size)
+                .filter(size -> isSearchDone());
     }
 }

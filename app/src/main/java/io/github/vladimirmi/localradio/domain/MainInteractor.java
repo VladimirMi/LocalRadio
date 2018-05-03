@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.reactivex.Completable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 28.04.2018.
@@ -25,10 +26,14 @@ public class MainInteractor {
     }
 
     public Completable initApp() {
+        Timber.e("initApp: ");
         Completable initStations;
         if (searchInteractor.isSearchDone()) {
             initStations = searchInteractor.checkCanSearch()
-                    .doOnComplete(searchInteractor::searchStations);
+                    .doOnComplete(searchInteractor::searchStations)
+                    .andThen(searchInteractor.getSearchResults())
+                    .doOnNext(integer -> Timber.e("initApp: " + integer))
+                    .firstOrError().toCompletable();
         } else {
             initStations = Completable.complete();
         }

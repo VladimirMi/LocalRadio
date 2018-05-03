@@ -22,6 +22,7 @@ import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 import toothpick.Toothpick;
 
@@ -58,8 +59,6 @@ public class SearchService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        // TODO: 4/30/18 get current address
-
         boolean skipCache = intent.getBooleanExtra(EXTRA_SKIP_CACHE, false);
         Throwable throwable = search(skipCache).blockingGet();
         Timber.w(throwable);
@@ -84,6 +83,7 @@ public class SearchService extends IntentService {
 
     private Single<List<Station>> searchStationsAuto(boolean skipCache) {
         return locationRepository.getCoordinates()
+                .subscribeOn(Schedulers.io())
                 .flatMap(coordinates -> {
                     Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(coordinates);
                     Timber.e("searchStationsAuto: " + countryCodeCity);
@@ -111,7 +111,8 @@ public class SearchService extends IntentService {
         }
         return restService.getStationsByLocation(countryCode, city, 1)
                 .map(StationsResult::getStations)
-                .onErrorReturn(throwable -> Collections.emptyList());
+                .onErrorReturn(throwable -> Collections.emptyList())
+                .subscribeOn(Schedulers.io());
     }
 
     private Single<List<Station>> getStationsByCoordinates(boolean skipCache, Pair<Float, Float> coordinates) {
@@ -119,7 +120,8 @@ public class SearchService extends IntentService {
             cacheSource.cleanCache(String.format("%s_%s", coordinates.first, coordinates.second));
         }
         return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
-                .map(StationsResult::getStations);
+                .map(StationsResult::getStations)
+                .subscribeOn(Schedulers.io());
     }
 
     private Single<List<Station>> getStationsByIp(boolean skipCache) {
@@ -127,6 +129,8 @@ public class SearchService extends IntentService {
                 .flatMap(ip -> {
                     if (skipCache) cacheSource.cleanCache(ip);
                     return restService.getStationsByIp(ip);
-                }).map(StationsResult::getStations);
+                })
+                .map(StationsResult::getStations)
+                .subscribeOn(Schedulers.io());
     }
 }

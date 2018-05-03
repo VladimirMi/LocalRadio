@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.support.annotation.MainThread;
 import android.support.annotation.RequiresApi;
 import android.support.annotation.WorkerThread;
 import android.support.v4.app.NotificationCompat;
@@ -65,7 +64,16 @@ public class MediaNotification {
         }
     }
 
-    @MainThread
+
+    public void startForeground() {
+        service.startForeground(PLAYER_NOTIFICATION_ID, createNotification());
+    }
+
+    public void stopForeground(boolean removeNotification) {
+        service.stopForeground(removeNotification);
+//        notificationManager.cancelAll();
+    }
+
     public void update() {
         if (notificationUpdate != null) notificationUpdate.dispose();
         notificationUpdate = Completable.fromAction(this::updateInBackground)
@@ -73,19 +81,17 @@ public class MediaNotification {
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(null));
     }
 
-    @WorkerThread
     private void updateInBackground() {
         int state = session.getController().getPlaybackState().getState();
         if (state == PlaybackStateCompat.STATE_PLAYING) {
-            service.startForeground(PLAYER_NOTIFICATION_ID, createNotification());
+            startForeground();
 
         } else if (state == PlaybackStateCompat.STATE_STOPPED) {
-            service.stopForeground(true);
-            notificationManager.cancelAll();
+            stopForeground(true);
 
         } else {
             if (state == PlaybackStateCompat.STATE_PAUSED) {
-                service.stopForeground(false);
+                stopForeground(false);
             }
             notificationManager.notify(PLAYER_NOTIFICATION_ID, createNotification());
         }
@@ -146,5 +152,4 @@ public class MediaNotification {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setStyle(mediaStyle);
     }
-
 }

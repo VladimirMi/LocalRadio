@@ -3,13 +3,13 @@ package io.github.vladimirmi.localradio.data.service.player;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -30,9 +30,9 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.github.vladimirmi.localradio.utils.UiUtils;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -66,9 +66,24 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     @Override
     public void onCreate() {
         super.onCreate();
-        Timber.e("onCreate: ");
         Toothpick.inject(this, Scopes.getAppScope());
 
+        initSession();
+        playback = new Playback(this, playerCallback);
+        notification = new MediaNotification(this, session);
+
+        compDisp.add(stationsInteractor.getCurrentStationObs()
+                .observeOn(Schedulers.io())
+                .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
+                    @Override
+                    public void onNext(Station station) {
+                        appInitialized = true;
+                        handleCurrentStation(station);
+                    }
+                }));
+    }
+
+    private void initSession() {
         session = new MediaSessionCompat(this, getClass().getSimpleName());
         session.setCallback(new SessionCallback(this));
         session.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
@@ -76,33 +91,30 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         session.setPlaybackState(playbackState);
         session.setMetadata(mediaMetadata);
         setSessionToken(session.getSessionToken());
-
-        playback = new Playback(this, playerCallback);
-        notification = new MediaNotification(this, session);
-
-        compDisp.add(mainInteractor.initApp()
-                .doOnComplete(() -> appInitialized = true)
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
-
-        compDisp.add(stationsInteractor.getCurrentStationObs()
-                .observeOn(Schedulers.io())
-                .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
-                    @Override
-                    public void onNext(Station station) {
-                        handleCurrentStation(station);
-                    }
-                }));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        playerCallback.onPlayerStateChanged(PlaybackStateCompat.STATE_BUFFERING);
+        notification.startForeground();
+        // TODO: 5/3/18 if paused reschedule stop
+
+        if (!appInitialized) {
+            compDisp.add(mainInteractor.initApp()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(() -> {
+                        appInitialized = true;
+                        MediaButtonReceiver.handleIntent(session, intent);
+                    })
+                    .doOnError(e -> notification.stopForeground(true))
+                    .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
+        } else {
+            MediaButtonReceiver.handleIntent(session, intent);
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
-        Timber.e("onDestroy: ");
         compDisp.dispose();
         onStopCommand();
         playback.releasePlayer();
@@ -119,21 +131,16 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         result.sendResult(Collections.emptyList());
     }
 
-    private void startPlayingService() {
+    private void startService() {
         if (!serviceStarted) {
             Intent startPlayerService = new Intent(this, PlayerService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(startPlayerService);
-            } else {
-                startService(startPlayerService);
-            }
+            startService(startPlayerService);
             serviceStarted = true;
             session.setActive(true);
         }
     }
 
     private void handleCurrentStation(Station station) {
-        Timber.e("handleCurrentStation: " + station.getName());
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
 
@@ -160,7 +167,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
-        if (station.isNullStation()) return;
         playingStationId = station.getId();
         playback.play(Uri.parse(station.getUrl()));
     }
@@ -169,23 +175,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onPlayCommand() {
-        Timber.e("onPlayCommand: " + serviceStarted);
         if (stopTask != null) stopTask.cancel();
-        startPlayingService();
+        startService();
         if (isPaused() && currentStationId == playingStationId) {
             playback.resume();
         } else {
             playCurrent();
-        }
-    }
-
-    private void waitAppInit() {
-        while (!appInitialized) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -211,7 +206,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
-        waitAppInit();
         if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.previousStation();
         } else {
@@ -221,7 +215,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToNextCommand() {
-        waitAppInit();
         if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.nextStation();
         } else {

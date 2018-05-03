@@ -42,9 +42,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCountries(locationInteractor.getCountries());
         view.setAutodetect(locationInteractor.isAutodetect());
 
-        disposables.add(stationsInteractor.getStationsObs()
-                .map(List::size)
-                .filter(size -> searchInteractor.isSearchDone())
+        disposables.add(searchInteractor.getSearchResults()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
                     @Override
