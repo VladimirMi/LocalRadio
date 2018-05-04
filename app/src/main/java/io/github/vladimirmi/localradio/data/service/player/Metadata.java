@@ -112,6 +112,9 @@ public class Metadata {
         } else {
             strings = artistTitle.split(":", 2);
         }
+        if (strings.length == 1) {
+            strings = new String[]{"", strings[0]};
+        }
         return strings;
     }
 }

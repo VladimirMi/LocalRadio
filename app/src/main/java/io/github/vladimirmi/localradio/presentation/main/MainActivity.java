@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.main;
 
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -33,6 +35,12 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     protected MainPresenter providePresenter() {
         return Scopes.getAppScope().getInstance(MainPresenter.class);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
+        super.onCreate(savedInstanceState);
     }
 
     @Override
