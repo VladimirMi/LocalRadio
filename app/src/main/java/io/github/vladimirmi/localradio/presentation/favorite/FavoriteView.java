@@ -11,4 +11,8 @@ public interface FavoriteView extends BaseView {
     void selectStation(Station station);
 
     void setSelectedPlaying(boolean playing);
+
+    void showPlaceholder();
+
+    void hidePlaceholder();
 }

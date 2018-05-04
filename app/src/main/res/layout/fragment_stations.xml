@@ -22,8 +22,9 @@
         android:layout_height="match_parent"
         android:background="@color/grey_50"
         android:gravity="center"
-        android:textColor="@color/colorPrimary"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textColor="@color/colorPrimary"
+        android:visibility="gone"
         tools:text="Pol, a bene mortem."
         />
 </FrameLayout>

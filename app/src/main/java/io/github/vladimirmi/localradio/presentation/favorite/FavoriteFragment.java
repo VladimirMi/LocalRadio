@@ -50,11 +50,14 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //noinspection ConstantConditions
         getActivity().getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     protected void setupView(View view) {
+        placeholder.setText(R.string.favorites_empty);
+
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         stationList.setLayoutManager(layoutManager);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),
@@ -74,9 +77,20 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
         stationsAdapter.setPlaying(playing);
     }
 
+    @Override
+    public void showPlaceholder() {
+        placeholder.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidePlaceholder() {
+        placeholder.setVisibility(View.GONE);
+    }
+
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int id, @Nullable Bundle args) {
+        //noinspection ConstantConditions
         return new CursorLoader(getContext(), StationContract.StationEntry.CONTENT_URI,
                 null, null, null, null);
     }
