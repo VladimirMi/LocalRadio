@@ -11,10 +11,12 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.Collections;
 import java.util.List;
 
+import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.db.StationContract;
 import io.github.vladimirmi.localradio.data.db.ValuesMapper;
@@ -30,6 +32,9 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
         implements FavoriteView, LoaderManager.LoaderCallbacks<Cursor>, StationsAdapter.onStationListener {
 
     public static final int LOADER_ID = 0;
+    @BindView(R.id.stationList) RecyclerView stationList;
+    @BindView(R.id.placeholder) TextView placeholder;
+
     private StationsAdapter stationsAdapter;
 
     @Override
@@ -50,7 +55,6 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
 
     @Override
     protected void setupView(View view) {
-        RecyclerView stationList = (RecyclerView) view;
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         stationList.setLayoutManager(layoutManager);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),

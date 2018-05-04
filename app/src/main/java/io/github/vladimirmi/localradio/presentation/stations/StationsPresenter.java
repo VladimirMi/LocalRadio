@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
-import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import java.util.List;
@@ -9,6 +8,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
@@ -23,21 +23,32 @@ public class StationsPresenter extends BasePresenter<StationsView> {
 
     private final StationsInteractor stationsInteractor;
     private final PlayerControlInteractor controlInteractor;
+    private final SearchInteractor searchInteractor;
 
     @Inject
-    StationsPresenter(StationsInteractor stationsInteractor, PlayerControlInteractor controlInteractor) {
+    StationsPresenter(StationsInteractor stationsInteractor,
+                      PlayerControlInteractor controlInteractor,
+                      SearchInteractor searchInteractor) {
         this.stationsInteractor = stationsInteractor;
         this.controlInteractor = controlInteractor;
+        this.searchInteractor = searchInteractor;
     }
 
     @Override
-    protected void onFirstAttach(@Nullable StationsView view, CompositeDisposable disposables) {
+    protected void onFirstAttach(StationsView view, CompositeDisposable disposables) {
+        if (!searchInteractor.isSearchDone()) view.showPlaceholder(false);
+
         disposables.add(stationsInteractor.getStationsObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
                     public void onNext(List<Station> stations) {
-                        if (view != null) view.setStations(stations);
+                        view.setStations(stations);
+                        if (stations.size() == 0) {
+                            view.showPlaceholder(searchInteractor.isSearchDone());
+                        } else {
+                            view.hidePlaceholder();
+                        }
                     }
                 }));
 
@@ -46,7 +57,7 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
                     public void onNext(Station station) {
-                        if (view != null) view.selectStation(station);
+                        view.selectStation(station);
                     }
                 }));
 
@@ -55,9 +66,7 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                 .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
                     @Override
                     public void onNext(PlaybackStateCompat state) {
-                        if (view != null) {
-                            view.setSelectedPlaying(state.getState() == PlaybackStateCompat.STATE_PLAYING);
-                        }
+                        view.setSelectedPlaying(state.getState() == PlaybackStateCompat.STATE_PLAYING);
                     }
                 }));
     }

@@ -1,10 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView
+
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
-    tools:listitem="@layout/item_station"
-    android:paddingBottom="@dimen/player_controls_height"
-    />
+    >
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/stationList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/player_controls_height"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/item_station"
+        />
+
+    <TextView
+        android:id="@+id/placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/grey_50"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        tools:text="Pol, a bene mortem."
+        />
+</FrameLayout>

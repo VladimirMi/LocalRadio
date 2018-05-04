@@ -10,9 +10,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
@@ -24,6 +26,9 @@ import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 
 public class StationsFragment extends BaseFragment<StationsPresenter>
         implements StationsView, StationsAdapter.onStationListener, SearchView.OnQueryTextListener {
+
+    @BindView(R.id.stationList) RecyclerView stationList;
+    @BindView(R.id.placeholder) TextView placeholder;
 
     private StationsAdapter stationsAdapter;
     private SearchView searchView;
@@ -69,7 +74,6 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     @Override
     protected void setupView(View view) {
-        RecyclerView stationList = (RecyclerView) view;
         layoutManager = new LinearLayoutManager(getContext());
         stationList.setLayoutManager(layoutManager);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),
@@ -78,6 +82,8 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
     }
+
+    //region =============== StationsView ==============
 
     @Override
     public void setStations(List<Station> stations) {
@@ -95,6 +101,24 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     public void setSelectedPlaying(boolean playing) {
         stationsAdapter.setPlaying(playing);
     }
+
+    @Override
+    public void showPlaceholder(boolean searchDone) {
+        placeholder.setVisibility(View.VISIBLE);
+        if (searchDone) {
+            String text = getResources().getQuantityString(R.plurals.search_result, 0, 0);
+            placeholder.setText(text);
+        } else {
+            placeholder.setText(R.string.search_result_empty);
+        }
+    }
+
+    @Override
+    public void hidePlaceholder() {
+        placeholder.setVisibility(View.GONE);
+    }
+
+    //endregion
 
     @Override
     public void onStationClick(Station station) {
