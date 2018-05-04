@@ -47,12 +47,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @Override
     protected void setupView(View view) {
         autodetectCb.setOnClickListener(v -> presenter.setAutodetect(!autodetectCb.isChecked()));
-
-        countryEt.setOnItemClickListener((parent, v, position, id) ->
-                presenter.selectCountry((Country) parent.getItemAtPosition(position)));
-
-        cityEt.setOnItemClickListener((parent, v, position, id) ->
-                presenter.selectCity((String) parent.getItemAtPosition(position)));
+        countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
+        cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
 
         cityEt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -64,14 +60,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             return true;
         });
 
-        searchBt.setOnClickListener(v -> {
-            if (countryEt.getText().toString().isEmpty()) countryEt.setText(" ");
-            countryEt.performValidation();
-            if (cityEt.getText().toString().isEmpty()) cityEt.setText(" ");
-            cityEt.performValidation();
-            presenter.search(countryEt.getText().toString(),
-                    cityEt.getText().toString());
-        });
+        searchBt.setOnClickListener(v -> presenter.search(countryEt.getText().toString(),
+                cityEt.getText().toString()));
 
         refreshBt.setOnClickListener(v -> presenter.refreshSearch());
         newSearchBt.setOnClickListener(v -> presenter.newSearch());
@@ -79,15 +69,13 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void setCountries(List<Country> countries) {
-        CustomArrayAdapter<Country> countryAdapter = new CustomArrayAdapter<>(getContext(),
+    public void setCountries(List<String> countries) {
+        CustomArrayAdapter<String> countryAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, countries);
-        countryAdapter.setDefaultValue(Country.any());
+        countryAdapter.setDefaultValue(Country.any().getName());
 
         countryEt.setAdapter(countryAdapter);
         countryEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(countries));
-
-        countryAdapter.setOnFilteringListener(filteredData -> presenter.selectCountries(filteredData));
     }
 
     @SuppressWarnings("ConstantConditions")

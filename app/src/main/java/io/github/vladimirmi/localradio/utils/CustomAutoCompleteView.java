@@ -13,6 +13,7 @@ import java.util.List;
 public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
 
     private boolean isPopupDismissed = true;
+    private OnCompletionListener listener;
 
     public CustomAutoCompleteView(Context context) {
         this(context, null);
@@ -34,18 +35,6 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
         });
 
         setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
-
-        setValidator(new Validator() {
-            @Override
-            public boolean isValid(CharSequence text) {
-                return false;
-            }
-
-            @Override
-            public CharSequence fixText(CharSequence invalidText) {
-                return null;
-            }
-        });
     }
 
     private void showPopup() {
@@ -56,6 +45,24 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
     @Override
     public boolean enoughToFilter() {
         return true;
+    }
+
+
+    public void setOnCompletionListener(OnCompletionListener listener) {
+        this.listener = listener;
+        setOnItemClickListener((parent, v, position, id) ->
+                listener.onCompletion((String) parent.getItemAtPosition(position)));
+    }
+
+    @Override
+    public void performValidation() {
+        super.performValidation();
+        listener.onCompletion(getText().toString());
+    }
+
+    public interface OnCompletionListener {
+
+        void onCompletion(String text);
     }
 
     public static class CustomValidator<T> implements Validator {
@@ -78,7 +85,32 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
 
         @Override
         public CharSequence fixText(CharSequence invalidText) {
-            return list.get(0).toString();
+            int maxCharEquals = 0;
+            int elementIndex = 0;
+
+            for (int idx = 0; idx < list.size(); idx++) {
+                String element = list.get(idx).toString();
+                int charEquals = 0;
+
+                int minLenght = Math.min(element.length(), invalidText.length());
+                for (int i = 0; i < minLenght; i++) {
+                    char actual = invalidText.charAt(i);
+                    char expected = element.charAt(i);
+
+                    if (actual == expected) {
+                        charEquals++;
+                        if (charEquals == minLenght) {
+                            return element;
+                        }
+                    }
+                    if (charEquals > maxCharEquals) {
+                        maxCharEquals = charEquals;
+                        elementIndex = idx;
+                    }
+                }
+            }
+
+            return list.get(elementIndex).toString();
         }
     }
 }

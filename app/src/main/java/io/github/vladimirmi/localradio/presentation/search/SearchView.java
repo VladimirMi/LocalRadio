@@ -2,7 +2,6 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import java.util.List;
 
-import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**
@@ -11,7 +10,7 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 public interface SearchView extends BaseView {
 
-    void setCountries(List<Country> countries);
+    void setCountries(List<String> countries);
 
     void setCities(List<String> cities);
 

@@ -3,6 +3,7 @@ package io.github.vladimirmi.localradio.domain;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -36,8 +37,14 @@ public class LocationInteractor {
         this.locationRepository = locationRepository;
     }
 
-    public List<Country> getCountries() {
-        return locationRepository.getCountries();
+    public List<String> getCountriesName() {
+        List<Country> countries = locationRepository.getCountries();
+        List<String> countriesName = new ArrayList<>(countries.size());
+
+        for (Country country : countries) {
+            countriesName.add(country.getName());
+        }
+        return countriesName;
     }
 
     public void saveAutodetect(boolean enabled) {
@@ -66,7 +73,7 @@ public class LocationInteractor {
     public void saveCountryNameCity(String countryName, String cityName) {
         String countryCode = "";
         if (!countryName.equals(anyCountry.getName())) {
-            for (Country country : getCountries()) {
+            for (Country country : locationRepository.getCountries()) {
                 if (country.getName().equals(countryName)) {
                     countryCode = country.getIsoCode();
                     break;
@@ -79,23 +86,21 @@ public class LocationInteractor {
     }
 
     @Nullable
-    public Country findCountry(String city) {
+    public String findCountryName(String city) {
         if (city.equals(anyCity) || city.equals(unlistedCity)) return null;
 
         for (Country country : locationRepository.getCountries()) {
             if (country.getCities().contains(city)) {
-                return country;
+                return country.getName();
             }
         }
         throw new IllegalStateException();
     }
 
-    public List<String> findCities(List<Country> countries) {
+    public List<String> findCities(String countryName) {
         Set<String> cities = new TreeSet<>();
+        List<Country> countries = findCountries(countryName);
 
-        if (countries.size() == 1 && countries.get(0).equals(anyCountry)) {
-            countries = locationRepository.getCountries();
-        }
         for (Country country : countries) {
             cities.addAll(country.getCities());
         }
@@ -116,5 +121,18 @@ public class LocationInteractor {
         } else {
             return Completable.complete();
         }
+    }
+
+    private List<Country> findCountries(String countryName) {
+        if (countryName.equals(anyCountry.getName())) {
+            return locationRepository.getCountries();
+        } else {
+            for (Country country : locationRepository.getCountries()) {
+                if (country.getName().equals(countryName)) {
+                    return Collections.singletonList(country);
+                }
+            }
+        }
+        return Collections.emptyList();
     }
 }

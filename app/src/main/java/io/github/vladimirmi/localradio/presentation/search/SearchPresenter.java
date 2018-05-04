@@ -3,17 +3,14 @@ package io.github.vladimirmi.localradio.presentation.search;
 import android.Manifest;
 import android.annotation.SuppressLint;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.domain.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.SearchInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -27,20 +24,23 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     private final LocationInteractor locationInteractor;
     private final SearchInteractor searchInteractor;
-    private final StationsInteractor stationsInteractor;
 
     @Inject
-    SearchPresenter(LocationInteractor locationInteractor, SearchInteractor searchInteractor,
-                    StationsInteractor stationsInteractor) {
+    SearchPresenter(LocationInteractor locationInteractor,
+                    SearchInteractor searchInteractor) {
         this.locationInteractor = locationInteractor;
         this.searchInteractor = searchInteractor;
-        this.stationsInteractor = stationsInteractor;
     }
 
     @Override
     protected void onFirstAttach(SearchView view, CompositeDisposable disposables) {
-        view.setCountries(locationInteractor.getCountries());
+        view.setCountries(locationInteractor.getCountriesName());
+        String countryName = locationInteractor.getCountryName();
+        view.setCities(locationInteractor.findCities(countryName));
+        view.setCountryName(countryName);
+        view.setCity(locationInteractor.getCity());
         view.setAutodetect(locationInteractor.isAutodetect());
+        setSearchDone(searchInteractor.isSearchDone());
 
         disposables.add(searchInteractor.getSearchResults()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -48,36 +48,27 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     @Override
                     public void onNext(Integer integer) {
                         if (hasView()) {
+                            //noinspection ConstantConditions
                             getView().setSearchResult(integer);
                             getView().setCountryName(locationInteractor.getCountryName());
                             getView().setCity(locationInteractor.getCity());
-                            if (locationInteractor.isAutodetect()) {
-                                getView().setAutoSearchDone(searchInteractor.isSearchDone());
-                            } else {
-                                getView().setManualSearchDone(searchInteractor.isSearchDone());
-                            }
+                            setSearchDone(true);
                         }
                     }
                 }));
     }
 
-    public void selectCountry(Country country) {
-        List<String> cities = locationInteractor.findCities(Collections.singletonList(country));
+    public void selectCountry(String countryName) {
+        List<String> cities = locationInteractor.findCities(countryName);
         view.setCities(cities);
         view.setCity(cities.get(0));
-        view.setCountryName(country.getName());
-    }
-
-    public void selectCountries(List<Country> countries) {
-        view.setCities(locationInteractor.findCities(countries));
     }
 
     public void selectCity(String city) {
-        Country country = locationInteractor.findCountry(city);
-        if (country != null) {
-            view.setCountryName(country.getName());
+        String countryName = locationInteractor.findCountryName(city);
+        if (countryName != null) {
+            view.setCountryName(countryName);
         }
-        view.setCity(city);
     }
 
     @SuppressLint("CheckResult")
@@ -95,6 +86,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     enableAutodetect(enabled);
                     if (enabled) {
                         view.setSearching(true);
+                        setSearchDone(true);
                         searchInteractor.searchStations();
                     }
                 })
@@ -104,6 +96,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     public void onError(Throwable e) {
                         super.onError(e);
                         view.setSearching(false);
+                        setSearchDone(false);
                     }
                 });
     }
@@ -114,9 +107,10 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         disposables.add(locationInteractor.checkCanSearch()
                 .andThen(searchInteractor.checkCanSearch())
                 .doOnComplete(() -> {
-                    view.setSearching(true);
                     searchInteractor.resetSearch();
                     searchInteractor.searchStations();
+                    view.setSearching(true);
+                    setSearchDone(true);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
@@ -124,6 +118,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     public void onError(Throwable e) {
                         super.onError(e);
                         view.setSearching(false);
+                        setSearchDone(false);
                     }
                 }));
     }
@@ -131,8 +126,9 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     public void refreshSearch() {
         disposables.add(searchInteractor.checkCanSearch()
                 .doOnComplete(() -> {
-                    view.setSearching(true);
                     searchInteractor.refreshStations();
+                    view.setSearching(true);
+                    setSearchDone(true);
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
@@ -140,6 +136,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     public void onError(Throwable e) {
                         super.onError(e);
                         view.setSearching(false);
+                        setSearchDone(false);
                     }
                 }));
     }
@@ -148,6 +145,15 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setManualSearchDone(false);
         view.resetSearchResult();
         searchInteractor.resetSearch();
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void setSearchDone(boolean isSearchDone) {
+        if (locationInteractor.isAutodetect()) {
+            getView().setAutoSearchDone(isSearchDone);
+        } else {
+            getView().setManualSearchDone(isSearchDone);
+        }
     }
 
     private void enableAutodetect(boolean enabled) {

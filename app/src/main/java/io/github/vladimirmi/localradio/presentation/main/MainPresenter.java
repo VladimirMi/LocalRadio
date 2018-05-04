@@ -49,10 +49,8 @@ public class MainPresenter extends BasePresenter<MainView> {
                     }
                 }));
 
-        disposables.add(searchInteractor.checkCanSearch()
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
-
         disposables.add(mainInteractor.initApp()
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
 
         if (!searchInteractor.isSearchDone()) {

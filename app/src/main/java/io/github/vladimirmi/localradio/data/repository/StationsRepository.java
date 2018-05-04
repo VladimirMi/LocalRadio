@@ -39,7 +39,7 @@ public class StationsRepository {
     public void resetSearch() {
         setSearchDone(false);
         stations.accept(Collections.emptyList());
-        if (!currentStation.getValue().isFavorite()) {
+        if (currentStation.hasValue() && !currentStation.getValue().isFavorite()) {
             currentStation.accept(Station.nullStation());
         }
     }

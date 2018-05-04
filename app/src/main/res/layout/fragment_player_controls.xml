@@ -9,6 +9,8 @@
     android:background="@color/colorPrimaryDark"
     android:clickable="true"
     android:focusable="true"
+    android:visibility="gone"
+    tools:visibility="visible"
     >
 
     <ImageView
