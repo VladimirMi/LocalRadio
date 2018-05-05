@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -98,9 +99,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         notification.startForeground();
         serviceStarted = true;
         session.setActive(true);
-        if (isPaused()) {
-            scheduleStopTask(SessionCallback.STOP_DELAY);
-        }
+
+        if (isPaused()) scheduleStopTask(SessionCallback.STOP_DELAY);
 
         if (!appInitialized) {
             compDisp.add(mainInteractor.initApp()
@@ -144,12 +144,14 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         }
     }
 
+    @WorkerThread
     private void handleCurrentStation(Station station) {
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
 
         Bitmap icon = UiUtils.loadBitmapForStation(this, station);
 
+        clearMetadata();
         mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.getName())
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, icon)
@@ -228,15 +230,16 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     .setState(state, 0, 1f)
                     .build();
             session.setPlaybackState(playbackState);
+            if (state == PlaybackStateCompat.STATE_STOPPED) {
+                clearMetadata();
+                session.setMetadata(mediaMetadata);
+            }
             updateRemoteViews();
         }
 
         @Override
         public void onMetadata(Metadata metadata) {
-            mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
-                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, metadata.artist)
-                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, metadata.title)
-                    .build();
+            updateMetadata(metadata.artist, metadata.title);
             session.setMetadata(mediaMetadata);
             updateRemoteViews();
         }
@@ -247,6 +250,17 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
             UiUtils.handleError(PlayerService.this, error);
         }
     };
+
+    private void clearMetadata() {
+        updateMetadata("", "");
+    }
+
+    private void updateMetadata(String artist, String title) {
+        mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                .build();
+    }
 
     private void updateRemoteViews() {
         notification.update();

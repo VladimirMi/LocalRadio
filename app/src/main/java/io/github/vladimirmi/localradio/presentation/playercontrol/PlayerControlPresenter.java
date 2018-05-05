@@ -5,7 +5,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
@@ -71,6 +70,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         view.setStation(station);
     }
 
+    // TODO: 5/5/18 loading button
     private void handleState(PlaybackStateCompat state) {
         if (view == null) return;
         switch (state.getState()) {
@@ -78,14 +78,13 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                 view.showPlaying();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-                view.setMetadata(R.string.metadata_buffering);
+                view.showLoading();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 view.showStopped();
                 break;
             case PlaybackStateCompat.STATE_STOPPED:
                 view.showStopped();
-                view.setMetadata(stationsInteractor.getCurrentStation().getName());
                 break;
         }
     }

@@ -13,9 +13,9 @@ public interface PlayerControlView extends BaseView {
 
     void setMetadata(String string);
 
-    void setMetadata(int stringId);
-
     void showPlaying();
 
     void showStopped();
+
+    void showLoading();
 }

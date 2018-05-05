@@ -90,8 +90,8 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     }
 
     @Override
-    public void setMetadata(int stringId) {
-        metadataTv.setText(stringId);
+    public void showLoading() {
+        metadataTv.setText(getString(R.string.metadata_buffering));
     }
 
     @Override

@@ -40,13 +40,13 @@
         android:id="@+id/playPauseBt"
         android:layout_width="56dp"
         android:layout_height="56dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/ic_play"
         android:contentDescription="@string/desc_play_pause_button"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="24dp"
         />
 
     <Button
@@ -77,20 +77,23 @@
 
     <TextView
         android:id="@+id/metadataTv"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"
         android:singleLine="true"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iconIv"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Festus vigils ducunt ad gemna."
         />
 
     <include
+        android:id="@+id/include"
         layout="@layout/view_station_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

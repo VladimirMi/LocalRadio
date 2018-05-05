@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.text.Spannable;
@@ -82,6 +83,7 @@ public class UiUtils {
                 .into(view);
     }
 
+    @WorkerThread
     public static Bitmap loadBitmapForStation(Context context, Station station) {
         Resources resources = context.getResources();
         int width = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width);

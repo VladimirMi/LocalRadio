@@ -51,11 +51,11 @@ public class Metadata {
 
     public static Metadata create(MediaMetadataCompat meta) {
         if (meta == null) return UNSUPPORTED;
-        CharSequence subtitle = meta.getDescription().getSubtitle();
-        CharSequence title = meta.getDescription().getTitle();
+        String subtitle = meta.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
+        String title = meta.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
         return new Metadata(
-                subtitle == null ? "" : subtitle.toString(),
-                title == null ? "" : title.toString()
+                subtitle.isEmpty() ? unsupported : subtitle,
+                title.isEmpty() ? unsupported : title
         );
     }
 

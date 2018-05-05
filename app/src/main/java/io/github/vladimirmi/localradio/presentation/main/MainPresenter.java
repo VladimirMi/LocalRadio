@@ -1,8 +1,5 @@
 package io.github.vladimirmi.localradio.presentation.main;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.entity.Station;
@@ -37,7 +34,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     @Override
-    protected void onFirstAttach(@Nullable MainView view, CompositeDisposable disposables) {
+    protected void onFirstAttach(MainView view, CompositeDisposable disposables) {
         initPage(mainInteractor.getPagePosition());
 
         disposables.add(stationsInteractor.getCurrentStationObs()
@@ -59,7 +56,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     @Override
-    protected void onAttach(@NonNull MainView view) {
+    protected void onAttach(MainView view) {
         controlInteractor.connect();
     }
 
@@ -70,7 +67,7 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     public void selectPage(int position) {
         mainInteractor.savePagePosition(position);
-        initPage(position);
+        if (hasView()) initPage(position);
     }
 
     private void handleCurrentStation(Station station) {
