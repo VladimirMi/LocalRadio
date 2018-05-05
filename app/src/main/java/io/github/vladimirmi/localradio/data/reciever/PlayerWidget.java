@@ -1,9 +1,11 @@
 package io.github.vladimirmi.localradio.data.reciever;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -13,9 +15,11 @@ import android.widget.RemoteViews;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.data.service.player.PlayerActions;
+import io.github.vladimirmi.localradio.presentation.main.MainActivity;
 
 public class PlayerWidget extends AppWidgetProvider {
 
+    public static final int REQUEST_CODE_WIDGET = 200;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -42,13 +46,13 @@ public class PlayerWidget extends AppWidgetProvider {
         String stationName = mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
         Bitmap stationIcon = mediaMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART);
 
+        views.setTextViewText(R.id.stationNameTv, stationName);
         views.setImageViewBitmap(R.id.iconIv, stationIcon);
 
         if (metadata.isSupported) {
-            views.setTextViewText(R.id.titleTv, metadata.title);
-            views.setTextViewText(R.id.artistTv, metadata.artist);
+            views.setTextViewText(R.id.metadataTv, metadata.toString());
         } else {
-            views.setTextViewText(R.id.artistTv, context.getString(R.string.metadata_not_available));
+            views.setTextViewText(R.id.metadataTv, context.getString(R.string.metadata_not_available));
         }
 
         if (playbackState.getState() == PlaybackStateCompat.STATE_STOPPED
@@ -73,6 +77,10 @@ public class PlayerWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.previousBt, PlayerActions.previousIntent(context));
         views.setOnClickPendingIntent(R.id.playPauseBt, PlayerActions.playPauseIntent(context));
         views.setOnClickPendingIntent(R.id.nextBt, PlayerActions.nextIntent(context));
+
+        Intent startApp = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, REQUEST_CODE_WIDGET, startApp, 0);
+        views.setOnClickPendingIntent(R.id.iconIv, pendingIntent);
 
         return views;
     }

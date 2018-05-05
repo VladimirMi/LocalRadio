@@ -116,7 +116,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     static class StationVH extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.imageIv) ImageView imageIv;
+        @BindView(R.id.iconIv) ImageView imageIv;
         @BindView(R.id.titleTv) TextView titleTv;
         @BindView(R.id.bandTv) TextView bandTv;
         @BindView(R.id.favoriteIv) ImageView favoriteIv;

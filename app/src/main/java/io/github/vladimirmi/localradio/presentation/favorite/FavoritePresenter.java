@@ -60,10 +60,12 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
     public void listChanged(List<Station> list) {
         favoriteInteractor.setFavorites(list);
-        if (list.size() > 0) {
-            view.hidePlaceholder();
-        } else {
-            view.showPlaceholder();
+        if (hasView()) {
+            if (list.size() > 0) {
+                view.hidePlaceholder();
+            } else {
+                view.showPlaceholder();
+            }
         }
     }
 
