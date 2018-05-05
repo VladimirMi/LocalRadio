@@ -15,7 +15,6 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 13.04.2018.
@@ -60,7 +59,6 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
 
 
     public void listChanged(List<Station> list) {
-        Timber.e("listChanged: " + list.size());
         favoriteInteractor.setFavorites(list);
         if (list.size() > 0) {
             view.hidePlaceholder();

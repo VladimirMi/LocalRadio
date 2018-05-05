@@ -11,9 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +18,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -140,13 +138,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
             }
             bandTv.setText(band);
 
-            Glide.with(itemView.getContext())
-                    .load(station.getImageUrl())
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                    .error(R.drawable.ic_radio)
-                    .into(imageIv);
-
+            UiUtils.loadImageInto(imageIv, station);
         }
 
         void setFavorite(Station station) {

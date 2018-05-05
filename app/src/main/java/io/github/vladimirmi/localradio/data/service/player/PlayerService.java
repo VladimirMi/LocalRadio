@@ -148,7 +148,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
 
-        Bitmap icon = UiUtils.loadBitmap(this, station.getImageUrl());
+        Bitmap icon = UiUtils.loadBitmapForStation(this, station);
 
         mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.getName())

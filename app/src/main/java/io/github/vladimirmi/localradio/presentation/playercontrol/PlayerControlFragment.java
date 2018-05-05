@@ -5,14 +5,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -34,9 +32,6 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @BindView(R.id.websiteTv) TextView websiteTv;
     @BindView(R.id.emailTv) TextView emailTv;
     @BindView(R.id.phoneTv) TextView phoneTv;
-
-
-    private String iconUrl;
 
     @Override
     protected int getLayout() {
@@ -60,16 +55,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @Override
     public void setStation(Station station) {
         setMetadata(station.getName());
-        if (iconUrl == null || !iconUrl.equals(station.getImageUrl())) {
-            iconUrl = station.getImageUrl();
-
-            Glide.with(getContext())
-                    .load(iconUrl)
-                    .skipMemoryCache(true)
-                    .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                    .error(R.drawable.ic_radio)
-                    .into(iconIv);
-        }
+        UiUtils.loadImageInto(iconIv, station);
 
         favoriteBt.setBackgroundResource(station.isFavorite() ? R.drawable.ic_star : R.drawable.ic_star_empty);
 
@@ -81,6 +67,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         setTextOrHideIfEmpty(emailTv, station.getEmail());
         setTextOrHideIfEmpty(phoneTv, station.getPhone());
 
+        // TODO: 5/5/18 remove string
         if ("{unlisted}".equals(station.getCity())) {
             locationTv.setText(station.getCountryCode());
         } else {
