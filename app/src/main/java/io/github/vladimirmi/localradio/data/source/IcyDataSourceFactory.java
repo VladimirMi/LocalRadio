@@ -10,16 +10,14 @@ import io.github.vladimirmi.localradio.data.service.player.PlayerCallback;
 
 public class IcyDataSourceFactory implements DataSource.Factory {
 
-    private final String userAgent;
     private final PlayerCallback playerCallback;
 
-    public IcyDataSourceFactory(String userAgent, PlayerCallback playerCallback) {
-        this.userAgent = userAgent;
+    public IcyDataSourceFactory(PlayerCallback playerCallback) {
         this.playerCallback = playerCallback;
     }
 
     @Override
     public DataSource createDataSource() {
-        return new IcyDataSource(userAgent, null, playerCallback);
+        return new IcyDataSource(playerCallback);
     }
 }

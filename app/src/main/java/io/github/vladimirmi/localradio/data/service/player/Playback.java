@@ -20,10 +20,8 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DefaultAllocator;
-import com.google.android.exoplayer2.util.Util;
 
 import io.github.vladimirmi.localradio.BuildConfig;
-import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.source.IcyDataSourceFactory;
 
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
@@ -47,11 +45,13 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     private SimpleExoPlayer player = null;
 
 
+    @SuppressWarnings("WeakerAccess")
     public Playback(PlayerService service, PlayerCallback callback) {
         this.service = service;
         this.callback = callback;
 
         audioManager = ((AudioManager) service.getSystemService(Context.AUDIO_SERVICE));
+        //noinspection ConstantConditions
         wifiLock = ((WifiManager) service.getApplicationContext().getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, BuildConfig.APPLICATION_ID);
     }
@@ -121,8 +121,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     }
 
     private void preparePlayer(Uri uri) {
-        String userAgent = Util.getUserAgent(service, service.getString(R.string.app_name));
-        IcyDataSourceFactory dataSourceFactory = new IcyDataSourceFactory(userAgent, callback);
+        IcyDataSourceFactory dataSourceFactory = new IcyDataSourceFactory(callback);
         ExtractorMediaSource mediaSource = new ExtractorMediaSource.Factory(dataSourceFactory)
                 .createMediaSource(uri);
 

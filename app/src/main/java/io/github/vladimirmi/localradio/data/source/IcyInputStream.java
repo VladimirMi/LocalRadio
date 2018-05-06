@@ -21,6 +21,7 @@ public class IcyInputStream extends FilterInputStream {
     private int bytesBeforeMetadata;
     private byte[] buffer = new byte[128];
 
+    @SuppressWarnings("WeakerAccess")
     public IcyInputStream(InputStream in, int window, PlayerCallback playerCallback) {
         super(in);
         this.window = window;

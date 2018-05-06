@@ -19,11 +19,11 @@ import okhttp3.internal.http.RealResponseBody;
 import okhttp3.internal.io.FileSystem;
 import okio.BufferedSource;
 import okio.Okio;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 12.04.2018.
  */
-@SuppressWarnings("ResultOfMethodCallIgnored")
 public class CacheSource implements Interceptor {
 
     private static final String CACHE_PREFIX = "cache";
@@ -80,7 +80,10 @@ public class CacheSource implements Interceptor {
     public void cleanCache(String namePart) {
         File[] files = cacheDir.listFiles((dir, name) -> name.contains(namePart));
         for (File file : files) {
-            file.delete();
+            boolean delete = file.delete();
+            if (!delete) {
+                Timber.w("Can't delete file " + file.getName());
+            }
         }
     }
 
@@ -89,7 +92,10 @@ public class CacheSource implements Interceptor {
         String nowDate = dateFormat.format(new Date());
         for (File file : files) {
             if (!file.getName().contains(nowDate)) {
-                file.delete();
+                boolean delete = file.delete();
+                if (!delete) {
+                    Timber.w("Can't delete file " + file.getName());
+                }
             }
         }
     }

@@ -26,12 +26,11 @@ import io.github.vladimirmi.localradio.di.Scopes;
 @Singleton
 public class CountrySource {
 
-    private final Context context;
     private List<Country> countries = Collections.emptyList();
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public CountrySource(Context context) {
-        this.context = context;
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
                 context.getResources().openRawResource(R.raw.countries)))) {

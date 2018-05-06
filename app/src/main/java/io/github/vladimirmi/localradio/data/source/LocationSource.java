@@ -31,6 +31,7 @@ public class LocationSource {
     private final FusedLocationProviderClient fusedLocationProviderClient;
     private final Geocoder geocoder;
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public LocationSource(Context context) {
         // TODO: 4/6/18 check if play services available
