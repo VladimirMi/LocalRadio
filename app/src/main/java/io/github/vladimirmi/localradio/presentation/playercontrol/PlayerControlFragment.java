@@ -64,7 +64,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     public void setStation(Station station) {
-        if (!stationImageUrl.equals(station.getImageUrl())) {
+        if (!stationImageUrl.equals(station.getImageUrl()) || station.getImageUrl().isEmpty()) {
             stationImageUrl = station.getImageUrl();
             UiUtils.loadImageInto(iconIv, station);
         }

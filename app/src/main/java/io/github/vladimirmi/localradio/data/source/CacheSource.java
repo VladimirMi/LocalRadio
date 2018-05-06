@@ -85,7 +85,6 @@ public class CacheSource implements Interceptor {
     }
 
     private void cleanOldCache() {
-        // TODO: 5/1/18 keep cache based on max size
         File[] files = cacheDir.listFiles((dir, name) -> name.startsWith(CACHE_PREFIX));
         String nowDate = dateFormat.format(new Date());
         for (File file : files) {

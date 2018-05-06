@@ -74,12 +74,12 @@ public class UiUtils {
 
     public static void loadImageInto(ImageView view, Station station) {
         Context context = view.getContext();
-        BitmapDrawable drawable = new BitmapDrawable(context.getResources(), UiUtils.textAsBitmap(context, station.getName()));
+        BitmapDrawable placeholder = new BitmapDrawable(context.getResources(), UiUtils.textAsBitmap(context, station.getName()));
         Glide.with(context)
                 .load(station.getImageUrl())
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .placeholder(drawable)
+                .placeholder(placeholder)
                 .into(view);
     }
 

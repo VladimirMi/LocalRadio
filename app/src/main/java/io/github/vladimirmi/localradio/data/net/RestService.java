@@ -12,8 +12,8 @@ import retrofit2.http.Query;
 public interface RestService {
 
     @GET("darstations.php")
-    Single<StationsResult> getStationsByCoordinates(@Query(Api.QUERY_LATITUDE) double latitude,
-                                                    @Query(Api.QUERY_LONGITUDE) double longitude);
+    Single<StationsResult> getStationsByCoordinates(@Query(Api.QUERY_LATITUDE) float latitude,
+                                                    @Query(Api.QUERY_LONGITUDE) float longitude);
 
     @GET("darstations.php")
     Single<StationsResult> getStationsByIp(@Query(Api.QUERY_IP) String ip);
