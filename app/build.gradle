@@ -92,4 +92,6 @@ dependencies {
     //DI
     implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.2'
     annotationProcessor 'com.github.stephanenicolas.toothpick:toothpick-compiler:1.1.2'
+
+    implementation project(':playerbutton')
 }

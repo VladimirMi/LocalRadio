@@ -175,7 +175,7 @@ public class Station {
         return id == 0;
     }
 
-    public Station copy(boolean isFavorite) {
+    public Station setFavoriteAndCopy(boolean isFavorite) {
         return new Station(id, name, band, genre, language, websiteUrl, imageUrl, description,
                 encoding, status, countryCode, city, phone, email, dial, slogan, isFavorite);
     }

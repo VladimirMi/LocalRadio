@@ -1,8 +1,10 @@
 package io.github.vladimirmi.localradio.presentation.playercontrol;
 
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import butterknife.BindView;
@@ -11,6 +13,7 @@ import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.utils.UiUtils;
+import io.github.vladimirmi.playerbutton.PlayerButton;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -20,7 +23,8 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @BindView(R.id.iconIv) ImageView iconIv;
     @BindView(R.id.previousBt) Button previousBt;
-    @BindView(R.id.playPauseBt) Button playPauseBt;
+    @BindView(R.id.playPauseBt) PlayerButton playPauseBt;
+    @BindView(R.id.loadingPb) ProgressBar loadingPb;
     @BindView(R.id.nextBt) Button nextBt;
     @BindView(R.id.favoriteBt) Button favoriteBt;
     @BindView(R.id.metadataTv) TextView metadataTv;
@@ -32,6 +36,8 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @BindView(R.id.websiteTv) TextView websiteTv;
     @BindView(R.id.emailTv) TextView emailTv;
     @BindView(R.id.phoneTv) TextView phoneTv;
+
+    private String stationImageUrl = "";
 
     @Override
     protected int getLayout() {
@@ -50,12 +56,18 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         previousBt.setOnClickListener(v -> presenter.skipToPrevious());
         nextBt.setOnClickListener(v -> presenter.skipToNext());
         favoriteBt.setOnClickListener(v -> presenter.switchFavorite());
+
+        playPauseBt.setManualMode(true);
+        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+                .getColor(R.color.grey_50), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
     public void setStation(Station station) {
-        setMetadata(station.getName());
-        UiUtils.loadImageInto(iconIv, station);
+        if (!stationImageUrl.equals(station.getImageUrl())) {
+            stationImageUrl = station.getImageUrl();
+            UiUtils.loadImageInto(iconIv, station);
+        }
 
         favoriteBt.setBackgroundResource(station.isFavorite() ? R.drawable.ic_star : R.drawable.ic_star_empty);
 
@@ -91,20 +103,18 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     public void showLoading() {
-        metadataTv.setText(getString(R.string.metadata_buffering));
+        loadingPb.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void showPlaying() {
-        playPauseBt.setBackgroundResource(R.drawable.ic_stop);
-        if (metadataTv.getText().toString().equals(getString(R.string.metadata_buffering))) {
-            metadataTv.setText("");
-        }
+        playPauseBt.setPlaying(true);
+        loadingPb.setVisibility(View.GONE);
     }
 
     @Override
     public void showStopped() {
-        playPauseBt.setBackgroundResource(R.drawable.ic_play);
+        playPauseBt.setPlaying(false);
+        loadingPb.setVisibility(View.GONE);
     }
-
 }

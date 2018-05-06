@@ -36,12 +36,23 @@
         app:layout_constraintTop_toTopOf="@+id/playPauseBt"
         />
 
-    <Button
+    <ProgressBar
+        android:id="@+id/loadingPb"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="24dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <io.github.vladimirmi.playerbutton.PlayerButton
         android:id="@+id/playPauseBt"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
-        android:background="@drawable/ic_play"
         android:contentDescription="@string/desc_play_pause_button"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         app:layout_constraintEnd_toEndOf="parent"
