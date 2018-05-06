@@ -2,7 +2,6 @@ package io.github.vladimirmi.localradio.presentation.stations;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -76,9 +75,6 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     protected void setupView(View view) {
         layoutManager = new LinearLayoutManager(getContext());
         stationList.setLayoutManager(layoutManager);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),
-                layoutManager.getOrientation());
-        stationList.addItemDecoration(itemDecoration);
         stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
     }
@@ -150,11 +146,11 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         }
 
         if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
-            //workaround on not scrolled when initialized
-            getView().postDelayed(() -> layoutManager
-                    .scrollToPositionWithOffset(stationPosition, getView().getHeight() / 2), 10);
+            layoutManager.scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3);
+
         } else if (stationPosition + offset > lastPosition) {
             layoutManager.scrollToPosition(stationPosition + offset);
+
         } else {
             layoutManager.scrollToPosition(stationPosition - offset);
         }
