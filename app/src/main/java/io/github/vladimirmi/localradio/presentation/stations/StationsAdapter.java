@@ -31,8 +31,9 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
+    private Station selectedStation = Station.nullStation();
+    // TODO: 5/6/18 remove selectedPosition
     private int selectedPosition;
-    private Station selectedStation;
     private boolean playing;
 
     private static final DiffUtil.ItemCallback CALLBACK = new DiffUtil.ItemCallback<Station>() {
@@ -61,7 +62,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     @Override
     public void submitList(List<Station> list) {
         stations = list;
-        selectedPosition = stations.indexOf(selectedStation);
+        selectedPosition = getPosition(selectedStation);
         super.submitList(list);
     }
 
@@ -91,12 +92,12 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.bind(station);
         holder.setFavorite(station);
         holder.select(position == selectedPosition, playing);
-        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(getItem(position)));
     }
 
     public void select(Station station) {
-        int newSelectedPos = stations.indexOf(station);
-        int oldSelectedPos = stations.indexOf(selectedStation);
+        int newSelectedPos = getPosition(station);
+        int oldSelectedPos = selectedPosition;
 
         selectedPosition = newSelectedPos;
         selectedStation = station;
@@ -112,6 +113,16 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     public int getSelectedPosition() {
         return selectedPosition;
+    }
+
+
+    private int getPosition(Station station) {
+        for (int i = 0; i < stations.size(); i++) {
+            if (stations.get(i).getId() == station.getId()) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     static class StationVH extends RecyclerView.ViewHolder {

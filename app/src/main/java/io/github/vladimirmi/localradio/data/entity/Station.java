@@ -11,21 +11,21 @@ import io.github.vladimirmi.localradio.data.net.Api;
 public class Station {
 
     @Json(name = "station_id") private int id;
-    @Json(name = "callsign") private String name;
-    @Json(name = "band") private String band;
-    @Json(name = "ubergenre") private String genre;
-    @Json(name = "language") private String language;
-    @Json(name = "websiteurl") private String websiteUrl;
-    @Json(name = "imageurl") private String imageUrl;
-    @Json(name = "description") private String description;
-    @Json(name = "encoding") private String encoding;
-    @Json(name = "status") private String status;
-    @Json(name = "country") private String countryCode;
-    @Json(name = "city") private String city;
-    @Json(name = "phone") private String phone;
-    @Json(name = "email") private String email;
-    @Json(name = "dial") private String dial;
-    @Json(name = "slogan") private String slogan;
+    @Json(name = "callsign") private String name = "";
+    @Json(name = "band") private String band = "";
+    @Json(name = "ubergenre") private String genre = "";
+    @Json(name = "language") private String language = "";
+    @Json(name = "websiteurl") private String websiteUrl = "";
+    @Json(name = "imageurl") private String imageUrl = "";
+    @Json(name = "description") private String description = "";
+    @Json(name = "encoding") private String encoding = "";
+    @Json(name = "status") private String status = "";
+    @Json(name = "country") private String countryCode = "";
+    @Json(name = "city") private String city = "";
+    @Json(name = "phone") private String phone = "";
+    @Json(name = "email") private String email = "";
+    @Json(name = "dial") private String dial = "";
+    @Json(name = "slogan") private String slogan = "";
     private boolean isFavorite;
     private String url;
 
@@ -136,12 +136,15 @@ public class Station {
 
         Station station = (Station) o;
 
-        return id == station.id;
+        if (id != station.id) return false;
+        return isFavorite == station.isFavorite;
     }
 
     @Override
     public int hashCode() {
-        return id;
+        int result = id;
+        result = 31 * result + (isFavorite ? 1 : 0);
+        return result;
     }
 
     @Override
@@ -149,20 +152,6 @@ public class Station {
         return "Station{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", band='" + band + '\'' +
-                ", genre='" + genre + '\'' +
-                ", language='" + language + '\'' +
-                ", websiteUrl='" + websiteUrl + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                ", description='" + description + '\'' +
-                ", encoding='" + encoding + '\'' +
-                ", status='" + status + '\'' +
-                ", countryCode='" + countryCode + '\'' +
-                ", city='" + city + '\'' +
-                ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                ", dial='" + dial + '\'' +
-                ", slogan='" + slogan + '\'' +
                 ", isFavorite=" + isFavorite +
                 '}';
     }

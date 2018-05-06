@@ -75,7 +75,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(Schedulers.io())
-                .distinctUntilChanged(Station::getId)
+                .filter(station -> !station.isNullStation())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
                     @Override
                     public void onNext(Station station) {

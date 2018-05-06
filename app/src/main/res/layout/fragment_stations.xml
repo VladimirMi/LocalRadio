@@ -22,6 +22,7 @@
         android:layout_height="match_parent"
         android:background="@color/grey_50"
         android:gravity="center"
+        android:paddingBottom="@dimen/player_controls_height"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorPrimary"
         android:visibility="gone"

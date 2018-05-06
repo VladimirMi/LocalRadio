@@ -30,7 +30,8 @@ public class StationsInteractor {
     }
 
     public Observable<Station> getCurrentStationObs() {
-        return stationsRepository.getCurrentStationObs();
+        return stationsRepository.getCurrentStationObs()
+                .distinctUntilChanged();
     }
 
     public Station getCurrentStation() {

@@ -38,11 +38,13 @@ public class MainPresenter extends BasePresenter<MainView> {
         initPage(mainInteractor.getPagePosition());
 
         disposables.add(stationsInteractor.getCurrentStationObs()
+                .map(Station::isNullStation)
+                .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
-                    public void onNext(Station station) {
-                        handleCurrentStation(station);
+                    public void onNext(Boolean isNull) {
+                        handleIsNullStation(isNull);
                     }
                 }));
 
@@ -70,9 +72,9 @@ public class MainPresenter extends BasePresenter<MainView> {
         if (hasView()) initPage(position);
     }
 
-    private void handleCurrentStation(Station station) {
+    private void handleIsNullStation(boolean isNull) {
         if (view == null) return;
-        if (station.isNullStation()) {
+        if (isNull) {
             view.hideControls();
         } else {
             view.showControls();
