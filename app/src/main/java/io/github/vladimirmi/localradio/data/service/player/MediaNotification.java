@@ -114,7 +114,11 @@ public class MediaNotification {
             builder.setContentTitle(metadata.title)
                     .setContentText(metadata.artist);
         } else {
-            builder.setContentText(service.getString(R.string.metadata_not_available));
+            builder.setContentTitle(service.getString(R.string.metadata_not_available));
+        }
+
+        if (playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            builder.setContentTitle(service.getString(R.string.metadata_buffering));
         }
 
         builder.addAction(generateAction(R.drawable.ic_skip_previous, "Previous", previousIntent));
