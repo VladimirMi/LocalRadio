@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import io.github.vladimirmi.localradio.R;
@@ -55,11 +56,20 @@ public class PlayerWidget extends AppWidgetProvider {
             views.setTextViewText(R.id.metadataTv, context.getString(R.string.metadata_not_available));
         }
 
+        if (playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            views.setViewVisibility(R.id.loadingPb, View.VISIBLE);
+
+        } else if (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            views.setViewVisibility(R.id.loadingPb, View.GONE);
+        }
+
         if (playbackState.getState() == PlaybackStateCompat.STATE_STOPPED
                 || playbackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
             views.setInt(R.id.playPauseBt, "setBackgroundResource", R.drawable.ic_play);
+            views.setViewVisibility(R.id.loadingPb, View.GONE);
+
         } else {
-            views.setInt(R.id.playPauseBt, "setBackgroundResource", R.drawable.ic_stop);
+            views.setInt(R.id.playPauseBt, "setBackgroundResource", R.drawable.ic_pause);
         }
 
         updateAppWidgets(context, views);
