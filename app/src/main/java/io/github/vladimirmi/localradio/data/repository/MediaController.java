@@ -27,6 +27,7 @@ public class MediaController {
     public BehaviorRelay<PlaybackStateCompat> playbackState = BehaviorRelay.create();
     public BehaviorRelay<MediaMetadataCompat> playbackMetadata = BehaviorRelay.create();
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public MediaController(Context context) {
         MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
@@ -79,8 +80,10 @@ public class MediaController {
     }
 
     public void disconnect() {
-        //todo check if need unregister callback
-        if (mediaBrowser.isConnected()) mediaBrowser.disconnect();
+        if (mediaBrowser.isConnected()) {
+            mediaController.unregisterCallback(controllerCallback);
+            mediaBrowser.disconnect();
+        }
     }
 
     public void play() {
