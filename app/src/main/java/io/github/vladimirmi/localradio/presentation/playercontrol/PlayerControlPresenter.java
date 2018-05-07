@@ -91,7 +91,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     private void handleMetadata(Metadata metadata) {
         if (view == null) return;
-        if (metadata.isSupported) {
+        if (metadata.isSupported && !metadata.isEmpty) {
             view.setMetadata(metadata.toString());
         } else {
             view.setMetadata(stationsInteractor.getCurrentStation().getName());
