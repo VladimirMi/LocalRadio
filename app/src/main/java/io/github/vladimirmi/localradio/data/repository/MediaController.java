@@ -36,6 +36,9 @@ public class MediaController {
                 try {
                     mediaController = new MediaControllerCompat(context, mediaBrowser.getSessionToken());
                     mediaController.registerCallback(controllerCallback);
+                    controllerCallback.onPlaybackStateChanged(mediaController.getPlaybackState());
+                    controllerCallback.onMetadataChanged(mediaController.getMetadata());
+
                 } catch (RemoteException e) {
                     Timber.e(e, e.getMessage());
                 }

@@ -14,6 +14,7 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -70,8 +71,8 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         view.setStation(station);
     }
 
-    // TODO: 5/5/18 loading button
     private void handleState(PlaybackStateCompat state) {
+        Timber.e("handleState: " + state.getState());
         if (view == null) return;
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
@@ -93,7 +94,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         if (view == null) return;
         if (metadata.isSupported && !metadata.isEmpty) {
             view.setMetadata(metadata.toString());
-        } else {
+        } else if (stationsInteractor.getCurrentStation() != null) {
             view.setMetadata(stationsInteractor.getCurrentStation().getName());
         }
     }
