@@ -1,8 +1,47 @@
 <resources>
     <string name="app_name">Local Radio</string>
-    <string name="tab_text_1">Tab 1</string>
-    <string name="tab_text_2">Tab 2</string>
-    <string name="tab_text_3">Tab 3</string>
-    <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="country">Country:</string>
+    <string name="city">City:</string>
+    <string name="automatic_position_detection">Automatic position detection</string>
+    <string name="any_country">Any country</string>
+    <string name="any_city">Any city</string>
+    <string name="unlisted_city">Unlisted city</string>
+
+    <string name="desc_station_icon">station icon</string>
+    <string name="desc_favorite">add/remove favorite</string>
+    <string name="desc_play_pause_button">play/pause button</string>
+    <string name="desc_skip_previous_button">skip previous button</string>
+    <string name="desc_skip_next_button">skip next button</string>
+
+    <string name="favorite">Favorite</string>
+    <string name="stations">Stations</string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="refresh">Refresh</string>
+    <string name="new_search">New search</string>
+    <string name="searching">Searching…</string>
+
+    <string name="need_permission">Need permission for the action</string>
+
+    <string name="notification_name">Local Radio notification</string>
+    <string name="metadata_not_available">Metadata not available</string>
+    <string name="metadata_buffering">Loading…</string>
+
+    <string name="error_specify_location">A more specific location is required</string>
+    <string name="error_network">Network not available</string>
+    <string name="error_connection">Connection error</string>
+    <string name="error_renderer">Not supported audio stream</string>
+    <string name="error_unexpected">Unexpected error</string>
+
+    <string name="search_result_empty">The search results are empty</string>
+    <plurals name="search_result">
+        <item quantity="one">%d station found</item>
+        <item quantity="other">%d stations found</item>
+    </plurals>
+    <string name="favorites_empty">The favorites list is empty</string>
+
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+
 </resources>

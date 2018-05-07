@@ -1,0 +1,81 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="@color/colorPrimaryDark"
+    >
+
+    <ImageView
+        android:id="@+id/iconIv"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/desc_station_icon"
+        tools:src="@color/blue_500"
+        />
+
+    <Button
+        android:id="@+id/previousBt"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="4dp"
+        android:layout_toStartOf="@+id/playPauseBt"
+        android:background="@drawable/ic_skip_previous"
+        android:contentDescription="@string/desc_skip_previous_button"
+        />
+
+    <Button
+        android:id="@+id/playPauseBt"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/nextBt"
+        android:background="@drawable/ic_play"
+        android:contentDescription="@string/desc_play_pause_button"
+        />
+
+    <Button
+        android:id="@+id/nextBt"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/ic_skip_next"
+        android:contentDescription="@string/desc_skip_next_button"
+        />
+
+    <TextView
+        android:id="@+id/stationNameTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/iconIv"
+        android:fontFamily="sans-serif-condensed"
+        android:layout_toStartOf="@id/previousBt"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@android:color/white"
+        tools:text="Sunt sagaes tractare rusticus, velox triticumes."
+        />
+
+    <TextView
+        android:id="@+id/metadataTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_toEndOf="@id/iconIv"
+        android:fontFamily="sans-serif-condensed"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/white"
+        tools:text="Sunt sagaes tractare rusticus, velox triticumes."
+        />
+
+</RelativeLayout>
