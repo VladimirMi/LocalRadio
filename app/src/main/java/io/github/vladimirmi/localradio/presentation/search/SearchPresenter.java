@@ -61,6 +61,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     public void selectCountry(String countryName) {
         List<String> cities = locationInteractor.findCities(countryName);
         view.setCities(cities);
+        view.setCountryName(countryName);
         view.setCity(cities.get(0));
     }
 
@@ -69,6 +70,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         if (countryName != null) {
             view.setCountryName(countryName);
         }
+        view.setCity(city);
     }
 
     @SuppressLint("CheckResult")

@@ -34,6 +34,7 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -102,7 +103,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         serviceStarted = true;
         session.setActive(true);
 
-        if (isPaused()) scheduleStopTask(SessionCallback.STOP_DELAY);
+        if (isPaused()) scheduleStopTask(Playback.STOP_DELAY);
 
         if (!appInitialized) {
             compDisp.add(mainInteractor.initApp()
@@ -228,6 +229,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerStateChanged(int state) {
+            Timber.e("onPlayerStateChanged: " + state);
             playbackState = new PlaybackStateCompat.Builder(playbackState)
                     .setState(state, 0, 1f)
                     .build();
@@ -248,6 +250,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerError(MessageException error) {
+            // TODO: 5/7/18 player internally stops. try to keep notification
             onStopCommand();
             UiUtils.handleError(PlayerService.this, error);
         }

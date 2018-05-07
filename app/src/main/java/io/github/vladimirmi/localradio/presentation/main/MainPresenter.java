@@ -48,6 +48,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                     }
                 }));
 
+
         disposables.add(mainInteractor.initApp()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
