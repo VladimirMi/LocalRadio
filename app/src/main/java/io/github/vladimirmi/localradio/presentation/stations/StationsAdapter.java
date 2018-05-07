@@ -32,7 +32,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
     private Station selectedStation = Station.nullStation();
-    // TODO: 5/6/18 remove selectedPosition
     private int selectedPosition;
     private boolean playing;
 
@@ -75,6 +74,8 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(getItem(position)));
+
         if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
             holder.select(position == selectedPosition, playing);
 
@@ -92,7 +93,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.bind(station);
         holder.setFavorite(station);
         holder.select(position == selectedPosition, playing);
-        holder.itemView.setOnClickListener(view -> listener.onStationClick(getItem(position)));
     }
 
     public void select(Station station) {
