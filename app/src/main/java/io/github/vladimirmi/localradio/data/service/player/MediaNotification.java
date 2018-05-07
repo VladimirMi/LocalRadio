@@ -41,6 +41,7 @@ public class MediaNotification {
 
     private Disposable notificationUpdate;
 
+    @SuppressWarnings("WeakerAccess")
     public MediaNotification(PlayerService service, MediaSessionCompat session) {
         this.service = service;
         this.session = session;
@@ -121,7 +122,7 @@ public class MediaNotification {
                 || playbackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
             builder.addAction(generateAction(R.drawable.ic_play, "Play", playPauseIntent));
         } else {
-            builder.addAction(generateAction(R.drawable.ic_stop, "Stop", playPauseIntent));
+            builder.addAction(generateAction(R.drawable.ic_pause, "Pause", playPauseIntent));
         }
         builder.addAction(generateAction(R.drawable.ic_skip_next, "Next", nextIntent));
 

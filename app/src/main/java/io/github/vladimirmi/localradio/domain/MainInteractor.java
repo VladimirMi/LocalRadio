@@ -15,6 +15,7 @@ public class MainInteractor {
     private final FavoriteInteractor favoriteInteractor;
     private final SearchInteractor searchInteractor;
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public MainInteractor(Preferences preferences,
                           FavoriteInteractor favoriteInteractor,
@@ -46,9 +47,5 @@ public class MainInteractor {
 
     public void savePagePosition(int position) {
         preferences.pagePosition.put(position);
-    }
-
-    public boolean isFavoritePage() {
-        return getPagePosition() == 0;
     }
 }
