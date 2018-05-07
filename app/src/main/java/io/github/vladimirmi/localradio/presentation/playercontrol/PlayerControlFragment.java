@@ -29,6 +29,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @BindView(R.id.favoriteBt) Button favoriteBt;
     @BindView(R.id.metadataTv) TextView metadataTv;
     @BindView(R.id.titleTv) TextView titleTv;
+    @BindView(R.id.bandTv) TextView bandTv;
     @BindView(R.id.sloganTv) TextView sloganTv;
     @BindView(R.id.descriptionTv) TextView descriptionTv;
     @BindView(R.id.genreTv) TextView genreTv;
@@ -72,6 +73,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         favoriteBt.setBackgroundResource(station.isFavorite() ? R.drawable.ic_star : R.drawable.ic_star_empty);
 
         setTextOrHideIfEmpty(titleTv, station.getName());
+        setTextOrHideIfEmpty(bandTv, station.getBandString());
         setTextOrHideIfEmpty(sloganTv, station.getSlogan());
         setTextOrHideIfEmpty(descriptionTv, station.getDescription());
         setTextOrHideIfEmpty(genreTv, station.getGenre());

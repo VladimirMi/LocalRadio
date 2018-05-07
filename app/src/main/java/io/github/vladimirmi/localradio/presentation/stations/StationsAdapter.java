@@ -141,13 +141,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         void bind(Station station) {
             titleTv.setText(station.getName());
             genresTv.setText(station.getGenre());
-            String band;
-            if (station.getBand().equals("net")) {
-                band = station.getBand();
-            } else {
-                band = String.format("%s %s", station.getDial(), station.getBand());
-            }
-            bandTv.setText(band);
+            bandTv.setText(station.getBandString());
 
             UiUtils.loadImageInto(imageIv, station);
         }
