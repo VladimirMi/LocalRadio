@@ -26,16 +26,6 @@
         android:contentDescription="@string/desc_skip_previous_button"
         />
 
-    <Button
-        android:id="@+id/playPauseBt"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentBottom="true"
-        android:layout_toStartOf="@id/nextBt"
-        android:background="@drawable/ic_play"
-        android:contentDescription="@string/desc_play_pause_button"
-        />
-
     <ProgressBar
         android:id="@+id/loadingPb"
         android:layout_width="48dp"
@@ -46,6 +36,16 @@
         android:visibility="gone"
         android:indeterminateDrawable="@drawable/progress_bar"
         android:indeterminateDuration="900"
+        />
+
+    <Button
+        android:id="@+id/playPauseBt"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toStartOf="@id/nextBt"
+        android:background="@drawable/ic_play"
+        android:contentDescription="@string/desc_play_pause_button"
         />
 
     <Button
