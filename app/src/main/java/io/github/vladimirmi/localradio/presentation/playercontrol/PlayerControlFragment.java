@@ -103,6 +103,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     public void showLoading() {
+        playPauseBt.setPlaying(true);
         loadingPb.setVisibility(View.VISIBLE);
     }
 
