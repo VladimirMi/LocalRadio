@@ -11,14 +11,18 @@ ext {
     }
 }
 
+ext.versionMajor = 0
+ext.versionMinor = 9
+ext.versionPatch = 0
+
 android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "io.github.vladimirmi.localradio"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         javaCompileOptions {
@@ -39,6 +43,14 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
     }
+}
+
+private Integer generateVersionCode() {
+    return ext.versionMajor * 10000 + ext.versionMinor * 100 + ext.versionPatch
+}
+
+private String generateVersionName() {
+    return "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
 }
 
 ext {
