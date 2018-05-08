@@ -74,5 +74,4 @@
         tools:layout="@layout/fragment_player_controls"
         />
 
-
 </android.support.design.widget.CoordinatorLayout>

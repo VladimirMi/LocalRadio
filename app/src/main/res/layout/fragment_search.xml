@@ -22,9 +22,7 @@
             android:id="@+id/autodetectCb"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_margin="16dp"
             android:checkMark="?android:attr/listChoiceIndicatorMultiple"
             android:focusable="false"
             android:focusableInTouchMode="false"
@@ -40,8 +38,8 @@
             android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             app:contentPadding="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/autodetectCb"
@@ -66,7 +64,6 @@
                     android:id="@+id/countryEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions|textCapSentences"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -91,7 +88,6 @@
                     android:id="@+id/cityEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
                     android:imeOptions="actionDone"
                     android:inputType="textNoSuggestions|textCapSentences"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -102,9 +98,8 @@
                 <TextView
                     android:id="@+id/searchResultTv"
                     style="@style/CustomText"
-                    android:layout_width="match_parent"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="24dp"
-                    android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -118,10 +113,7 @@
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_marginTop="16dp"
+            android:layout_margin="32dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -138,7 +130,6 @@
                 android:layout_weight="1"
                 android:text="@string/refresh"
                 android:theme="@style/GreyButton"
-
                 />
 
             <Button
@@ -158,10 +149,7 @@
             android:id="@+id/searchBt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="32dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginRight="32dp"
-            android:layout_marginTop="16dp"
+            android:layout_margin="32dp"
             android:text="@string/search"
             android:theme="@style/AccentButton"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -170,7 +158,6 @@
             app:layout_constraintTop_toBottomOf="@+id/cardView"
             app:layout_constraintVertical_bias="1.0"
             />
-
 
     </android.support.constraint.ConstraintLayout>
 
