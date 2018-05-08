@@ -34,7 +34,6 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -229,7 +228,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerStateChanged(int state) {
-            Timber.e("onPlayerStateChanged: " + state);
             playbackState = new PlaybackStateCompat.Builder(playbackState)
                     .setState(state, 0, 1f)
                     .build();
