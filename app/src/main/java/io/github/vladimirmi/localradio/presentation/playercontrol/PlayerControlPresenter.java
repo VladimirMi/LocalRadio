@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.MainInteractor;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
@@ -22,15 +23,19 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     private final PlayerControlInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final FavoriteInteractor favoriteInteractor;
+    private final MainInteractor mainInteractor;
 
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
-    PlayerControlPresenter(PlayerControlInteractor controlInteractor,
-                           StationsInteractor stationsInteractor,
-                           FavoriteInteractor favoriteInteractor) {
+    public PlayerControlPresenter(PlayerControlInteractor controlInteractor,
+                                  StationsInteractor stationsInteractor,
+                                  FavoriteInteractor favoriteInteractor,
+                                  MainInteractor mainInteractor) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
         this.favoriteInteractor = favoriteInteractor;
+        this.mainInteractor = mainInteractor;
     }
 
     @Override
@@ -100,11 +105,19 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void skipToPrevious() {
-        controlInteractor.skipToPrevious();
+        if (mainInteractor.isFavoritePage()) {
+            favoriteInteractor.previousStation();
+        } else {
+            stationsInteractor.previousStation();
+        }
     }
 
     public void skipToNext() {
-        controlInteractor.skipToNext();
+        if (mainInteractor.isFavoritePage()) {
+            favoriteInteractor.nextStation();
+        } else {
+            stationsInteractor.nextStation();
+        }
     }
 
     public void switchFavorite() {

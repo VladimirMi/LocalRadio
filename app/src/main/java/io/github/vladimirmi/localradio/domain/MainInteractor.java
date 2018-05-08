@@ -48,4 +48,9 @@ public class MainInteractor {
     public void savePagePosition(int position) {
         preferences.pagePosition.put(position);
     }
+
+
+    public boolean isFavoritePage() {
+        return getPagePosition() == 0;
+    }
 }
