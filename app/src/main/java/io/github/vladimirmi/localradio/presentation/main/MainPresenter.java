@@ -37,18 +37,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     protected void onFirstAttach(MainView view, CompositeDisposable disposables) {
         initPage(mainInteractor.getPagePosition());
 
-        disposables.add(stationsInteractor.getCurrentStationObs()
-                .map(Station::isNullStation)
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
-                    @Override
-                    public void onNext(Boolean isNull) {
-                        handleIsNullStation(isNull);
-                    }
-                }));
-
-
         disposables.add(mainInteractor.initApp()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
@@ -61,6 +49,18 @@ public class MainPresenter extends BasePresenter<MainView> {
     @Override
     protected void onAttach(MainView view) {
         controlInteractor.connect();
+
+        disposables.add(stationsInteractor.getCurrentStationObs()
+                .map(Station::isNullStation)
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
+                    @Override
+                    public void onNext(Boolean isNull) {
+                        handleIsNullStation(isNull);
+                    }
+                }));
+
     }
 
     @Override

@@ -34,7 +34,6 @@
     <string name="error_renderer">Not supported audio stream</string>
     <string name="error_unexpected">Unexpected error</string>
 
-    <string name="search_result_empty">The search results are empty</string>
     <plurals name="search_result">
         <item quantity="one">%d station found</item>
         <item quantity="other">%d stations found</item>

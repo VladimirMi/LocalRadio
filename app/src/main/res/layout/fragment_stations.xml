@@ -28,4 +28,13 @@
         android:visibility="gone"
         tools:text="Pol, a bene mortem."
         />
+
+    <ProgressBar
+        android:id="@+id/loadingPb"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        />
 </FrameLayout>

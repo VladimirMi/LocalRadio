@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -28,6 +29,7 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     @BindView(R.id.stationList) RecyclerView stationList;
     @BindView(R.id.placeholder) TextView placeholder;
+    @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
     private StationsAdapter stationsAdapter;
     private SearchView searchView;
@@ -99,19 +101,20 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     }
 
     @Override
-    public void showPlaceholder(boolean searchDone) {
+    public void showPlaceholder() {
         placeholder.setVisibility(View.VISIBLE);
-        if (searchDone) {
-            String text = getResources().getQuantityString(R.plurals.search_result, 0, 0);
-            placeholder.setText(text);
-        } else {
-            placeholder.setText(R.string.search_result_empty);
-        }
+        String text = getResources().getQuantityString(R.plurals.search_result, 0, 0);
+        placeholder.setText(text);
     }
 
     @Override
     public void hidePlaceholder() {
         placeholder.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setSearching(boolean isSearching) {
+        loadingPb.setVisibility(isSearching ? View.VISIBLE : View.GONE);
     }
 
     //endregion

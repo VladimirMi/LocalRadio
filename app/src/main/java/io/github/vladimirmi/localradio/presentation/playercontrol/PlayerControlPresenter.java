@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.presentation.playercontrol;
 
-import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import javax.inject.Inject;
@@ -13,7 +12,6 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -36,7 +34,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     @Override
-    protected void onFirstAttach(@Nullable PlayerControlView view, CompositeDisposable disposables) {
+    protected void onAttach(PlayerControlView view) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {

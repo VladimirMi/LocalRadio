@@ -41,19 +41,19 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCity(locationInteractor.getCity());
         view.setAutodetect(locationInteractor.isAutodetect());
         setSearchDone(searchInteractor.isSearchDone());
+    }
 
+    @Override
+    protected void onAttach(SearchView view) {
         disposables.add(searchInteractor.getSearchResults()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
                     @Override
                     public void onNext(Integer integer) {
-                        if (hasView()) {
-                            //noinspection ConstantConditions
-                            getView().setSearchResult(integer);
-                            getView().setCountryName(locationInteractor.getCountryName());
-                            getView().setCity(locationInteractor.getCity());
-                            setSearchDone(true);
-                        }
+                        view.setSearchResult(integer);
+                        view.setCountryName(locationInteractor.getCountryName());
+                        view.setCity(locationInteractor.getCity());
+                        setSearchDone(true);
                     }
                 }));
     }

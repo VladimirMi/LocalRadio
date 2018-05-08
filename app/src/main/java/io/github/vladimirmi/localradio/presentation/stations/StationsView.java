@@ -17,7 +17,9 @@ public interface StationsView extends BaseView {
 
     void setSelectedPlaying(boolean playing);
 
-    void showPlaceholder(boolean searchDone);
+    void showPlaceholder();
 
     void hidePlaceholder();
+
+    void setSearching(boolean isSearching);
 }

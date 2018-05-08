@@ -32,17 +32,23 @@ public class SearchInteractor {
         return stationsRepository.isSearchDone();
     }
 
+    public Observable<Boolean> isSearching() {
+        return stationsRepository.isSearching();
+    }
+
     public void resetSearch() {
         stationsRepository.resetSearch();
     }
 
     public void searchStations() {
         SearchService.performSearch(false);
+        stationsRepository.setSearching(true);
     }
 
     public void refreshStations() {
         resetSearch();
         SearchService.performSearch(true);
+        stationsRepository.setSearching(true);
     }
 
     public Completable checkCanSearch() {
