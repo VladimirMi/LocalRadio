@@ -77,6 +77,7 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
 
     @Override
     public void performValidation() {
+        if (getText().toString().isEmpty()) setText(" ");
         super.performValidation();
         listener.onCompletion(getText().toString());
     }
@@ -113,14 +114,14 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
                 String element = list.get(idx).toString();
                 int charEquals = 0;
 
-                int minLenght = Math.min(element.length(), invalidText.length());
-                for (int i = 0; i < minLenght; i++) {
+                int minLength = Math.min(element.length(), invalidText.length());
+                for (int i = 0; i < minLength; i++) {
                     char actual = invalidText.charAt(i);
                     char expected = element.charAt(i);
 
                     if (actual == expected) {
                         charEquals++;
-                        if (charEquals == minLenght) {
+                        if (charEquals == minLength) {
                             return element;
                         }
                     }

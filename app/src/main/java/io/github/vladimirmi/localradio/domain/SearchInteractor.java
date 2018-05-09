@@ -42,13 +42,11 @@ public class SearchInteractor {
 
     public void searchStations() {
         SearchService.performSearch(false);
-        stationsRepository.setSearching(true);
     }
 
     public void refreshStations() {
         resetSearch();
         SearchService.performSearch(true);
-        stationsRepository.setSearching(true);
     }
 
     public Completable checkCanSearch() {

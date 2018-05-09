@@ -3,7 +3,6 @@ package io.github.vladimirmi.localradio.data.service.search;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import java.util.Collections;
@@ -20,10 +19,10 @@ import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -58,10 +57,16 @@ public class SearchService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(Intent intent) {
         boolean skipCache = intent.getBooleanExtra(EXTRA_SKIP_CACHE, false);
+        stationsRepository.setSearching(true);
         Throwable throwable = search(skipCache).blockingGet();
-        Timber.w(throwable);
+        // TODO: 5/9/18 MessageException from throwable
+        // TODO: 5/9/18 Retry policy
+        if (throwable != null) {
+            stationsRepository.setSearchDone(false);
+            UiUtils.handleError(this, throwable);
+        }
     }
 
     private Completable search(boolean skipCache) {
@@ -76,9 +81,7 @@ public class SearchService extends IntentService {
         return search.doOnSuccess(stations -> {
             stationsRepository.setSearchResult(stations);
             favoriteInteractor.updateStationsWithFavorites();
-        })
-                .doOnError(throwable -> stationsRepository.setSearchDone(false))
-                .toCompletable();
+        }).toCompletable();
     }
 
     private Single<List<Station>> searchStationsAuto(boolean skipCache) {

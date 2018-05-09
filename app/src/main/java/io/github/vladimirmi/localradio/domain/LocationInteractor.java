@@ -24,14 +24,15 @@ import io.reactivex.Completable;
 public class LocationInteractor {
 
     private static final String UNLISTED_CITY = "{unlisted}";
+    private Country anyCountry = Country.any();
+    public String anyCity = anyCountry.getCities().get(0);
 
     private final LocationRepository locationRepository;
 
-    private Country anyCountry = Country.any();
-    private String anyCity = anyCountry.getCities().get(0);
     // TODO: 5/2/18 Create resource manager
     private String unlistedCity = Scopes.appContext().getString(R.string.unlisted_city);
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public LocationInteractor(LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
