@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -79,6 +81,9 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         stationList.setLayoutManager(layoutManager);
         stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
+
+        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
     //region =============== StationsView ==============
@@ -114,6 +119,7 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     @Override
     public void setSearching(boolean isSearching) {
+        Timber.e("setSearching: " + isSearching);
         loadingPb.setVisibility(isSearching ? View.VISIBLE : View.GONE);
     }
 

@@ -23,7 +23,6 @@ import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.presentation.stations.StationsAdapter;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 13.04.2018.
@@ -67,7 +66,6 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
 
     @Override
     public void selectStation(Station station) {
-        Timber.e("selectStation: " + station);
         stationsAdapter.select(station);
         scrollToSelectedStation();
     }
