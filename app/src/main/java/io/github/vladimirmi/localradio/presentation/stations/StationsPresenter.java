@@ -69,6 +69,7 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                     @Override
                     public void onNext(Boolean isSearching) {
                         view.setSearching(isSearching);
+                        if (isSearching) view.hidePlaceholder();
                     }
                 }));
     }
