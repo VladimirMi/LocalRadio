@@ -21,7 +21,7 @@ public class StationsRepository {
 
     private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
     private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
-    private BehaviorRelay<Boolean> isSearching = BehaviorRelay.create();
+    private BehaviorRelay<Boolean> isSearching = BehaviorRelay.createDefault(false);
 
     @Inject
     public StationsRepository(Preferences preferences) {

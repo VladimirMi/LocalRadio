@@ -51,11 +51,12 @@ public class CacheSource implements Interceptor {
             return chain.proceed(chain.request());
         }
 
-        if (!cacheFile.exists()) {
+        if (!cacheFile.exists() || cacheFile.length() == 0) {
             cleanOldCache();
 
             Response response = chain.proceed(chain.request());
             if (response.isSuccessful()) {
+                Timber.w("Write %s", cacheFile.getName());
                 FileWriter fileWriter = new FileWriter(cacheFile);
                 //noinspection ConstantConditions
                 fileWriter.write(response.body().string());
@@ -63,6 +64,8 @@ public class CacheSource implements Interceptor {
             } else {
                 return response;
             }
+        } else {
+            Timber.w("Return %s", cacheFile.getName());
         }
 
         BufferedSource cache = Okio.buffer(FileSystem.SYSTEM.source(cacheFile));
@@ -76,13 +79,22 @@ public class CacheSource implements Interceptor {
                 .build();
     }
 
+    public void cleanCache(String countryCode, String city) {
+        cleanCache(String.format("%s_%s", countryCode, city));
+    }
+
+    public void cleanCache(float lat, float lon) {
+        cleanCache(String.format("%s_%s", lat, lon));
+    }
 
     public void cleanCache(String namePart) {
         File[] files = cacheDir.listFiles((dir, name) -> name.contains(namePart));
         for (File file : files) {
             boolean delete = file.delete();
             if (!delete) {
-                Timber.w("Can't delete file " + file.getName());
+                Timber.w("Can't delete %s", file.getName());
+            } else {
+                Timber.w("Clean %s", file.getName());
             }
         }
     }
@@ -94,7 +106,7 @@ public class CacheSource implements Interceptor {
             if (!file.getName().contains(nowDate)) {
                 boolean delete = file.delete();
                 if (!delete) {
-                    Timber.w("Can't delete file " + file.getName());
+                    Timber.w("Can't delete %s", file.getName());
                 }
             }
         }

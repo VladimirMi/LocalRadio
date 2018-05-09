@@ -13,7 +13,6 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -41,7 +40,6 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
                     public void onNext(List<Station> stations) {
-                        Timber.e("onNext: " + stations.size());
                         view.setStations(stations);
                         decideShowPlaceholder(stations);
                     }

@@ -38,6 +38,7 @@ import timber.log.Timber;
  * Created by Vladimir Mikhalev 28.04.2018.
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class UiUtils {
 
     private UiUtils() {
@@ -48,7 +49,7 @@ public class UiUtils {
         if (e instanceof MessageException) {
             messageId = ((MessageException) e).getMessageId();
         } else if (e instanceof SocketTimeoutException) {
-            messageId = R.string.error_network;
+            messageId = R.string.error_connection;
         }
 
         if (errorHandler != null && messageId != -1) {

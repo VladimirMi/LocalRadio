@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -14,6 +13,7 @@ import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.entity.StationsResult;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
+import io.github.vladimirmi.localradio.data.net.RxRetryTransformer;
 import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
@@ -22,7 +22,9 @@ import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
 import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -60,13 +62,14 @@ public class SearchService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         boolean skipCache = intent.getBooleanExtra(EXTRA_SKIP_CACHE, false);
         stationsRepository.setSearching(true);
-        Throwable throwable = search(skipCache).blockingGet();
-        // TODO: 5/9/18 MessageException from throwable
-        // TODO: 5/9/18 Retry policy
-        if (throwable != null) {
-            stationsRepository.setSearchDone(false);
-            UiUtils.handleError(this, throwable);
-        }
+
+        Throwable err = search(skipCache).observeOn(AndroidSchedulers.mainThread())
+                .doOnError(throwable -> {
+                    stationsRepository.setSearchDone(false);
+                    UiUtils.handleError(this, throwable);
+                })
+                .blockingGet();
+        Timber.w(err);
     }
 
     private Completable search(boolean skipCache) {
@@ -78,10 +81,12 @@ public class SearchService extends IntentService {
             search = searchStationsManual(skipCache);
         }
 
-        return search.doOnSuccess(stations -> {
-            stationsRepository.setSearchResult(stations);
-            favoriteInteractor.updateStationsWithFavorites();
-        }).toCompletable();
+        return search.compose(new RxRetryTransformer<>())
+                .doOnSuccess(stations -> {
+                    stationsRepository.setSearchResult(stations);
+                    favoriteInteractor.updateStationsWithFavorites();
+                })
+                .toCompletable();
     }
 
     private Single<List<Station>> searchStationsAuto(boolean skipCache) {
@@ -101,36 +106,38 @@ public class SearchService extends IntentService {
                     } else {
                         return searchStationsManual(skipCache);
                     }
-                })
-                .onErrorReturn(throwable -> Collections.emptyList());
+                });
     }
 
     private Single<List<Station>> searchStationsManual(boolean skipCache) {
         String countryCode = locationRepository.getCountryCode();
         String city = locationRepository.getCity();
         if (skipCache) {
-            cacheSource.cleanCache(String.format("%s_%s", countryCode, city));
+            cacheSource.cleanCache(countryCode, city);
         }
         return restService.getStationsByLocation(countryCode, city, 1)
                 .map(StationsResult::getStations)
-                .onErrorReturn(throwable -> Collections.emptyList())
+                .doOnError(e -> cacheSource.cleanCache(countryCode, city))
                 .subscribeOn(Schedulers.io());
     }
 
     private Single<List<Station>> getStationsByCoordinates(boolean skipCache, Pair<Float, Float> coordinates) {
         if (skipCache) {
-            cacheSource.cleanCache(String.format("%s_%s", coordinates.first, coordinates.second));
+            cacheSource.cleanCache(coordinates.first, coordinates.second);
         }
         return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
                 .map(StationsResult::getStations)
+                .doOnError(e -> cacheSource.cleanCache(coordinates.first, coordinates.second))
                 .subscribeOn(Schedulers.io());
     }
 
     private Single<List<Station>> getStationsByIp(boolean skipCache) {
+
         return Single.fromCallable(() -> networkChecker.getIp())
                 .flatMap(ip -> {
                     if (skipCache) cacheSource.cleanCache(ip);
-                    return restService.getStationsByIp(ip);
+                    return restService.getStationsByIp(ip)
+                            .doOnError(e -> cacheSource.cleanCache(ip));
                 })
                 .map(StationsResult::getStations)
                 .subscribeOn(Schedulers.io());

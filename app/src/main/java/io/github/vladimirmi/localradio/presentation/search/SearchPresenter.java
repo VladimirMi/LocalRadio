@@ -49,21 +49,17 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
                     @Override
                     public void onNext(Integer integer) {
-                        view.setSearchResult(integer);
-                        view.setCountryName(locationInteractor.getCountryName());
-                        String city = locationInteractor.getCity();
-                        view.setCity(city);
-                        view.showCity(!city.equals(locationInteractor.anyCity)
-                                || !locationInteractor.isAutodetect());
+                        handleSearchResults(integer);
                     }
                 }));
 
         disposables.add(searchInteractor.isSearching()
+                .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
                     public void onNext(Boolean isSearching) {
-                        view.setSearching(isSearching);
+                        handleIsSearching(isSearching);
                     }
                 }));
     }
@@ -126,16 +122,36 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
-    private void enableAutodetect(boolean enabled) {
-        locationInteractor.saveAutodetect(enabled);
-        view.setAutodetect(enabled);
-        if (!enabled) newSearch();
-    }
-
     public void newSearch() {
         searchInteractor.resetSearch();
         view.resetSearchResult();
         setSearchDone(false);
+    }
+
+    private void handleSearchResults(Integer integer) {
+        view.setSearchResult(integer);
+        view.setCountryName(locationInteractor.getCountryName());
+        String city = locationInteractor.getCity();
+        view.setCity(city);
+        view.showCity(!city.equals(locationInteractor.anyCity)
+                || !locationInteractor.isAutodetect());
+    }
+
+    private void handleIsSearching(Boolean isSearching) {
+        view.setSearching(isSearching);
+        if (!isSearching && !searchInteractor.isSearchDone()) {
+            if (locationInteractor.isAutodetect()) {
+                enableAutodetect(false);
+            } else {
+                newSearch();
+            }
+        }
+    }
+
+    private void enableAutodetect(boolean enabled) {
+        locationInteractor.saveAutodetect(enabled);
+        view.setAutodetect(enabled);
+        if (!enabled) newSearch();
     }
 
     private void setSearchDone(boolean isSearchDone) {
