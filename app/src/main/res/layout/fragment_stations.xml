@@ -25,15 +25,15 @@
         android:paddingBottom="@dimen/player_controls_height"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorPrimary"
-        android:visibility="gone"
-        tools:text="Pol, a bene mortem."
+        android:text="@string/search_result_empty"
+        tools:visibility="gone"
         />
 
     <ProgressBar
         android:id="@+id/loadingPb"
-        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:indeterminate="true"
         android:visibility="gone"
         />

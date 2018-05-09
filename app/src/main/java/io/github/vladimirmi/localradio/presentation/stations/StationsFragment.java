@@ -107,8 +107,6 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     @Override
     public void showPlaceholder() {
         placeholder.setVisibility(View.VISIBLE);
-        String text = getResources().getQuantityString(R.plurals.search_result, 0, 0);
-        placeholder.setText(text);
     }
 
     @Override
