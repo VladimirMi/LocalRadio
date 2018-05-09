@@ -39,7 +39,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
                     public void onNext(Station station) {
-                        if (view != null) view.selectStation(station);
+                        view.selectStation(station);
                     }
                 }));
 
@@ -48,9 +48,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                 .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
                     @Override
                     public void onNext(PlaybackStateCompat state) {
-                        if (view != null) {
-                            view.setSelectedPlaying(state.getState() == PlaybackStateCompat.STATE_PLAYING);
-                        }
+                        view.setSelectedPlaying(state.getState() == PlaybackStateCompat.STATE_PLAYING);
                     }
                 }));
     }

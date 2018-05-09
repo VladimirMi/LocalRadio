@@ -66,6 +66,10 @@ public class StationsInteractor {
         stationsRepository.setStations(stationsRepository.getStations());
     }
 
+    public String getFilter() {
+        return filter;
+    }
+
     private List<Station> getFilteredStations() {
         if (filteredStations != null) {
             return filteredStations;
@@ -94,9 +98,5 @@ public class StationsInteractor {
 
     private boolean checkCanFilter(String field) {
         return field != null && field.toLowerCase().contains(filter);
-    }
-
-    public String getFilter() {
-        return filter;
     }
 }

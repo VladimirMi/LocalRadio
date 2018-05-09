@@ -78,7 +78,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
 
         if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
-            holder.select(position == selectedPosition, playing);
+            holder.select(station.getId() == selectedStation.getId(), playing);
 
         } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
             holder.setFavorite(station);
@@ -93,7 +93,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         Station station = getItem(position);
         holder.bind(station);
         holder.setFavorite(station);
-        holder.select(position == selectedPosition, playing);
+        holder.select(station.getId() == selectedStation.getId(), playing);
     }
 
     public void select(Station station) {
