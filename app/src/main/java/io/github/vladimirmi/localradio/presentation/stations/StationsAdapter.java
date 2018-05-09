@@ -74,13 +74,14 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
-        holder.itemView.setOnClickListener(view -> listener.onStationClick(getItem(position)));
+        Station station = getItem(position);
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
 
         if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
             holder.select(position == selectedPosition, playing);
 
         } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
-            holder.setFavorite(getItem(position));
+            holder.setFavorite(station);
 
         } else {
             super.onBindViewHolder(holder, position, payloads);

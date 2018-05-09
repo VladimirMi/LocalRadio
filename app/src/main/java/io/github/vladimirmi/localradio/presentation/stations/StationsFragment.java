@@ -140,22 +140,18 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         int stationPosition = stationsAdapter.getSelectedPosition();
         if (stationPosition < 0) return;
 
-        int firstPosition = layoutManager.findFirstVisibleItemPosition();
-        int lastPosition = layoutManager.findLastVisibleItemPosition();
-        int offset = (lastPosition - firstPosition) / 4;
+        int firstPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+        int lastPosition = layoutManager.findLastCompletelyVisibleItemPosition();
 
-        if (stationPosition > firstPosition + offset && stationPosition < lastPosition - offset) {
+        if (stationPosition > firstPosition && stationPosition < lastPosition) {
             return;
         }
 
         if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
             layoutManager.scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3);
 
-        } else if (stationPosition + offset > lastPosition) {
-            layoutManager.scrollToPosition(stationPosition + offset);
-
         } else {
-            layoutManager.scrollToPosition(stationPosition - offset);
+            layoutManager.scrollToPosition(stationPosition);
         }
     }
 }

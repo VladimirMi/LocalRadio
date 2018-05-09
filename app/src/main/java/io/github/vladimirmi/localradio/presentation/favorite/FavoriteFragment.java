@@ -35,6 +35,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @BindView(R.id.placeholder) TextView placeholder;
 
     private StationsAdapter stationsAdapter;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected int getLayout() {
@@ -57,7 +58,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     protected void setupView(View view) {
         placeholder.setText(R.string.favorites_empty);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager = new LinearLayoutManager(getContext());
         stationList.setLayoutManager(layoutManager);
         stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
@@ -66,6 +67,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void selectStation(Station station) {
         stationsAdapter.select(station);
+        scrollToSelectedStation();
     }
 
     @Override
@@ -94,7 +96,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         List<Station> list = ValuesMapper.getList(data, ValuesMapper::cursorToStation);
-        stationsAdapter.submitList(list);
+        setStations(list);
         presenter.listChanged(list);
     }
 
@@ -106,5 +108,29 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void onStationClick(Station station) {
         presenter.selectStation(station);
+    }
+
+    private void setStations(List<Station> stations) {
+        stationsAdapter.submitList(stations);
+        scrollToSelectedStation();
+    }
+
+    private void scrollToSelectedStation() {
+        int stationPosition = stationsAdapter.getSelectedPosition();
+        if (stationPosition < 0) return;
+
+        int firstPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+        int lastPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+
+        if (stationPosition > firstPosition && stationPosition < lastPosition) {
+            return;
+        }
+
+        if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
+            layoutManager.scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3);
+
+        } else {
+            layoutManager.scrollToPosition(stationPosition);
+        }
     }
 }
