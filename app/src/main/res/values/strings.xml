@@ -3,7 +3,7 @@
 
     <string name="country">Country</string>
     <string name="city">City</string>
-    <string name="automatic_position_detection">Automatic position detection</string>
+    <string name="automatic_location_detection">Automatic location detection</string>
     <string name="any_country">Any country</string>
     <string name="any_city">Any city</string>
     <string name="unlisted_city">Unlisted city</string>

@@ -50,7 +50,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
-        autodetectCb.setOnClickListener(v -> presenter.setAutodetect(!autodetectCb.isChecked()));
+        autodetectCb.requestFocus();
+        autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
         countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
         cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
 
@@ -131,8 +132,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public void setSearchDone(boolean done) {
-        enableView(countryEt, !done);
-        enableView(cityEt, !done);
+        enableTextView(countryEt, !done);
+        enableTextView(cityEt, !done);
         setVisible(searchBt, !done);
         setVisible(refreshBt, done);
     }
@@ -163,7 +164,19 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         setVisible(loadingPb, enabled);
     }
 
-    private void enableView(TextView view, boolean enable) {
+    @Override
+    public void enableAutodetect(boolean enabled) {
+        autodetectCb.setEnabled(enabled);
+    }
+
+    @Override
+    public void enableControls(boolean enabled) {
+        enableAutodetect(enabled);
+        refreshBt.setEnabled(enabled);
+        newSearchBt.setEnabled(enabled);
+    }
+
+    private void enableTextView(TextView view, boolean enable) {
         view.setEnabled(enable);
         view.setFocusable(enable);
         view.setFocusableInTouchMode(enable);

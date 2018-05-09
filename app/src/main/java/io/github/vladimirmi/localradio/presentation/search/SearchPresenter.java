@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -79,25 +80,26 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCity(city);
     }
 
-    public void setAutodetect(boolean autodetect) {
-        disposables.add(searchInteractor.checkCanSearch()
+    @SuppressLint("CheckResult")
+    public void enableAutodetect(boolean autodetect) {
+        searchInteractor.checkCanSearch()
                 .andThen(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION))
+                .delay(300, TimeUnit.MILLISECONDS)
                 .doOnNext(enabled -> {
                     // TODO: 4/27/18 action with settings to snackbar
                     if (!enabled) view.showMessage(R.string.need_permission);
                 })
                 .map(enabled -> enabled && autodetect)
-                .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(enabled -> {
-                    enableAutodetect(enabled);
+                    setAutodetect(enabled);
                     if (enabled) {
                         setSearchDone(true);
                         searchInteractor.searchStations();
                     }
                 })
                 .ignoreElements()
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
     public void search(String countryName, String city) {
@@ -140,15 +142,20 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     private void handleIsSearching(Boolean isSearching) {
         view.setSearching(isSearching);
         if (!isSearching && !searchInteractor.isSearchDone()) {
+            view.enableControls(true);
             if (locationInteractor.isAutodetect()) {
-                enableAutodetect(false);
+                setAutodetect(false);
             } else {
                 newSearch();
             }
+        } else if (isSearching) {
+            view.enableControls(false);
+        } else {
+            view.enableControls(true);
         }
     }
 
-    private void enableAutodetect(boolean enabled) {
+    private void setAutodetect(boolean enabled) {
         locationInteractor.saveAutodetect(enabled);
         view.setAutodetect(enabled);
         if (!enabled) newSearch();
