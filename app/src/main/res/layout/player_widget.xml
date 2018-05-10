@@ -14,7 +14,7 @@
         android:layout_centerVertical="true"
         android:contentDescription="@string/desc_station_icon"
         android:src="@drawable/ic_headphones"
-        android:background="#fafafa"
+        android:background="@color/grey_50"
         />
 
     <Button

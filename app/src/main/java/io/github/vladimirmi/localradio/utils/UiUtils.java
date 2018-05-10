@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.text.Spannable;
@@ -32,6 +31,9 @@ import java.util.zip.CRC32;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -75,7 +77,8 @@ public class UiUtils {
 
     public static void loadImageInto(ImageView view, Station station) {
         Context context = view.getContext();
-        BitmapDrawable placeholder = new BitmapDrawable(context.getResources(), UiUtils.textAsBitmap(context, station.getName()));
+        BitmapDrawable placeholder = new BitmapDrawable(context.getResources(),
+                UiUtils.textAsBitmap(context, station.getName()));
         Glide.with(context)
                 .load(station.getImageUrl())
                 .skipMemoryCache(true)
@@ -84,27 +87,37 @@ public class UiUtils {
                 .into(view);
     }
 
-    @WorkerThread
-    public static Bitmap loadBitmapForStation(Context context, Station station) {
+    public static FutureTarget<Bitmap> getGlideTarget(Context context, Station station) {
+
         Resources resources = context.getResources();
         int width = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width);
         int height = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
 
-        FutureTarget<Bitmap> futureTarget = Glide.with(context.getApplicationContext())
+        return Glide.with(context.getApplicationContext())
                 .load(station.getImageUrl())
                 .asBitmap()
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .into(width, height);
+    }
 
-        try {
-            return futureTarget.get(3000, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            Timber.w("error loading image %s", station.getImageUrl());
-            return textAsBitmap(context, station.getName());
-        } finally {
-            Glide.clear(futureTarget);
-        }
+    public static Observable<Bitmap> loadBitmapForStation(Context context, Station station) {
+        return Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
+            FutureTarget<Bitmap> glideTarget = getGlideTarget(context, station);
+            try {
+                Bitmap bitmap = glideTarget.get(5000, TimeUnit.MILLISECONDS);
+                if (!emitter.isDisposed()) {
+                    emitter.onNext(bitmap);
+                }
+            } catch (Exception e) {
+                Timber.w("error loading image %s", station.getImageUrl());
+            } finally {
+                Glide.clear(glideTarget);
+                if (!emitter.isDisposed()) {
+                    emitter.onComplete();
+                }
+            }
+        }).subscribeOn(Schedulers.io());
     }
 
     public static int spToPx(Context context, int sp) {

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -76,14 +75,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(Schedulers.io())
                 .distinctUntilChanged(Station::getId)
-                .filter(station -> !station.isNullStation())
-                .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
-                    @Override
-                    public void onNext(Station station) {
-                        appInitialized = true;
-                        handleCurrentStation(station);
-                    }
-                }));
+                .doOnNext(station -> {
+                    appInitialized = true;
+                    handleCurrentStation(station);
+                }).switchMap(station -> UiUtils.loadBitmapForStation(this, station))
+                .subscribe(this::handleStationIcon)
+        );
     }
 
     private void initSession() {
@@ -146,17 +143,23 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         }
     }
 
-    @WorkerThread
     private void handleCurrentStation(Station station) {
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
 
-        Bitmap icon = UiUtils.loadBitmapForStation(this, station);
-
         clearMetadata();
         mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.getName())
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, icon)
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                        UiUtils.textAsBitmap(this, station.getName()))
+                .build();
+        session.setMetadata(mediaMetadata);
+        updateRemoteViews();
+    }
+
+    private void handleStationIcon(Bitmap bitmap) {
+        mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
                 .build();
         session.setMetadata(mediaMetadata);
         updateRemoteViews();
