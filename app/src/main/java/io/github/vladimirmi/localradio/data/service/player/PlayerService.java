@@ -78,8 +78,10 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                 .doOnNext(station -> {
                     appInitialized = true;
                     handleCurrentStation(station);
-                }).switchMap(station -> UiUtils.loadBitmapForStation(this, station))
-                .subscribe(this::handleStationIcon)
+                }).switchMap(station ->
+                        UiUtils.loadBitmapForStation(this, station)
+                                .doOnNext(this::handleStationIcon))
+                .subscribe()
         );
     }
 
@@ -178,6 +180,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
+        if (station.isNullStation()) return;
         playingStationId = station.getId();
         playback.play(Uri.parse(station.getUrl()));
     }

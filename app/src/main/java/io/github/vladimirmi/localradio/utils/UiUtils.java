@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -8,6 +9,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.VectorDrawable;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
 import android.text.Spannable;
@@ -75,6 +79,25 @@ public class UiUtils {
         textView.setText(spannable);
     }
 
+    @SuppressLint("NewApi")
+    public static Bitmap getBitmap(Context context, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(context, drawableId);
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        } else if (drawable instanceof VectorDrawableCompat || drawable instanceof VectorDrawable) {
+            Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                    drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+
+            return bitmap;
+        } else {
+            throw new IllegalArgumentException("unsupported drawable type");
+        }
+    }
+
     public static void loadImageInto(ImageView view, Station station) {
         Context context = view.getContext();
         BitmapDrawable placeholder = new BitmapDrawable(context.getResources(),
@@ -131,6 +154,10 @@ public class UiUtils {
     }
 
     public static Bitmap textAsBitmap(Context context, String text) {
+        if (text.isEmpty()) {
+            return getBitmap(context, R.drawable.ic_headphones);
+        }
+
         int maxTextLength = 4;
         int textSize = spToPx(context, 16);
         int padding = dpToPx(context, 4);

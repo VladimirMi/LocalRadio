@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationServices;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -71,7 +72,10 @@ public class LocationSource {
     private Single<Location> getLastLocation() {
         return Single.create(emitter -> fusedLocationProviderClient.getLastLocation()
                 .addOnSuccessListener(location -> {
-                    if (!emitter.isDisposed() && location != null) emitter.onSuccess(location);
+                    if (!emitter.isDisposed()) {
+                        if (location != null) emitter.onSuccess(location);
+                        else emitter.onError(new NoSuchElementException());
+                    }
                 })
                 .addOnFailureListener(e -> {
                     if (!emitter.isDisposed()) emitter.onError(e);

@@ -35,7 +35,8 @@ public class StationsInteractor {
     }
 
     public Station getCurrentStation() {
-        return stationsRepository.getCurrentStation();
+        Station currentStation = stationsRepository.getCurrentStation();
+        return currentStation == null ? Station.nullStation() : currentStation;
     }
 
     public void setCurrentStation(Station station) {
