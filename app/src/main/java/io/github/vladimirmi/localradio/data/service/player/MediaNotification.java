@@ -150,7 +150,7 @@ public class MediaNotification {
         return new NotificationCompat.Builder(service, CHANNEL_ID)
                 .setShowWhen(false)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSmallIcon(R.drawable.ic_radio)
+                .setSmallIcon(R.drawable.ic_headphones)
                 .setContentIntent(session.getController().getSessionActivity())
                 .setDeleteIntent(stopIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
