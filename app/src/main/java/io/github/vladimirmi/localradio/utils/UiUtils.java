@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
 import java.net.SocketTimeoutException;
 import java.util.Random;
@@ -56,11 +57,16 @@ public class UiUtils {
         int messageId = R.string.error_unexpected;
         if (e instanceof MessageException) {
             messageId = ((MessageException) e).getMessageId();
+
         } else if (e instanceof SocketTimeoutException) {
             messageId = R.string.error_connection;
+
         } else if (e instanceof ResolvableApiException && errorHandler instanceof BaseView) {
             ResolvableApiException resolvable = (ResolvableApiException) e;
             ((BaseView) errorHandler).resolveApiException(resolvable);
+
+        } else if (e instanceof HttpException) {
+            // TODO: 5/11/18 handle fail codes (500...)
         }
 
         if (errorHandler != null) {
