@@ -39,7 +39,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCitySuggestions(locationInteractor.findCities(countryName));
         view.setCountryName(countryName);
         view.setCity(locationInteractor.getCity());
-        view.setAutodetect(locationInteractor.isAutodetect());
+        setAutodetect(locationInteractor.isAutodetect());
         setSearchDone(searchInteractor.isSearchDone());
         view.enableAutodetect(locationInteractor.isServicesAvailable());
     }
@@ -97,8 +97,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     setAutodetect(enabled);
                     if (enabled) setSearchDone(true);
                 })
-                .ignoreElements()
-                .andThen(searchInteractor.searchStations())
+                .filter(enabled -> enabled)
+                .flatMapCompletable(enabled -> searchInteractor.searchStations())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
@@ -180,5 +180,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     private void setSearchDone(boolean isSearchDone) {
         view.setSearchDone(isSearchDone);
         if (!isSearchDone) view.showCity(true);
+        view.enableRefresh(isSearchDone);
     }
 }

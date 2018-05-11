@@ -2,8 +2,13 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -36,6 +41,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.searchResultTv) TextView searchResultTv;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
+    private boolean isRefreshEnabled = false;
+
     @Override
     protected int getLayout() {
         return R.layout.fragment_search;
@@ -44,6 +51,28 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @Override
     protected SearchPresenter providePresenter() {
         return Scopes.getAppScope().getInstance(SearchPresenter.class);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (isRefreshEnabled) {
+            inflater.inflate(R.menu.menu_search, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_refresh) {
+            presenter.refreshSearch();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -66,8 +95,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
         searchBt.setOnClickListener(v -> presenter.search(countryEt.getText().toString(),
                 cityEt.getText().toString()));
-
-//        refreshBt.setOnClickListener(v -> presenter.refreshSearch());
 
         loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
                 .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
@@ -172,6 +199,13 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @Override
     public void enableSearch(boolean enabled) {
         searchBt.setEnabled(enabled);
+    }
+
+    @Override
+    public void enableRefresh(boolean enabled) {
+        isRefreshEnabled = enabled;
+        //noinspection ConstantConditions
+        getActivity().invalidateOptionsMenu();
     }
 
     private void enableTextView(TextView view, boolean enable) {
