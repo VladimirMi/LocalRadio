@@ -73,6 +73,10 @@ public class MainPresenter extends BasePresenter<MainView> {
         if (hasView()) initPage(position);
     }
 
+    public void exit() {
+        controlInteractor.stop();
+    }
+
     private void handleIsNullStation(boolean isNull) {
         if (view == null) return;
         if (isNull) {
