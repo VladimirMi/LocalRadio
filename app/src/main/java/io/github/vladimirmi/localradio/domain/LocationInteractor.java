@@ -124,6 +124,14 @@ public class LocationInteractor {
         }
     }
 
+    public boolean isServicesAvailable() {
+        return locationRepository.isServicesAvailable();
+    }
+
+    public Completable checkCanGetLocation() {
+        return locationRepository.checkCanGetLocation();
+    }
+
     private List<Country> findCountries(String countryName) {
         if (countryName.equals(anyCountry.getName())) {
             return locationRepository.getCountries();

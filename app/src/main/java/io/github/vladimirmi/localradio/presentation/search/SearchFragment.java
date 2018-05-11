@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -70,6 +71,9 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
         refreshBt.setOnClickListener(v -> presenter.refreshSearch());
         newSearchBt.setOnClickListener(v -> presenter.newSearch());
+
+        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -170,8 +174,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     }
 
     @Override
-    public void enableControls(boolean enabled) {
-        enableAutodetect(enabled);
+    public void enableButtons(boolean enabled) {
         refreshBt.setEnabled(enabled);
         newSearchBt.setEnabled(enabled);
     }

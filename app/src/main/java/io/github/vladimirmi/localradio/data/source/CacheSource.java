@@ -29,6 +29,7 @@ public class CacheSource implements Interceptor {
     private static final String CACHE_PREFIX = "cache";
     private static final String SEARCH_PREFIX = "cache_search";
     private static final String SUFFIX = "json";
+    // TODO: 5/11/18 Change date on the current time with the expiration period
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.ENGLISH);
 
     private final File cacheDir;
@@ -79,6 +80,7 @@ public class CacheSource implements Interceptor {
                 .build();
     }
 
+    // TODO: 5/11/18 refactor: use varargs
     public void cleanCache(String countryCode, String city) {
         cleanCache(String.format("%s_%s", countryCode, city));
     }

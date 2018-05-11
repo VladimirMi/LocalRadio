@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.core;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+
 import io.reactivex.Observable;
 
 /**
@@ -13,4 +15,6 @@ public interface BaseView {
     void showMessage(String message);
 
     void showMessage(int messageId);
+
+    void resolveApiException(ResolvableApiException resolvable);
 }

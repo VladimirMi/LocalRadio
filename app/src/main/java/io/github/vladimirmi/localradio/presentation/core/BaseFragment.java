@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
@@ -74,19 +76,27 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
         super.onDestroy();
     }
 
-    @SuppressWarnings("all")
     @Override
     public Observable<Boolean> resolvePermissions(String... permissions) {
+        //noinspection unchecked,ConstantConditions
         return ((BaseActivity) getActivity()).resolvePermissions(permissions);
     }
 
     @Override
     public void showMessage(String message) {
+        //noinspection ConstantConditions
         Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void showMessage(int messageId) {
+        //noinspection ConstantConditions
         Snackbar.make(getView(), messageId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void resolveApiException(ResolvableApiException resolvable) {
+        //noinspection ConstantConditions
+        ((BaseActivity) getActivity()).resolveApiException(resolvable);
     }
 }

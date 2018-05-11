@@ -91,6 +91,7 @@ public class Metadata {
         return result;
     }
 
+    //todo refactor
     private static String[] splitOnArtistTitle(String artistTitle) {
         String[] strings;
         int i = artistTitle.indexOf('-');

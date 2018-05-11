@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
+import android.support.annotation.Nullable;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.ColorUtils;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.FutureTarget;
+import com.google.android.gms.common.api.ResolvableApiException;
 
 import java.net.SocketTimeoutException;
 import java.util.Random;
@@ -50,15 +52,18 @@ public class UiUtils {
     private UiUtils() {
     }
 
-    public static void handleError(Object errorHandler, Throwable e) {
-        int messageId = -1;
+    public static void handleError(@Nullable Object errorHandler, Throwable e) {
+        int messageId = R.string.error_unexpected;
         if (e instanceof MessageException) {
             messageId = ((MessageException) e).getMessageId();
         } else if (e instanceof SocketTimeoutException) {
             messageId = R.string.error_connection;
+        } else if (e instanceof ResolvableApiException && errorHandler instanceof BaseView) {
+            ResolvableApiException resolvable = (ResolvableApiException) e;
+            ((BaseView) errorHandler).resolveApiException(resolvable);
         }
 
-        if (errorHandler != null && messageId != -1) {
+        if (errorHandler != null) {
             if (errorHandler instanceof BaseView) {
                 ((BaseView) errorHandler).showMessage(messageId);
             } else if (errorHandler instanceof Context) {
@@ -101,7 +106,7 @@ public class UiUtils {
     public static void loadImageInto(ImageView view, Station station) {
         Context context = view.getContext();
         BitmapDrawable placeholder = new BitmapDrawable(context.getResources(),
-                UiUtils.textAsBitmap(context, station.getName()));
+                textAsBitmap(context, station.getName()));
         Glide.with(context)
                 .load(station.getImageUrl())
                 .skipMemoryCache(true)
@@ -111,7 +116,6 @@ public class UiUtils {
     }
 
     public static FutureTarget<Bitmap> getGlideTarget(Context context, Station station) {
-
         Resources resources = context.getResources();
         int width = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width);
         int height = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);

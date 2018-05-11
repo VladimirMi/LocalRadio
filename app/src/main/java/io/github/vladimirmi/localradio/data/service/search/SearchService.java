@@ -63,10 +63,11 @@ public class SearchService extends IntentService {
         boolean skipCache = intent.getBooleanExtra(EXTRA_SKIP_CACHE, false);
         stationsRepository.setSearching(true);
 
-        Throwable err = search(skipCache).observeOn(AndroidSchedulers.mainThread())
+        Throwable err = search(skipCache)
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnError(throwable -> {
                     stationsRepository.setSearchDone(false);
-                    UiUtils.handleError(this, throwable);
+                    UiUtils.handleError(this.getApplicationContext(), throwable);
                 })
                 .blockingGet();
         Timber.w(err);

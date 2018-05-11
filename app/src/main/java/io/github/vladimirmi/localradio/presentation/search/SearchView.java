@@ -34,5 +34,5 @@ public interface SearchView extends BaseView {
 
     void enableAutodetect(boolean enabled);
 
-    void enableControls(boolean enabled);
+    void enableButtons(boolean enabled);
 }

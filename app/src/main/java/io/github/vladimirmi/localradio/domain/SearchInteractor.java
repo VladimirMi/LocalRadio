@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
+import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.service.search.SearchService;
 import io.github.vladimirmi.localradio.utils.MessageException;
@@ -20,12 +21,14 @@ public class SearchInteractor {
 
     private final StationsRepository stationsRepository;
     private final NetworkChecker networkChecker;
+    private final LocationRepository locationRepository;
 
     @Inject
     public SearchInteractor(StationsRepository stationsRepository,
-                            NetworkChecker networkChecker) {
+                            NetworkChecker networkChecker, LocationRepository locationRepository) {
         this.stationsRepository = stationsRepository;
         this.networkChecker = networkChecker;
+        this.locationRepository = locationRepository;
     }
 
     public boolean isSearchDone() {
@@ -40,13 +43,13 @@ public class SearchInteractor {
         stationsRepository.resetSearch();
     }
 
-    public void searchStations() {
-        SearchService.performSearch(false);
+    public Completable searchStations() {
+        return performSearch(false);
     }
 
-    public void refreshStations() {
+    public Completable refreshStations() {
         resetSearch();
-        SearchService.performSearch(true);
+        return performSearch(true);
     }
 
     public Completable checkCanSearch() {
@@ -61,5 +64,15 @@ public class SearchInteractor {
         return stationsRepository.getStationsObs()
                 .map(List::size)
                 .filter(size -> isSearchDone());
+    }
+
+    private Completable performSearch(boolean skipCache) {
+        Completable checks;
+        if (locationRepository.isAutodetect()) {
+            checks = locationRepository.checkCanGetLocation();
+        } else {
+            checks = Completable.complete();
+        }
+        return checks.andThen(Completable.fromRunnable(() -> SearchService.performSearch(skipCache)));
     }
 }

@@ -41,6 +41,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCity(locationInteractor.getCity());
         view.setAutodetect(locationInteractor.isAutodetect());
         setSearchDone(searchInteractor.isSearchDone());
+        view.enableAutodetect(locationInteractor.isServicesAvailable());
     }
 
     @Override
@@ -83,45 +84,44 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     @SuppressLint("CheckResult")
     public void enableAutodetect(boolean autodetect) {
         searchInteractor.checkCanSearch()
+                .andThen(locationInteractor.checkCanGetLocation())
                 .andThen(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION))
                 .delay(300, TimeUnit.MILLISECONDS)
                 .doOnNext(enabled -> {
-                    // TODO: 4/27/18 action with settings to snackbar
+                    // TODO: 4/27/18 add action that opens settings to the snackbar
                     if (!enabled) view.showMessage(R.string.need_permission);
                 })
                 .map(enabled -> enabled && autodetect)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(enabled -> {
                     setAutodetect(enabled);
-                    if (enabled) {
-                        setSearchDone(true);
-                        searchInteractor.searchStations();
-                    }
+                    if (enabled) setSearchDone(true);
                 })
                 .ignoreElements()
+                .andThen(searchInteractor.searchStations())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
+    @SuppressLint("CheckResult")
     public void search(String countryName, String city) {
         locationInteractor.saveCountryNameCity(countryName, city);
 
-        disposables.add(locationInteractor.checkCanSearch()
+        locationInteractor.checkCanSearch()
                 .andThen(searchInteractor.checkCanSearch())
-                .doOnComplete(() -> {
-                    setSearchDone(true);
-                    searchInteractor.searchStations();
-                })
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+                .doOnComplete(() -> setSearchDone(true))
+                .andThen(searchInteractor.searchStations())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
+    @SuppressLint("CheckResult")
     public void refreshSearch() {
-        disposables.add(searchInteractor.checkCanSearch()
+        searchInteractor.checkCanSearch()
                 .doOnComplete(() -> {
                     setSearchDone(true);
                     view.resetSearchResult();
-                    searchInteractor.refreshStations();
                 })
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+                .andThen(searchInteractor.refreshStations())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
     public void newSearch() {
@@ -142,16 +142,19 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     private void handleIsSearching(Boolean isSearching) {
         view.setSearching(isSearching);
         if (!isSearching && !searchInteractor.isSearchDone()) {
-            view.enableControls(true);
+            view.enableButtons(true);
+            view.enableAutodetect(locationInteractor.isServicesAvailable());
             if (locationInteractor.isAutodetect()) {
                 setAutodetect(false);
             } else {
                 newSearch();
             }
         } else if (isSearching) {
-            view.enableControls(false);
+            view.enableButtons(false);
+            view.enableAutodetect(false);
         } else {
-            view.enableControls(true);
+            view.enableButtons(true);
+            view.enableAutodetect(locationInteractor.isServicesAvailable());
         }
     }
 

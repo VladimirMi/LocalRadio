@@ -12,6 +12,7 @@ import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CountrySource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 /**
@@ -68,6 +69,14 @@ public class LocationRepository {
         String countryCode = countryCity.first;
         String city = hasCountryCity(countryCity) ? countryCity.second : "";
         saveCountryCodeCity(countryCode, city);
+    }
+
+    public boolean isServicesAvailable() {
+        return locationSource.isServicesAvailable();
+    }
+
+    public Completable checkCanGetLocation() {
+        return locationSource.checkCanGetLocation();
     }
 
     public Single<Pair<Float, Float>> getCoordinates() {
