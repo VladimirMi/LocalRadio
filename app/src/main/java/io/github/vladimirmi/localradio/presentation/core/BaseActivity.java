@@ -71,7 +71,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
 
     @Override
     public void showMessage(int messageId) {
-        Snackbar.make(contentView, messageId, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(contentView, messageId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

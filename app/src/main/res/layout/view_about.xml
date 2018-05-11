@@ -123,6 +123,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:padding="8dp"
         android:background="@drawable/shape_button"
         android:text="@string/rate_app"
         app:layout_constraintStart_toStartOf="parent"
