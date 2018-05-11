@@ -102,16 +102,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
-    @SuppressLint("CheckResult")
-    public void search(String countryName, String city) {
-        locationInteractor.saveCountryNameCity(countryName, city);
-
-        locationInteractor.checkCanSearch()
-                .andThen(searchInteractor.checkCanSearch())
-                .doOnComplete(() -> setSearchDone(true))
-                .andThen(searchInteractor.searchStations())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
-    }
 
     @SuppressLint("CheckResult")
     public void refreshSearch() {
@@ -124,7 +114,26 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
-    public void newSearch() {
+    public void search(String countryName, String city) {
+        if (!searchInteractor.isSearchDone()) {
+            performSearch(countryName, city);
+        } else {
+            newSearch();
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private void performSearch(String countryName, String city) {
+        locationInteractor.saveCountryNameCity(countryName, city);
+
+        locationInteractor.checkCanSearch()
+                .andThen(searchInteractor.checkCanSearch())
+                .doOnComplete(() -> setSearchDone(true))
+                .andThen(searchInteractor.searchStations())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+    }
+
+    private void newSearch() {
         searchInteractor.resetSearch();
         view.resetSearchResult();
         setSearchDone(false);
@@ -139,38 +148,37 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 || !locationInteractor.isAutodetect());
     }
 
-    private void handleIsSearching(Boolean isSearching) {
+    private void handleIsSearching(boolean isSearching) {
         view.setSearching(isSearching);
-        if (!isSearching && !searchInteractor.isSearchDone()) {
-            view.enableButtons(true);
+        if (!isSearching) {
+            view.enableSearch(true);
             view.enableAutodetect(locationInteractor.isServicesAvailable());
-            if (locationInteractor.isAutodetect()) {
-                setAutodetect(false);
-            } else {
-                newSearch();
+            if (!searchInteractor.isSearchDone()) {
+                handleFailedSearch();
             }
-        } else if (isSearching) {
-            view.enableButtons(false);
-            view.enableAutodetect(false);
         } else {
-            view.enableButtons(true);
-            view.enableAutodetect(locationInteractor.isServicesAvailable());
+            view.enableSearch(false);
+            view.enableAutodetect(false);
+        }
+    }
+
+    private void handleFailedSearch() {
+        if (locationInteractor.isAutodetect()) {
+            setAutodetect(false);
+        } else {
+            newSearch();
         }
     }
 
     private void setAutodetect(boolean enabled) {
         locationInteractor.saveAutodetect(enabled);
         view.setAutodetect(enabled);
+        view.showSearchBtn(!enabled);
         if (!enabled) newSearch();
     }
 
     private void setSearchDone(boolean isSearchDone) {
         view.setSearchDone(isSearchDone);
         if (!isSearchDone) view.showCity(true);
-        if (locationInteractor.isAutodetect()) {
-            view.showNewSearchBtn(false);
-        } else {
-            view.showNewSearchBtn(isSearchDone);
-        }
     }
 }

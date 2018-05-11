@@ -22,7 +22,7 @@ public interface SearchView extends BaseView {
 
     void setSearchDone(boolean done);
 
-    void showNewSearchBtn(boolean visible);
+    void showSearchBtn(boolean visible);
 
     void showCity(boolean visible);
 
@@ -34,5 +34,5 @@ public interface SearchView extends BaseView {
 
     void enableAutodetect(boolean enabled);
 
-    void enableButtons(boolean enabled);
+    void enableSearch(boolean enabled);
 }

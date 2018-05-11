@@ -2,11 +2,11 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -32,9 +32,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
     @BindView(R.id.countryTil) TextInputLayout countryTil;
     @BindView(R.id.cityTil) TextInputLayout cityTil;
-    @BindView(R.id.searchBt) Button searchBt;
-    @BindView(R.id.refreshBt) Button refreshBt;
-    @BindView(R.id.newSearchBt) Button newSearchBt;
+    @BindView(R.id.searchBt) FloatingActionButton searchBt;
     @BindView(R.id.searchResultTv) TextView searchResultTv;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
@@ -69,8 +67,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         searchBt.setOnClickListener(v -> presenter.search(countryEt.getText().toString(),
                 cityEt.getText().toString()));
 
-        refreshBt.setOnClickListener(v -> presenter.refreshSearch());
-        newSearchBt.setOnClickListener(v -> presenter.newSearch());
+//        refreshBt.setOnClickListener(v -> presenter.refreshSearch());
 
         loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
                 .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
@@ -138,13 +135,12 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setSearchDone(boolean done) {
         enableTextView(countryEt, !done);
         enableTextView(cityEt, !done);
-        setVisible(searchBt, !done);
-        setVisible(refreshBt, done);
+        searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
     }
 
     @Override
-    public void showNewSearchBtn(boolean visible) {
-        setVisible(newSearchBt, visible);
+    public void showSearchBtn(boolean visible) {
+        setVisible(searchBt, visible);
     }
 
     @Override
@@ -174,9 +170,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     }
 
     @Override
-    public void enableButtons(boolean enabled) {
-        refreshBt.setEnabled(enabled);
-        newSearchBt.setEnabled(enabled);
+    public void enableSearch(boolean enabled) {
+        searchBt.setEnabled(enabled);
     }
 
     private void enableTextView(TextView view, boolean enable) {

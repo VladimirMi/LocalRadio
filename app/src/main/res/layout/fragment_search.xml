@@ -109,49 +109,15 @@
             app:layout_constraintTop_toBottomOf="@+id/cardView"
             />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="32dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loadingPb"
-            app:layout_constraintVertical_bias="1.0"
-            tools:ignore="ButtonStyle"
-            >
-
-            <Button
-                android:id="@+id/refreshBt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/refresh"
-                android:theme="@style/GreyButton"
-                />
-
-            <Button
-                android:id="@+id/newSearchBt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/new_search"
-                android:theme="@style/AccentButton"
-                />
-
-        </LinearLayout>
-
-        <Button
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/searchBt"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="32dp"
-            android:text="@string/search"
-            android:theme="@style/AccentButton"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_search"
+            app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cardView"
             app:layout_constraintVertical_bias="1.0"
             />
