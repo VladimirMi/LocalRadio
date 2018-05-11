@@ -6,6 +6,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 
 import butterknife.BindView;
@@ -41,6 +42,19 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_about) {
+            showAbout();
+            return true;
+
+        } else if (item.getItemId() == R.id.action_exit) {
+            exit();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -92,6 +106,14 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         if (viewPager.getCurrentItem() != PAGE_SEARCH) {
             tryShowControls();
         }
+    }
+
+    private void showAbout() {
+        // TODO: 5/11/18 implement
+    }
+
+    private void exit() {
+        // TODO: 5/11/18 implement
     }
 
     private void tryShowControls() {

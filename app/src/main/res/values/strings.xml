@@ -14,6 +14,8 @@
     <string name="desc_skip_previous_button">skip previous button</string>
     <string name="desc_skip_next_button">skip next button</string>
 
+    <string name="about">About</string>
+    <string name="exit">Exit</string>
     <string name="favorite">Favorite</string>
     <string name="stations">Stations</string>
     <string name="search">Search</string>

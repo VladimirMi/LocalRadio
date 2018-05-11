@@ -33,6 +33,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = providePresenter();
+        setHasOptionsMenu(true);
     }
 
     @Nullable

@@ -2,8 +2,6 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.view.Menu;
@@ -54,16 +52,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (isRefreshEnabled) {
-            inflater.inflate(R.menu.menu_search, menu);
-        }
+        inflater.inflate(isRefreshEnabled ? R.menu.menu_refresh : R.menu.menu_common, menu);
     }
 
     @Override

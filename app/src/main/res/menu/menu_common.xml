@@ -3,13 +3,6 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_search"
-        android:icon="@drawable/ic_filter"
-        android:title="@string/filter"
-        app:actionViewClass="android.support.v7.widget.SearchView"
-        app:showAsAction="ifRoom"/>
-
-    <item
         android:id="@+id/action_about"
         android:title="@string/about"
         app:showAsAction="never"/>
@@ -18,4 +11,5 @@
         android:id="@+id/action_exit"
         android:title="@string/exit"
         app:showAsAction="never"/>
+
 </menu>
