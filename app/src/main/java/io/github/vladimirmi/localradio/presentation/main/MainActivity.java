@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
@@ -12,6 +13,7 @@ import android.view.View;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.presentation.about.AboutActivity;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
@@ -109,7 +111,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     }
 
     private void showAbout() {
-        // TODO: 5/11/18 implement
+        Intent showAbout = new Intent(this, AboutActivity.class);
+        startActivity(showAbout);
     }
 
     private void exit() {
