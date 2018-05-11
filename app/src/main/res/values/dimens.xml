@@ -1,6 +1,4 @@
 <resources>
 
     <dimen name="player_controls_height">88dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
-
 </resources>

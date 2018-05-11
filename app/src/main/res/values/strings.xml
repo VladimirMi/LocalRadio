@@ -45,6 +45,18 @@
 
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
-    <string name="title_activity_main2">Main2Activity</string>
+
+    <string name="description">
+        Local Radio is an open source app for listening to radio broadcasts over the internet.
+        It can search stations by country and city.
+        It can also automatically detect the location and perform a search based on this.
+    </string>
+    <string name="project_page">Project page</string>
+    <string name="developer">Developer</string>
+    <string name="version">Version</string>
+    <string name="rate_app">Rate app</string>
+    <string name="powered_by">Powered by\ </string>
+    <string name="developer_name" translatable="false">Vladimir Mikhalev</string>
+    <string name="project_link" translatable="false">https://github.com/VladimirMi/LocalRadio</string>
 
 </resources>
