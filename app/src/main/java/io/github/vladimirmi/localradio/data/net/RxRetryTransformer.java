@@ -24,7 +24,7 @@ public class RxRetryTransformer<T> implements SingleTransformer<T, T> {
                     if (attempt == Api.RETRY_COUNT) {
                         return Flowable.error(throwable);
                     } else {
-                        return Flowable.timer(Api.RETRY_DELAY, TimeUnit.MILLISECONDS)
+                        return Flowable.timer(Api.RETRY_DELAY * attempt, TimeUnit.MILLISECONDS)
                                 .map(aLong -> new Object());
                     }
                 })

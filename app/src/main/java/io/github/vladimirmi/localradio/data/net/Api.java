@@ -16,7 +16,7 @@ public class Api {
     public final static int WRITE_TIMEOUT = 5000;
 
     public final static int RETRY_COUNT = 3;
-    public final static int RETRY_DELAY = 1000;
+    public final static int RETRY_DELAY = 2000;
 
     private Api() {
     }

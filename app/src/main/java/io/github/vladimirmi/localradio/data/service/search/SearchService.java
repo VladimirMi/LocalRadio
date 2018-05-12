@@ -82,6 +82,7 @@ public class SearchService extends IntentService {
             search = searchStationsManual(skipCache);
         }
 
+        // TODO: 5/12/18 clean a cache on error here
         return search.compose(new RxRetryTransformer<>())
                 .doOnSuccess(stations -> {
                     stationsRepository.setSearchResult(stations);
