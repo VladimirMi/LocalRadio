@@ -52,4 +52,8 @@ public class MainInteractor {
     public boolean isFavoritePage() {
         return getPagePosition() == 0;
     }
+
+    public boolean isHaveStations() {
+        return preferences.currentStationId.get() != 0;
+    }
 }

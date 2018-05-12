@@ -29,6 +29,10 @@ public class StationsInteractor {
                 .map(this::filter);
     }
 
+    public List<Station> getStations() {
+        return stationsRepository.getStations();
+    }
+
     public Observable<Station> getCurrentStationObs() {
         return stationsRepository.getCurrentStationObs()
                 .distinctUntilChanged();

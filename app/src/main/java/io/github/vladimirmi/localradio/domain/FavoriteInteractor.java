@@ -12,7 +12,6 @@ import io.github.vladimirmi.localradio.di.Scopes;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 13.04.2018.
@@ -39,6 +38,10 @@ public class FavoriteInteractor {
                     updateStationsWithFavorites();
                     setCurrentStationIfFavorite();
                 });
+    }
+
+    public List<Station> getFavorites() {
+        return favoriteRepository.getFavoriteStations();
     }
 
     public void setFavorites(List<Station> stations) {
@@ -76,7 +79,6 @@ public class FavoriteInteractor {
         int indexOfPrevious = (indexOfCurrent + source.size() - 1) % source.size();
         Station previousStation = indexOfCurrent == indexOfPrevious ?
                 Station.nullStation() : source.get(indexOfPrevious);
-        Timber.e("previousStation: " + previousStation);
         stationsRepository.setCurrentStation(previousStation);
     }
 
@@ -88,7 +90,6 @@ public class FavoriteInteractor {
         int indexOfNext = (indexOfCurrent + 1) % source.size();
         Station nextStation = indexOfCurrent == indexOfNext ?
                 Station.nullStation() : source.get(indexOfNext);
-        Timber.e("nextStation: " + nextStation);
         stationsRepository.setCurrentStation(nextStation);
     }
 
@@ -137,9 +138,9 @@ public class FavoriteInteractor {
     }
 
     private boolean canSelectNextFavorite() {
-        return getMainInteractor().isFavoritePage()
+        return (getMainInteractor().isFavoritePage() || stationsRepository.getStations().isEmpty())
                 && !controlInteractor.isPlaying()
-                && (favoriteRepository.getFavoriteStations().size() > 1 || stationsRepository.getStations().isEmpty());
+                && favoriteRepository.getFavoriteStations().size() > 1;
     }
 
     private int getIndexOfCurrent() {

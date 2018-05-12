@@ -39,11 +39,10 @@ public class MainPresenter extends BasePresenter<MainView> {
 
         disposables.add(mainInteractor.initApp()
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(() -> {
+                    if (!mainInteractor.isHaveStations()) selectPage(MainActivity.PAGE_SEARCH);
+                })
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
-
-        if (!searchInteractor.isSearchDone()) {
-            selectPage(MainActivity.PAGE_SEARCH);
-        }
     }
 
     @Override

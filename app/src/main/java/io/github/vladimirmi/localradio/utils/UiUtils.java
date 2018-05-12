@@ -138,7 +138,7 @@ public class UiUtils {
         return Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
             FutureTarget<Bitmap> glideTarget = getGlideTarget(context, station);
             try {
-                Bitmap bitmap = glideTarget.get(5000, TimeUnit.MILLISECONDS);
+                Bitmap bitmap = glideTarget.get(10000, TimeUnit.MILLISECONDS);
                 if (!emitter.isDisposed()) {
                     emitter.onNext(bitmap);
                 }

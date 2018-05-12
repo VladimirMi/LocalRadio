@@ -33,6 +33,7 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -78,9 +79,9 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                 .doOnNext(station -> {
                     appInitialized = true;
                     handleCurrentStation(station);
-                }).switchMap(station ->
-                        UiUtils.loadBitmapForStation(this, station)
-                                .doOnNext(this::handleStationIcon))
+                })
+                .switchMap(station -> UiUtils.loadBitmapForStation(this, station))
+                .doOnNext(this::handleStationIcon)
                 .subscribe()
         );
     }
@@ -104,18 +105,38 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         if (isPaused()) scheduleStopTask(Playback.STOP_DELAY);
 
         if (!appInitialized) {
-            compDisp.add(mainInteractor.initApp()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete(() -> {
-                        appInitialized = true;
-                        MediaButtonReceiver.handleIntent(session, intent);
-                    })
-                    .doOnError(e -> notification.stopForeground(true))
-                    .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
-        } else {
+            initApp(intent);
+        } else if (mainInteractor.isHaveStations()) {
+            Timber.e("onStartCommand: ");
             MediaButtonReceiver.handleIntent(session, intent);
+        } else {
+            stopForeground();
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void initApp(Intent intent) {
+        compDisp.add(mainInteractor.initApp()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(e -> stopForeground())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(this) {
+                    @Override
+                    public void onComplete() {
+                        appInitialized = true;
+                        if (mainInteractor.isHaveStations()) {
+                            Timber.e("onComplete: ");
+                            MediaButtonReceiver.handleIntent(session, intent);
+                        } else {
+                            stopForeground();
+                        }
+                    }
+                }));
+    }
+
+    private void stopForeground() {
+        Timber.e("stopForeground: ");
+        notification.stopForeground(true);
+        stopSelf();
     }
 
     @Override

@@ -33,7 +33,7 @@ import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 public class Playback implements AudioManager.OnAudioFocusChangeListener {
 
     public static final int STOP_DELAY = 60000; // default stop delay 1 min
-    private static final int STOP_DELAY_HEADSET = 5 * 60000; // stop delay on headset unplug
+    private static final int STOP_DELAY_HEADSET = 3 * 60000; // stop delay on headset unplug
     private static final float VOLUME_DUCK = 0.2f;
     private static final float VOLUME_NORMAL = 1.0f;
 
