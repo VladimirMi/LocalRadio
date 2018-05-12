@@ -41,7 +41,7 @@ public class StationsRepository {
         setSearchDone(false);
         stations.accept(Collections.emptyList());
         if (currentStation.hasValue() && !currentStation.getValue().isFavorite()) {
-            currentStation.accept(Station.nullStation());
+            setCurrentStation(Station.nullStation());
         }
     }
 

@@ -12,6 +12,7 @@ import io.github.vladimirmi.localradio.di.Scopes;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 13.04.2018.
@@ -73,7 +74,10 @@ public class FavoriteInteractor {
         if (indexOfCurrent == -1) return;
 
         int indexOfPrevious = (indexOfCurrent + source.size() - 1) % source.size();
-        stationsRepository.setCurrentStation(source.get(indexOfPrevious));
+        Station previousStation = indexOfCurrent == indexOfPrevious ?
+                Station.nullStation() : source.get(indexOfPrevious);
+        Timber.e("previousStation: " + previousStation);
+        stationsRepository.setCurrentStation(previousStation);
     }
 
     public void nextStation() {
@@ -82,7 +86,10 @@ public class FavoriteInteractor {
         if (indexOfCurrent == -1) return;
 
         int indexOfNext = (indexOfCurrent + 1) % source.size();
-        stationsRepository.setCurrentStation(source.get(indexOfNext));
+        Station nextStation = indexOfCurrent == indexOfNext ?
+                Station.nullStation() : source.get(indexOfNext);
+        Timber.e("nextStation: " + nextStation);
+        stationsRepository.setCurrentStation(nextStation);
     }
 
     public void updateStationsWithFavorites() {
@@ -118,9 +125,7 @@ public class FavoriteInteractor {
     }
 
     private void changeCurrentStationOnNextFavorite() {
-        if (!getMainInteractor().isFavoritePage()
-                || controlInteractor.isPlaying()
-                || favoriteRepository.getFavoriteStations().size() == 1) {
+        if (!canSelectNextFavorite()) {
             return;
         }
         int indexOfCurrent = getIndexOfCurrent();
@@ -129,6 +134,12 @@ public class FavoriteInteractor {
         } else {
             nextStation();
         }
+    }
+
+    private boolean canSelectNextFavorite() {
+        return getMainInteractor().isFavoritePage()
+                && !controlInteractor.isPlaying()
+                && (favoriteRepository.getFavoriteStations().size() > 1 || stationsRepository.getStations().isEmpty());
     }
 
     private int getIndexOfCurrent() {
