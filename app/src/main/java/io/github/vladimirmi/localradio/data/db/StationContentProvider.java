@@ -20,8 +20,8 @@ import io.github.vladimirmi.localradio.di.Scopes;
  */
 public class StationContentProvider extends ContentProvider {
 
-    public static final int STATIONS = 100;
-    public static final int STATION_BY_ID = 101;
+    private static final int STATIONS = 100;
+    private static final int STATION_BY_ID = 101;
 
     private UriMatcher matcher;
     private SQLiteDatabase db;

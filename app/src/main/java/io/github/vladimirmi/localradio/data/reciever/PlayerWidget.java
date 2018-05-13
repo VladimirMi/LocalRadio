@@ -22,8 +22,8 @@ import io.github.vladimirmi.localradio.presentation.main.MainActivity;
 
 public class PlayerWidget extends AppWidgetProvider {
 
-    public static final int REQUEST_CODE_WIDGET = 200;
     public static final String ACTION_WIDGET_UPDATE = "ACTION_WIDGET_UPDATE";
+    private static final int REQUEST_CODE_WIDGET = 200;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

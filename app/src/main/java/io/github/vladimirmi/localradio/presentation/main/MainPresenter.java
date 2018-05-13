@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.domain.MainInteractor;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
@@ -20,16 +19,14 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private final PlayerControlInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
-    private final SearchInteractor searchInteractor;
     private final MainInteractor mainInteractor;
 
     @Inject
     MainPresenter(PlayerControlInteractor controlInteractor,
                   StationsInteractor stationsInteractor,
-                  SearchInteractor searchInteractor, MainInteractor mainInteractor) {
+                  MainInteractor mainInteractor) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
-        this.searchInteractor = searchInteractor;
         this.mainInteractor = mainInteractor;
     }
 

@@ -25,8 +25,8 @@ public class CacheSource implements Interceptor {
 
     private static final String PREFIX = "cache";
     private static final String EXTENSION = "json";
-    private final File cacheDir;
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;  // 24 hours
+    private final File cacheDir;
 
     public CacheSource(Context context) {
         cacheDir = context.getCacheDir();
@@ -67,7 +67,6 @@ public class CacheSource implements Interceptor {
 
     public void cleanCache(String... queries) {
         String query = buildQuery(queries);
-        Timber.e("cleanCache: " + query);
         File[] files = cacheDir.listFiles((dir, name) -> name.contains(query));
         for (File file : files) {
             deleteFile(file);

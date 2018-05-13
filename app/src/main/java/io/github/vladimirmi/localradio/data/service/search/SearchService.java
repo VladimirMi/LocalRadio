@@ -132,7 +132,6 @@ public class SearchService extends IntentService {
     }
 
     private Single<List<Station>> getStationsByIp(boolean skipCache) {
-
         return Single.fromCallable(() -> networkChecker.getIp())
                 .flatMap(ip -> {
                     if (skipCache) cacheSource.cleanCache(ip);
