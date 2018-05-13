@@ -73,9 +73,7 @@ public class FavoriteInteractor {
         if (indexOfCurrent == -1) return;
 
         int indexOfPrevious = (indexOfCurrent + source.size() - 1) % source.size();
-        Station previousStation = indexOfCurrent == indexOfPrevious ?
-                Station.nullStation() : source.get(indexOfPrevious);
-        stationsRepository.setCurrentStation(previousStation);
+        stationsRepository.setCurrentStation(source.get(indexOfPrevious));
     }
 
     public void nextStation() {
@@ -84,9 +82,7 @@ public class FavoriteInteractor {
         if (indexOfCurrent == -1) return;
 
         int indexOfNext = (indexOfCurrent + 1) % source.size();
-        Station nextStation = indexOfCurrent == indexOfNext ?
-                Station.nullStation() : source.get(indexOfNext);
-        stationsRepository.setCurrentStation(nextStation);
+        stationsRepository.setCurrentStation(source.get(indexOfNext));
     }
 
     public void updateStationsWithFavorites() {
@@ -122,7 +118,13 @@ public class FavoriteInteractor {
     }
 
     private void changeCurrentStationOnNextFavorite() {
-        if (!canSelectNextFavorite()) {
+        if (!getMainInteractor().isFavoritePage() || controlInteractor.isPlaying()) {
+            return;
+        }
+        if (favoriteRepository.getFavoriteStations().size() == 1) {
+            if (stationsRepository.getStations().isEmpty()) {
+                stationsRepository.setCurrentStation(Station.nullStation());
+            }
             return;
         }
         int indexOfCurrent = getIndexOfCurrent();
@@ -131,13 +133,6 @@ public class FavoriteInteractor {
         } else {
             nextStation();
         }
-    }
-
-    private boolean canSelectNextFavorite() {
-        return getMainInteractor().isFavoritePage()
-                && !controlInteractor.isPlaying()
-                && (favoriteRepository.getFavoriteStations().size() > 1
-                || stationsRepository.getStations().isEmpty());
     }
 
     private int getIndexOfCurrent() {
