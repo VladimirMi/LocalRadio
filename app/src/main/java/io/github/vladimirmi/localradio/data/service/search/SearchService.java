@@ -17,6 +17,7 @@ import io.github.vladimirmi.localradio.data.net.RxRetryTransformer;
 import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
+import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
 import io.github.vladimirmi.localradio.utils.UiUtils;
@@ -96,8 +97,7 @@ public class SearchService extends IntentService {
                     Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(coordinates);
 
                     if (countryCodeCity == null) {
-                        return getStationsByIp(skipCache)
-                                .doOnSuccess(locationRepository::saveCountryCodeCity);
+                        return getStationsByIp(skipCache);
                     }
                     locationRepository.saveCountryCodeCity(countryCodeCity);
 
@@ -105,6 +105,12 @@ public class SearchService extends IntentService {
                         return getStationsByCoordinates(skipCache, coordinates);
                     } else {
                         return searchStationsManual(skipCache);
+                    }
+                }).onErrorResumeNext(throwable -> {
+                    if (throwable instanceof LocationSource.LocationTimeoutException) {
+                        return getStationsByIp(skipCache);
+                    } else {
+                        return Single.error(throwable);
                     }
                 });
     }
@@ -139,6 +145,7 @@ public class SearchService extends IntentService {
                             .doOnError(e -> cacheSource.cleanCache(ip));
                 })
                 .map(StationsResult::getStations)
+                .doOnSuccess(locationRepository::saveCountryCodeCity)
                 .subscribeOn(Schedulers.io());
     }
 }

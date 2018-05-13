@@ -26,12 +26,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.SingleOnSubscribe;
 import io.reactivex.disposables.Disposables;
 import timber.log.Timber;
 
@@ -42,13 +45,14 @@ import timber.log.Timber;
 @Singleton
 public class LocationSource {
 
+    private static final long LOCATION_MAX_WAIT_TIME = 10000; //10 sec
     private final FusedLocationProviderClient fusedLocationProviderClient;
     private final Geocoder geocoder;
     private final Context context;
     private final LocationRequest locationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_LOW_POWER)
-            .setInterval(2000)
-            .setFastestInterval(1000)
+            .setInterval(1000)
+            .setFastestInterval(500)
             .setNumUpdates(1);
 
     @SuppressWarnings("WeakerAccess")
@@ -113,7 +117,7 @@ public class LocationSource {
     @SuppressLint("MissingPermission")
     private Single<Location> getLocation() {
 
-        return Single.create(emitter -> {
+        return Single.create((SingleOnSubscribe<Location>) emitter -> {
             LocationCallback locationCallback = new LocationCallback() {
 
                 @Override
@@ -134,7 +138,8 @@ public class LocationSource {
 
             emitter.setDisposable(Disposables.fromRunnable(() -> fusedLocationProviderClient
                     .removeLocationUpdates(locationCallback)));
-        });
+
+        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new LocationTimeoutException()));
     }
 
 
@@ -143,5 +148,9 @@ public class LocationSource {
         String city = address.getLocality() != null ? address.getLocality() : "";
         Timber.i("getCountryCodeCity: %s, %s", countryCode, city);
         return new Pair<>(countryCode, city);
+    }
+
+    public static class LocationTimeoutException extends TimeoutException {
+
     }
 }

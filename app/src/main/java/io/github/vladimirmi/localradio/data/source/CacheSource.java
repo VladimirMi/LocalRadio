@@ -2,12 +2,14 @@ package io.github.vladimirmi.localradio.data.source;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
 
+import io.github.vladimirmi.localradio.data.net.Api;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Protocol;
@@ -34,12 +36,14 @@ public class CacheSource implements Interceptor {
 
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
+        cleanOldCache();
 
         File cacheFile = createCacheFile(chain.request().url());
+        if (cacheFile == null) {
+            return chain.proceed(chain.request());
+        }
 
         if (!cacheFile.exists() || cacheFile.length() == 0) {
-            cleanOldCache();
-
             Response response = chain.proceed(chain.request());
             if (response.isSuccessful()) {
                 Timber.w("Write %s", cacheFile.getName());
@@ -82,7 +86,11 @@ public class CacheSource implements Interceptor {
         }
     }
 
-    private File createCacheFile(HttpUrl url) {
+    private @Nullable
+    File createCacheFile(HttpUrl url) {
+        if (!url.host().equals(Api.HOST)) {
+            return null;
+        }
         Set<String> names = url.queryParameterNames();
         String[] values = new String[names.size()];
 
@@ -92,6 +100,11 @@ public class CacheSource implements Interceptor {
             i++;
         }
         String query = buildQuery(values);
+        File[] files = cacheDir.listFiles((dir, name) -> name.contains(query));
+        if (files.length > 0) {
+            return files[0];
+        }
+
         String fileName = String.format("%s_%s_%s.%s", PREFIX, query, System.currentTimeMillis(), EXTENSION);
         return new File(cacheDir, fileName);
     }
@@ -104,6 +117,7 @@ public class CacheSource implements Interceptor {
         }
         return builder.toString();
     }
+
 
     private boolean isCacheExpired(File cache) {
         int begin = cache.getName().lastIndexOf('_') + 1;
