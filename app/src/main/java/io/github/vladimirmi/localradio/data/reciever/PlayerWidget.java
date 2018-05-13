@@ -52,13 +52,18 @@ public class PlayerWidget extends AppWidgetProvider {
         String stationName = mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
         Bitmap stationIcon = mediaMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART);
 
-        views.setTextViewText(R.id.stationNameTv, stationName);
         views.setImageViewBitmap(R.id.iconIv, stationIcon);
 
-        if (metadata.isSupported) {
-            views.setTextViewText(R.id.metadataTv, metadata.toString());
+        if (metadata.isEmpty) {
+            views.setTextViewText(R.id.metadataTv, stationName);
+            views.setTextViewText(R.id.stationNameTv, "");
         } else {
-            views.setTextViewText(R.id.metadataTv, context.getString(R.string.metadata_not_available));
+            views.setTextViewText(R.id.stationNameTv, stationName);
+            if (metadata.isSupported) {
+                views.setTextViewText(R.id.metadataTv, metadata.toString());
+            } else {
+                views.setTextViewText(R.id.metadataTv, context.getString(R.string.metadata_not_available));
+            }
         }
 
         if (playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
