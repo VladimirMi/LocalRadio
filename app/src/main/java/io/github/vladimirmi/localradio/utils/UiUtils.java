@@ -111,26 +111,33 @@ public class UiUtils {
 
     public static void loadImageInto(ImageView view, Station station) {
         Context context = view.getContext();
-        BitmapDrawable placeholder = new BitmapDrawable(context.getResources(),
+        Resources resources = context.getResources();
+        int width = resources.getDimensionPixelSize(R.dimen.icon_size);
+        int height = resources.getDimensionPixelSize(R.dimen.icon_size);
+
+        BitmapDrawable placeholder = new BitmapDrawable(resources,
                 textAsBitmap(context, station.getName()));
         Glide.with(context)
                 .load(station.getImageUrl())
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .placeholder(placeholder)
+                .fitCenter()
+                .override(width, height)
                 .into(view);
     }
 
     public static FutureTarget<Bitmap> getGlideTarget(Context context, Station station) {
         Resources resources = context.getResources();
-        int width = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_width);
-        int height = resources.getDimensionPixelSize(android.R.dimen.notification_large_icon_height);
+        int width = resources.getDimensionPixelSize(R.dimen.icon_size);
+        int height = resources.getDimensionPixelSize(R.dimen.icon_size);
 
         return Glide.with(context.getApplicationContext())
                 .load(station.getImageUrl())
                 .asBitmap()
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
+                .fitCenter()
                 .into(width, height);
     }
 
@@ -138,7 +145,7 @@ public class UiUtils {
         return Observable.create((ObservableOnSubscribe<Bitmap>) emitter -> {
             FutureTarget<Bitmap> glideTarget = getGlideTarget(context, station);
             try {
-                Bitmap bitmap = glideTarget.get(10000, TimeUnit.MILLISECONDS);
+                Bitmap bitmap = glideTarget.get(5000, TimeUnit.MILLISECONDS);
                 if (!emitter.isDisposed()) {
                     emitter.onNext(bitmap);
                 }

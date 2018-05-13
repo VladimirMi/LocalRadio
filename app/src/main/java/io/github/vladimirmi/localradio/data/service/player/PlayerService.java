@@ -33,7 +33,6 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -107,7 +106,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         if (!appInitialized) {
             initApp(intent);
         } else if (mainInteractor.isHaveStations()) {
-            Timber.e("onStartCommand: ");
             MediaButtonReceiver.handleIntent(session, intent);
         } else {
             stopForeground();
@@ -124,7 +122,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     public void onComplete() {
                         appInitialized = true;
                         if (mainInteractor.isHaveStations()) {
-                            Timber.e("onComplete: ");
                             MediaButtonReceiver.handleIntent(session, intent);
                         } else {
                             stopForeground();
@@ -134,7 +131,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     private void stopForeground() {
-        Timber.e("stopForeground: ");
         notification.stopForeground(true);
         stopSelf();
     }
