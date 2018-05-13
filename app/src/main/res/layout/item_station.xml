@@ -26,6 +26,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/favoriteIv"
         app:layout_constraintStart_toEndOf="@+id/iconIv"
         app:layout_constraintTop_toTopOf="parent"

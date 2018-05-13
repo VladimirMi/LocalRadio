@@ -103,6 +103,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     private void showAbout() {
         Intent showAbout = new Intent(this, AboutActivity.class);
         startActivity(showAbout);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
     }
 
     private void exit() {

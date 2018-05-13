@@ -15,6 +15,7 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -39,7 +40,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCitySuggestions(locationInteractor.findCities(countryName));
         view.setCountryName(countryName);
         view.setCity(locationInteractor.getCity());
-        setAutodetect(locationInteractor.isAutodetect());
+        view.setAutodetect(locationInteractor.isAutodetect());
         setSearchDone(searchInteractor.isSearchDone());
         view.enableAutodetect(locationInteractor.isServicesAvailable());
     }
@@ -134,6 +135,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     private void newSearch() {
+        Timber.e("newSearch: ");
         searchInteractor.resetSearch();
         view.resetSearchResult();
         setSearchDone(false);
@@ -178,6 +180,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     private void setSearchDone(boolean isSearchDone) {
+        Timber.e("setSearchDone: " + isSearchDone);
         view.setSearchDone(isSearchDone);
         if (!isSearchDone) view.showCity(true);
         view.enableRefresh(isSearchDone);
