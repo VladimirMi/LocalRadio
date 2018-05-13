@@ -137,6 +137,14 @@ public class Station {
         }
     }
 
+    public String getLocationString() {
+        if (city.equals("{unlisted}") || city.isEmpty()) {
+            return countryCode;
+        } else {
+            return String.format("%s, %s", city, countryCode);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

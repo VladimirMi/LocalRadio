@@ -42,10 +42,12 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     protected void onAttach(PlayerControlView view) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(station -> view.setFavorite(station.isFavorite()))
+                .distinctUntilChanged(Station::getId)
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
                     public void onNext(Station station) {
-                        handleCurrentStation(station);
+                        view.setStation(station);
                     }
                 }));
 
@@ -68,13 +70,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                 }));
     }
 
-    private void handleCurrentStation(Station station) {
-        if (view == null) return;
-        view.setStation(station);
-    }
-
     private void handleState(PlaybackStateCompat state) {
-        if (view == null) return;
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
                 view.showPlaying();
@@ -92,7 +88,6 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     private void handleMetadata(Metadata metadata) {
-        if (view == null) return;
         if (metadata.isSupported && !metadata.isEmpty) {
             view.setMetadata(metadata.toString());
         } else if (stationsInteractor.getCurrentStation() != null) {

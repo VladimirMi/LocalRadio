@@ -11,6 +11,8 @@ public interface PlayerControlView extends BaseView {
 
     void setStation(Station station);
 
+    void setFavorite(boolean isFavorite);
+
     void setMetadata(String string);
 
     void showPlaying();
