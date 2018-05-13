@@ -40,10 +40,6 @@ public class FavoriteInteractor {
                 });
     }
 
-    public List<Station> getFavorites() {
-        return favoriteRepository.getFavoriteStations();
-    }
-
     public void setFavorites(List<Station> stations) {
         favoriteRepository.setFavoriteStations(stations);
         updateStationsWithFavorites();
@@ -138,9 +134,10 @@ public class FavoriteInteractor {
     }
 
     private boolean canSelectNextFavorite() {
-        return (getMainInteractor().isFavoritePage() || stationsRepository.getStations().isEmpty())
+        return getMainInteractor().isFavoritePage()
                 && !controlInteractor.isPlaying()
-                && favoriteRepository.getFavoriteStations().size() > 1;
+                && (favoriteRepository.getFavoriteStations().size() > 1
+                || stationsRepository.getStations().isEmpty());
     }
 
     private int getIndexOfCurrent() {

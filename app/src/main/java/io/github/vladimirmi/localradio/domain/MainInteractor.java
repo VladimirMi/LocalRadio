@@ -53,6 +53,10 @@ public class MainInteractor {
         return getPagePosition() == 0;
     }
 
+    public boolean isSearchPage() {
+        return getPagePosition() == 2;
+    }
+
     public boolean isHaveStations() {
         return preferences.currentStationId.get() != 0;
     }

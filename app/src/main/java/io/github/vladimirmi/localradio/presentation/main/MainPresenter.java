@@ -79,9 +79,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     private void handleIsNullStation(boolean isNull) {
         if (view == null) return;
         if (isNull) {
-            view.hideControls();
-        } else {
-            view.showControls();
+            view.hideControls(false);
+        } else if (!mainInteractor.isSearchPage()) {
+            view.showControls(false);
         }
     }
 
@@ -89,12 +89,19 @@ public class MainPresenter extends BasePresenter<MainView> {
         switch (position) {
             case MainActivity.PAGE_FAVORITE:
                 view.showFavorite();
+                if (!stationsInteractor.getCurrentStation().isNullStation()) {
+                    view.showControls(true);
+                }
                 break;
             case MainActivity.PAGE_STATIONS:
                 view.showStations();
+                if (!stationsInteractor.getCurrentStation().isNullStation()) {
+                    view.showControls(true);
+                }
                 break;
             case MainActivity.PAGE_SEARCH:
                 view.showSearch();
+                view.hideControls(true);
                 break;
         }
     }

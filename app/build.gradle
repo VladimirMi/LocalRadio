@@ -100,6 +100,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:okhttp3-integration:1.5.0@aar'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation "com.andkulikov:transitionseverywhere:1.7.9"
 
     //DI
     implementation 'com.github.stephanenicolas.toothpick:toothpick-runtime:1.1.2'
