@@ -6,11 +6,8 @@ import android.support.annotation.NonNull;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.util.Set;
 
-import io.github.vladimirmi.localradio.data.net.Api;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.Protocol;
@@ -26,13 +23,10 @@ import timber.log.Timber;
  */
 public class CacheSource implements Interceptor {
 
-    private static final String CACHE_PREFIX = "cache";
-    private static final String SEARCH_PREFIX = "cache_search";
-    private static final String SUFFIX = "json";
-    // TODO: 5/11/18 Change date on the current time with the expiration period
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy", Locale.ENGLISH);
-
+    private static final String PREFIX = "cache";
+    private static final String EXTENSION = "json";
     private final File cacheDir;
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;  // 24 hours
 
     public CacheSource(Context context) {
         cacheDir = context.getCacheDir();
@@ -41,16 +35,7 @@ public class CacheSource implements Interceptor {
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
 
-        File cacheFile = createLocationSearchCache(chain.request().url());
-        if (cacheFile == null) {
-            cacheFile = createCoordinatesSearchCache(chain.request().url());
-        }
-        if (cacheFile == null) {
-            cacheFile = createIpSearchCache(chain.request().url());
-        }
-        if (cacheFile == null) {
-            return chain.proceed(chain.request());
-        }
+        File cacheFile = createCacheFile(chain.request().url());
 
         if (!cacheFile.exists() || cacheFile.length() == 0) {
             cleanOldCache();
@@ -80,72 +65,60 @@ public class CacheSource implements Interceptor {
                 .build();
     }
 
-    // TODO: 5/11/18 refactor: use varargs
-    public void cleanCache(String countryCode, String city) {
-        cleanCache(String.format("%s_%s", countryCode, city));
-    }
-
-    public void cleanCache(float lat, float lon) {
-        cleanCache(String.format("%s_%s", lat, lon));
-    }
-
-    public void cleanCache(String namePart) {
-        File[] files = cacheDir.listFiles((dir, name) -> name.contains(namePart));
+    public void cleanCache(String... queries) {
+        String query = buildQuery(queries);
+        Timber.e("cleanCache: " + query);
+        File[] files = cacheDir.listFiles((dir, name) -> name.contains(query));
         for (File file : files) {
-            boolean delete = file.delete();
-            if (!delete) {
-                Timber.w("Can't delete %s", file.getName());
-            } else {
-                Timber.w("Clean %s", file.getName());
-            }
+            deleteFile(file);
         }
     }
 
     private void cleanOldCache() {
-        File[] files = cacheDir.listFiles((dir, name) -> name.startsWith(CACHE_PREFIX));
-        String nowDate = dateFormat.format(new Date());
+        File[] files = cacheDir.listFiles((dir, name) -> name.startsWith(PREFIX));
         for (File file : files) {
-            if (!file.getName().contains(nowDate)) {
-                boolean delete = file.delete();
-                if (!delete) {
-                    Timber.w("Can't delete %s", file.getName());
-                }
+            if (isCacheExpired(file)) {
+                deleteFile(file);
             }
         }
     }
 
-    private File createLocationSearchCache(HttpUrl url) {
-        String country = url.queryParameter(Api.QUERY_COUNTRY);
-        String city = url.queryParameter(Api.QUERY_CITY);
+    private File createCacheFile(HttpUrl url) {
+        Set<String> names = url.queryParameterNames();
+        String[] values = new String[names.size()];
 
-        if (country == null || city == null) {
-            return null;
+        int i = 0;
+        for (String name : names) {
+            values[i] = url.queryParameter(name);
+            i++;
         }
-        String fileName = String.format("%s_%s_%s_%s.%s", SEARCH_PREFIX, dateFormat.format(new Date()),
-                country, city, SUFFIX);
-
+        String query = buildQuery(values);
+        String fileName = String.format("%s_%s_%s.%s", PREFIX, query, System.currentTimeMillis(), EXTENSION);
         return new File(cacheDir, fileName);
     }
 
-    private File createCoordinatesSearchCache(HttpUrl url) {
-        String latitude = url.queryParameter(Api.QUERY_LATITUDE);
-        String longitude = url.queryParameter(Api.QUERY_LONGITUDE);
-
-        if (latitude == null || longitude == null) {
-            return null;
+    private String buildQuery(String... queries) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < queries.length; i++) {
+            builder.append(queries[i]);
+            if (i != queries.length - 1) builder.append('_');
         }
-        String fileName = String.format("%s_%s_%s_%s.%s", SEARCH_PREFIX, dateFormat.format(new Date()),
-                latitude, longitude, SUFFIX);
-
-        return new File(cacheDir, fileName);
+        return builder.toString();
     }
 
-    private File createIpSearchCache(HttpUrl url) {
-        String ip = url.queryParameter(Api.QUERY_IP);
+    private boolean isCacheExpired(File cache) {
+        int begin = cache.getName().lastIndexOf('_') + 1;
+        int end = cache.getName().lastIndexOf('.');
+        String createdTime = cache.getName().substring(begin, end);
+        return Long.parseLong(createdTime) + EXPIRATION_TIME < System.currentTimeMillis();
+    }
 
-        if (ip == null) return null;
-        String fileName = String.format("%s_%s_%s.%s", SEARCH_PREFIX, dateFormat.format(new Date()), ip, SUFFIX);
-
-        return new File(cacheDir, fileName);
+    private void deleteFile(File file) {
+        boolean delete = file.delete();
+        if (!delete) {
+            Timber.i("Can't delete %s", file.getName());
+        } else {
+            Timber.i("Delete %s", file.getName());
+        }
     }
 }

@@ -64,7 +64,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         favoriteBt.setOnClickListener(v -> presenter.switchFavorite());
 
         playPauseBt.setManualMode(true);
-        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+        loadingPb.getIndeterminateDrawable().mutate().setColorFilter(getResources()
                 .getColor(R.color.grey_50), PorterDuff.Mode.SRC_IN);
     }
 

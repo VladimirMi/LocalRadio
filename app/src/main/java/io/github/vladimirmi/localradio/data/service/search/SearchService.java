@@ -81,8 +81,6 @@ public class SearchService extends IntentService {
         } else {
             search = searchStationsManual(skipCache);
         }
-
-        // TODO: 5/12/18 clean a cache on error here
         return search.compose(new RxRetryTransformer<>())
                 .doOnSuccess(stations -> {
                     stationsRepository.setSearchResult(stations);
@@ -119,17 +117,17 @@ public class SearchService extends IntentService {
         }
         return restService.getStationsByLocation(countryCode, city, 1)
                 .map(StationsResult::getStations)
-                .doOnError(e -> cacheSource.cleanCache(countryCode, city))
+                .doOnError(e -> cacheSource.cleanCache(countryCode, city, "1"))
                 .subscribeOn(Schedulers.io());
     }
 
     private Single<List<Station>> getStationsByCoordinates(boolean skipCache, Pair<Float, Float> coordinates) {
         if (skipCache) {
-            cacheSource.cleanCache(coordinates.first, coordinates.second);
+            cacheSource.cleanCache(coordinates.first.toString(), coordinates.second.toString());
         }
         return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
                 .map(StationsResult::getStations)
-                .doOnError(e -> cacheSource.cleanCache(coordinates.first, coordinates.second))
+                .doOnError(e -> cacheSource.cleanCache(coordinates.first.toString(), coordinates.second.toString()))
                 .subscribeOn(Schedulers.io());
     }
 
