@@ -106,7 +106,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         if (!appInitialized) {
             initApp(intent);
         } else if (mainInteractor.isHaveStations()) {
-            MediaButtonReceiver.handleIntent(session, intent);
+            handleIntent(intent);
         } else {
             stopForeground();
         }
@@ -122,7 +122,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     public void onComplete() {
                         appInitialized = true;
                         if (mainInteractor.isHaveStations()) {
-                            MediaButtonReceiver.handleIntent(session, intent);
+                            handleIntent(intent);
                         } else {
                             stopForeground();
                         }
@@ -302,5 +302,13 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
             }
         };
         stopTimer.schedule(stopTask, stopDelay);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && PlayerWidget.ACTION_WIDGET_UPDATE.equals(intent.getAction())) {
+            updateRemoteViews();
+        } else {
+            MediaButtonReceiver.handleIntent(session, intent);
+        }
     }
 }
