@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="country">Страна</string>
+    <string name="city">Город</string>
+    <string name="automatic_location_detection">Автоматическое определение местоположения</string>
+    <string name="any_country">Любая страна</string>
+    <string name="any_city">Любой город</string>
+    <string name="unlisted_city">Незарегистрированный город</string>
+    <string name="desc_favorite">добавить/убрать из избранного</string>
+    <string name="desc_play_pause_button">воспроизвести/пауза</string>
+    <string name="desc_skip_previous_button">предидущая станция</string>
+    <string name="desc_skip_next_button">следующая станция</string>
+    <string name="about">О программе</string>
+    <string name="exit">Выход</string>
+    <string name="favorite">Избранное</string>
+    <string name="stations">Станции</string>
+    <string name="search">Поиск</string>
+    <string name="filter">Фильтр</string>
+    <string name="refresh">Обновить</string>
+    <string name="new_search">Новый поиск</string>
+    <string name="searching">Поиск…</string>
+    <string name="need_permission">Требуется разрешение для действия</string>
+    <string name="metadata_not_available">Метаданные не доступны</string>
+    <string name="metadata_buffering">Загрузка…</string>
+    <string name="error_specify_location">Требуется более конкретное местоположение</string>
+    <string name="error_network">Сеть не доступна</string>
+    <string name="error_connection">Ошибка соединения</string>
+    <string name="error_renderer">Не поддерживаемый аудиопоток</string>
+    <string name="error_unexpected">Непредвиденная ошибка</string>
+    <string name="search_result_empty">Результаты поиска пусты</string>
+    <string name="favorites_empty">Список избранного пуст</string>
+    <string name="project_page">Страница проекта</string>
+    <string name="developer">Разработчик</string>
+    <string name="version">Версия</string>
+    <string name="rate_app">Оценить приложение</string>
+    <string name="description">
+        Local Radio это приложение с открытым исходным кодом для прослушивания радиостанций,
+        транслируемых через интеренет. Приложение может искать станции по стране и городу.
+        Также оно может автоматически определять местоположение и выполнять поиск на основе этого.
+    </string>
+</resources>

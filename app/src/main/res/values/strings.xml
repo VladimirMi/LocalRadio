@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Local Radio</string>
+    <string name="app_name" translatable="false">Local Radio</string>
 
     <string name="country">Country</string>
     <string name="city">City</string>
@@ -8,11 +8,11 @@
     <string name="any_city">Any city</string>
     <string name="unlisted_city">Unlisted city</string>
 
-    <string name="desc_station_icon">station icon</string>
+    <string name="desc_station_icon" translatable="false">station icon</string>
     <string name="desc_favorite">add/remove favorite</string>
-    <string name="desc_play_pause_button">play/pause button</string>
-    <string name="desc_skip_previous_button">skip previous button</string>
-    <string name="desc_skip_next_button">skip next button</string>
+    <string name="desc_play_pause_button">play/pause</string>
+    <string name="desc_skip_previous_button">skip previous station</string>
+    <string name="desc_skip_next_button">skip next station</string>
 
     <string name="about">About</string>
     <string name="exit">Exit</string>
@@ -26,7 +26,7 @@
 
     <string name="need_permission">Need permission for the action</string>
 
-    <string name="notification_name">Local Radio notification</string>
+    <string name="notification_name" translatable="false">Local Radio notification</string>
     <string name="metadata_not_available">Metadata not available</string>
     <string name="metadata_buffering">Loading…</string>
 
@@ -52,7 +52,7 @@
     <string name="developer">Developer</string>
     <string name="version">Version</string>
     <string name="rate_app">Rate this app</string>
-    <string name="powered_by">Powered by\ </string>
+    <string name="powered_by" translatable="false">Powered by\ </string>
     <string name="developer_name" translatable="false">Vladimir Mikhalev</string>
     <string name="project_link" translatable="false">https://github.com/VladimirMi/LocalRadio</string>
 
