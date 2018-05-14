@@ -46,7 +46,7 @@ public class CacheSource implements Interceptor {
         if (!cacheFile.exists() || cacheFile.length() == 0) {
             Response response = chain.proceed(chain.request());
             if (response.isSuccessful()) {
-                Timber.w("Write %s", cacheFile.getName());
+                Timber.i("Write %s", cacheFile.getName());
                 FileWriter fileWriter = new FileWriter(cacheFile);
                 //noinspection ConstantConditions
                 fileWriter.write(response.body().string());
@@ -129,9 +129,9 @@ public class CacheSource implements Interceptor {
     private void deleteFile(File file) {
         boolean delete = file.delete();
         if (!delete) {
-            Timber.i("Can't delete %s", file.getName());
+            Timber.w("Can't delete %s", file.getName());
         } else {
-            Timber.i("Delete %s", file.getName());
+            Timber.w("Delete %s", file.getName());
         }
     }
 }

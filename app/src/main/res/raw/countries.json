@@ -2,13 +2,13 @@
   {
     "isoCode": "AD",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "AE",
     "cities": [
-      "",
+      "{unlisted}",
       "Abu Dhabi",
       "Ajman",
       "Ajman UAE",
@@ -39,7 +39,7 @@
   {
     "isoCode": "AF",
     "cities": [
-      "",
+      "{unlisted}",
       "Delta",
       "Kabul",
       "Langley",
@@ -50,7 +50,7 @@
   {
     "isoCode": "AG",
     "cities": [
-      "",
+      "{unlisted}",
       "St John\u0027s",
       "St. John\u0027s"
     ]
@@ -64,7 +64,7 @@
   {
     "isoCode": "AL",
     "cities": [
-      "",
+      "{unlisted}",
       "Elbasan",
       "Gjirokaster County",
       "Kosove",
@@ -79,7 +79,7 @@
   {
     "isoCode": "AM",
     "cities": [
-      "",
+      "{unlisted}",
       "Lexington",
       "Yerevan"
     ]
@@ -87,7 +87,7 @@
   {
     "isoCode": "AN",
     "cities": [
-      "",
+      "{unlisted}",
       "Curacao",
       "Kralendijk",
       "Philipsburg",
@@ -104,7 +104,7 @@
   {
     "isoCode": "AR",
     "cities": [
-      "",
+      "{unlisted}",
       "Abra Pampa",
       "Adelia Maria",
       "Adelia María",
@@ -401,7 +401,7 @@
   {
     "isoCode": "AT",
     "cities": [
-      "",
+      "{unlisted}",
       "Axams",
       "Bregenz",
       "Dornbirn",
@@ -439,7 +439,7 @@
   {
     "isoCode": "AU",
     "cities": [
-      "",
+      "{unlisted}",
       "Adelaide",
       "Albany",
       "Albury",
@@ -560,7 +560,7 @@
   {
     "isoCode": "AW",
     "cities": [
-      "",
+      "{unlisted}",
       "Noord",
       "Oranjestad",
       "Pos Chikito"
@@ -569,14 +569,14 @@
   {
     "isoCode": "AZ",
     "cities": [
-      "",
+      "{unlisted}",
       "Baku"
     ]
   },
   {
     "isoCode": "BA",
     "cities": [
-      "",
+      "{unlisted}",
       "Banja Luka",
       "Banja Luka / Bosnia and Herzegovina",
       "Bijeljina",
@@ -618,7 +618,7 @@
   {
     "isoCode": "BB",
     "cities": [
-      "",
+      "{unlisted}",
       "Bridgetown",
       "Sturges"
     ]
@@ -626,7 +626,7 @@
   {
     "isoCode": "BD",
     "cities": [
-      "",
+      "{unlisted}",
       "Chapai Nawabganj",
       "Dhaka",
       "Rajshahi"
@@ -635,7 +635,7 @@
   {
     "isoCode": "BE",
     "cities": [
-      "",
+      "{unlisted}",
       "Aalst",
       "Aarschot - Begijnendijk",
       "Affligem",
@@ -779,7 +779,7 @@
   {
     "isoCode": "BO",
     "cities": [
-      "",
+      "{unlisted}",
       "BOLIVIA",
       "COCHABAMBA",
       "Cochabamba",
@@ -799,7 +799,7 @@
   {
     "isoCode": "BR",
     "cities": [
-      "",
+      "{unlisted}",
       "Abelardo Luz",
       "Adamantina",
       "Afonso Claudio",
@@ -1504,7 +1504,7 @@
   {
     "isoCode": "BS",
     "cities": [
-      "",
+      "{unlisted}",
       "Nassau",
       "Yuma"
     ]
@@ -1512,13 +1512,13 @@
   {
     "isoCode": "BW",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "BY",
     "cities": [
-      "",
+      "{unlisted}",
       "Lida",
       "Minsk",
       "Svetlogorsk"
@@ -1535,7 +1535,7 @@
   {
     "isoCode": "CA",
     "cities": [
-      "",
+      "{unlisted}",
       "100 Mile House",
       "AB",
       "Acton-Vale",
@@ -1754,7 +1754,7 @@
   {
     "isoCode": "CG",
     "cities": [
-      "",
+      "{unlisted}",
       "Kinshasa",
       "Tshangu"
     ]
@@ -1762,7 +1762,7 @@
   {
     "isoCode": "CI",
     "cities": [
-      "",
+      "{unlisted}",
       "Abidjan"
     ]
   },
@@ -1775,7 +1775,7 @@
   {
     "isoCode": "CL",
     "cities": [
-      "",
+      "{unlisted}",
       "ANTOFAGASTA",
       "Ancud",
       "Antofagasta",
@@ -1879,14 +1879,14 @@
   {
     "isoCode": "CN",
     "cities": [
-      "",
+      "{unlisted}",
       "Hong Kong"
     ]
   },
   {
     "isoCode": "CO",
     "cities": [
-      "",
+      "{unlisted}",
       "Aca",
       "Amalfi (Antioquia)",
       "Ansermanuevo",
@@ -1972,7 +1972,7 @@
   {
     "isoCode": "CR",
     "cities": [
-      "",
+      "{unlisted}",
       "Alajuela",
       "Cartago",
       "Cártago",
@@ -1993,7 +1993,7 @@
   {
     "isoCode": "CU",
     "cities": [
-      "",
+      "{unlisted}",
       "Havana"
     ]
   },
@@ -2007,7 +2007,7 @@
   {
     "isoCode": "CY",
     "cities": [
-      "",
+      "{unlisted}",
       "Akrotiri",
       "Akrotiri  Dhekeli",
       "Ayia Napa",
@@ -2029,7 +2029,7 @@
   {
     "isoCode": "CZ",
     "cities": [
-      "",
+      "{unlisted}",
       "Bohumin",
       "Ceske Budejovice",
       "Czech Republic",
@@ -2056,7 +2056,7 @@
   {
     "isoCode": "DE",
     "cities": [
-      "",
+      "{unlisted}",
       "##Unable-to-Display##",
       "65817 Eppstein",
       "Aachen",
@@ -2370,7 +2370,7 @@
   {
     "isoCode": "DK",
     "cities": [
-      "",
+      "{unlisted}",
       "Aalborg",
       "Arhus",
       "Byvejen Niva",
@@ -2400,14 +2400,14 @@
   {
     "isoCode": "DM",
     "cities": [
-      "",
+      "{unlisted}",
       "Roseau"
     ]
   },
   {
     "isoCode": "DO",
     "cities": [
-      "",
+      "{unlisted}",
       "Azua",
       "Bahoruco",
       "Barahona",
@@ -2439,7 +2439,7 @@
   {
     "isoCode": "DZ",
     "cities": [
-      "",
+      "{unlisted}",
       "Akbou",
       "Algiers",
       "Constantine"
@@ -2448,7 +2448,7 @@
   {
     "isoCode": "EC",
     "cities": [
-      "",
+      "{unlisted}",
       "Ambato",
       "Azogues",
       "Canar",
@@ -2487,7 +2487,7 @@
   {
     "isoCode": "EE",
     "cities": [
-      "",
+      "{unlisted}",
       "Ida-Virumaa",
       "Laane-Viru County",
       "Parnu",
@@ -2500,7 +2500,7 @@
   {
     "isoCode": "EG",
     "cities": [
-      "",
+      "{unlisted}",
       "9090",
       "Alexandria",
       "Alexandria Sharm el-Sheikh",
@@ -2526,7 +2526,7 @@
   {
     "isoCode": "ES",
     "cities": [
-      "",
+      "{unlisted}",
       "Adeje",
       "Agramunt",
       "Aguilar de Campoo",
@@ -2809,7 +2809,7 @@
   {
     "isoCode": "FI",
     "cities": [
-      "",
+      "{unlisted}",
       "Espoo",
       "Helsinki",
       "Iisalmi",
@@ -2847,7 +2847,7 @@
   {
     "isoCode": "FR",
     "cities": [
-      "",
+      "{unlisted}",
       "66000 Perpignan",
       "AMELIE-LES-BAINS",
       "AMIENS",
@@ -3195,7 +3195,7 @@
   {
     "isoCode": "GB",
     "cities": [
-      "",
+      "{unlisted}",
       "Aberdeen",
       "Aberdeenshire",
       "Aberystwyth",
@@ -3637,7 +3637,7 @@
   {
     "isoCode": "GD",
     "cities": [
-      "",
+      "{unlisted}",
       "Belair Carriacou",
       "Carriacou",
       "Fort Hill in Hillsborough",
@@ -3650,7 +3650,7 @@
   {
     "isoCode": "GE",
     "cities": [
-      "",
+      "{unlisted}",
       "Tbilisi"
     ]
   },
@@ -3663,7 +3663,7 @@
   {
     "isoCode": "GH",
     "cities": [
-      "",
+      "{unlisted}",
       "Accra",
       "Accra North",
       "Kumasi",
@@ -3675,35 +3675,35 @@
   {
     "isoCode": "GI",
     "cities": [
-      "",
+      "{unlisted}",
       "Gibraltar"
     ]
   },
   {
     "isoCode": "GM",
     "cities": [
-      "",
+      "{unlisted}",
       "Banjul"
     ]
   },
   {
     "isoCode": "GN",
     "cities": [
-      "",
+      "{unlisted}",
       "Conakry"
     ]
   },
   {
     "isoCode": "GP",
     "cities": [
-      "",
+      "{unlisted}",
       "Basse-Terre"
     ]
   },
   {
     "isoCode": "GR",
     "cities": [
-      "",
+      "{unlisted}",
       "ATHENS",
       "Agrinio",
       "Aigio",
@@ -3820,7 +3820,7 @@
   {
     "isoCode": "GT",
     "cities": [
-      "",
+      "{unlisted}",
       "ALDEA SAN ANTONIO SIJA",
       "Aldea Patachaj",
       "Amparo",
@@ -3894,7 +3894,7 @@
   {
     "isoCode": "GY",
     "cities": [
-      "",
+      "{unlisted}",
       "Alberttown",
       "Georgetown"
     ]
@@ -3902,7 +3902,7 @@
   {
     "isoCode": "HK",
     "cities": [
-      "",
+      "{unlisted}",
       "Flensburg",
       "Hong Kong",
       "Kowloon"
@@ -3911,7 +3911,7 @@
   {
     "isoCode": "HN",
     "cities": [
-      "",
+      "{unlisted}",
       "Choluteca",
       "Colon",
       "Cortes",
@@ -3934,7 +3934,7 @@
   {
     "isoCode": "HR",
     "cities": [
-      "",
+      "{unlisted}",
       "Baranja",
       "Bjelovar-Bilogora",
       "Brod-Posavina",
@@ -4000,7 +4000,7 @@
   {
     "isoCode": "HT",
     "cities": [
-      "",
+      "{unlisted}",
       "Biarritz",
       "Canape-vert",
       "Cap Haitien",
@@ -4032,7 +4032,7 @@
   {
     "isoCode": "HU",
     "cities": [
-      "",
+      "{unlisted}",
       "Bekescsaba",
       "Budapest",
       "Csongrad",
@@ -4061,7 +4061,7 @@
   {
     "isoCode": "IE",
     "cities": [
-      "",
+      "{unlisted}",
       "Annestown",
       "Ardara Donegal",
       "Ardkeen",
@@ -4106,7 +4106,7 @@
   {
     "isoCode": "IL",
     "cities": [
-      "",
+      "{unlisted}",
       "Acre",
       "Bnei Brak",
       "Eilat",
@@ -4133,7 +4133,7 @@
   {
     "isoCode": "IN",
     "cities": [
-      "",
+      "{unlisted}",
       "Amritsar",
       "Arakkonam",
       "Bangalore",
@@ -4182,7 +4182,7 @@
   {
     "isoCode": "IQ",
     "cities": [
-      "",
+      "{unlisted}",
       "Al Hayat Al-Jadida",
       "Amman",
       "Arbil",
@@ -4211,7 +4211,7 @@
   {
     "isoCode": "IR",
     "cities": [
-      "",
+      "{unlisted}",
       "Abu Dhabi",
       "Bandar Abbas",
       "Persian",
@@ -4221,7 +4221,7 @@
   {
     "isoCode": "IS",
     "cities": [
-      "",
+      "{unlisted}",
       "Reykjavik",
       "Reykjavík"
     ]
@@ -4229,7 +4229,7 @@
   {
     "isoCode": "IT",
     "cities": [
-      "",
+      "{unlisted}",
       "31015 Conegliano",
       "Abruzzo",
       "Agordo",
@@ -4532,7 +4532,7 @@
   {
     "isoCode": "JM",
     "cities": [
-      "",
+      "{unlisted}",
       "KIngston",
       "Kingston",
       "Montego Bay",
@@ -4561,7 +4561,7 @@
   {
     "isoCode": "JP",
     "cities": [
-      "",
+      "{unlisted}",
       "Aosagi",
       "Fukuchiyama",
       "Ishikawa",
@@ -4574,7 +4574,7 @@
   {
     "isoCode": "KE",
     "cities": [
-      "",
+      "{unlisted}",
       "Nairobi",
       "UpperHill"
     ]
@@ -4602,14 +4602,14 @@
   {
     "isoCode": "KN",
     "cities": [
-      "",
+      "{unlisted}",
       "Basseterre"
     ]
   },
   {
     "isoCode": "KP",
     "cities": [
-      "",
+      "{unlisted}",
       "Gongju-si",
       "Seoul"
     ]
@@ -4617,7 +4617,7 @@
   {
     "isoCode": "KR",
     "cities": [
-      "",
+      "{unlisted}",
       "Gwangju",
       "Pochon",
       "Seoul"
@@ -4626,7 +4626,7 @@
   {
     "isoCode": "KW",
     "cities": [
-      "",
+      "{unlisted}",
       "Kuwait",
       "Kuwait City",
       "Kuwait City Arab",
@@ -4647,13 +4647,13 @@
   {
     "isoCode": "KZ",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "LB",
     "cities": [
-      "",
+      "{unlisted}",
       "Arab",
       "Arabic",
       "Beirut",
@@ -4676,7 +4676,7 @@
   {
     "isoCode": "LC",
     "cities": [
-      "",
+      "{unlisted}",
       "Castries",
       "Soufriere",
       "St. Lucia",
@@ -4686,13 +4686,13 @@
   {
     "isoCode": "LI",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "LK",
     "cities": [
-      "",
+      "{unlisted}",
       "Colombo",
       "Colombo 2",
       "Colombo 7",
@@ -4704,7 +4704,7 @@
   {
     "isoCode": "LT",
     "cities": [
-      "",
+      "{unlisted}",
       "Kaunas",
       "Siauliai",
       "Vilnius"
@@ -4713,7 +4713,7 @@
   {
     "isoCode": "LU",
     "cities": [
-      "",
+      "{unlisted}",
       "Esch-sur-Alzette",
       "Luxembourg",
       "Luxembourg City",
@@ -4724,7 +4724,7 @@
   {
     "isoCode": "LV",
     "cities": [
-      "",
+      "{unlisted}",
       "Kurzeme",
       "Liepaja",
       "Riga"
@@ -4740,7 +4740,7 @@
   {
     "isoCode": "MA",
     "cities": [
-      "",
+      "{unlisted}",
       "Agadir",
       "Casablanca",
       "Ceuta",
@@ -4756,7 +4756,7 @@
   {
     "isoCode": "MC",
     "cities": [
-      "",
+      "{unlisted}",
       "Monaco",
       "Monte Carlo"
     ]
@@ -4764,7 +4764,7 @@
   {
     "isoCode": "MD",
     "cities": [
-      "",
+      "{unlisted}",
       "Chisinau",
       "Kishiniov",
       "Taraclia"
@@ -4773,13 +4773,13 @@
   {
     "isoCode": "ME",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "MG",
     "cities": [
-      "",
+      "{unlisted}",
       "Andravoahangy",
       "Antananarivo",
       "Majunga"
@@ -4788,7 +4788,7 @@
   {
     "isoCode": "MK",
     "cities": [
-      "",
+      "{unlisted}",
       "Bitola",
       "Kicevo",
       "Ohrid",
@@ -4811,13 +4811,13 @@
   {
     "isoCode": "MN",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "MQ",
     "cities": [
-      "",
+      "{unlisted}",
       "Cap Marin",
       "Fort-de-France",
       "Gros-Morne",
@@ -4843,7 +4843,7 @@
   {
     "isoCode": "MT",
     "cities": [
-      "",
+      "{unlisted}",
       "Birkirkara",
       "Blata l-Bajda",
       "Fgura",
@@ -4858,7 +4858,7 @@
   {
     "isoCode": "MU",
     "cities": [
-      "",
+      "{unlisted}",
       "Beirut",
       "Port Louis"
     ]
@@ -4873,13 +4873,13 @@
   {
     "isoCode": "MW",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "MX",
     "cities": [
-      "",
+      "{unlisted}",
       "AG",
       "Acambaro",
       "Acapulco",
@@ -5108,7 +5108,7 @@
   {
     "isoCode": "MY",
     "cities": [
-      "",
+      "{unlisted}",
       "Johor",
       "Johor Bahru",
       "Keningau",
@@ -5143,14 +5143,14 @@
   {
     "isoCode": "NC",
     "cities": [
-      "",
+      "{unlisted}",
       "Noumea"
     ]
   },
   {
     "isoCode": "NG",
     "cities": [
-      "",
+      "{unlisted}",
       "Aba",
       "Abeokuta",
       "Agidingbi",
@@ -5165,7 +5165,7 @@
   {
     "isoCode": "NI",
     "cities": [
-      "",
+      "{unlisted}",
       "Carazo",
       "Ciudad Jardin Q-20. Managua",
       "Jícaro",
@@ -5176,7 +5176,7 @@
   {
     "isoCode": "NL",
     "cities": [
-      "",
+      "{unlisted}",
       "Aalburg",
       "Aalsmeer",
       "Aalst",
@@ -5403,7 +5403,7 @@
   {
     "isoCode": "NO",
     "cities": [
-      "",
+      "{unlisted}",
       "Bergen",
       "Bo",
       "Clesund",
@@ -5431,7 +5431,7 @@
   {
     "isoCode": "NP",
     "cities": [
-      "",
+      "{unlisted}",
       "Achham",
       "Bauniya",
       "Birgunj",
@@ -5458,7 +5458,7 @@
   {
     "isoCode": "NZ",
     "cities": [
-      "",
+      "{unlisted}",
       "Auckland",
       "Bay of Plenty",
       "Burwood",
@@ -5502,7 +5502,7 @@
   {
     "isoCode": "OM",
     "cities": [
-      "",
+      "{unlisted}",
       "Masqat",
       "Muscat"
     ]
@@ -5510,7 +5510,7 @@
   {
     "isoCode": "PA",
     "cities": [
-      "",
+      "{unlisted}",
       "BOQUETE",
       "Bocas Del Toro",
       "Chiriqui",
@@ -5527,7 +5527,7 @@
   {
     "isoCode": "PE",
     "cities": [
-      "",
+      "{unlisted}",
       "AYACUCHO",
       "Abancay",
       "Alto Peru",
@@ -5603,7 +5603,7 @@
   {
     "isoCode": "PH",
     "cities": [
-      "",
+      "{unlisted}",
       "Bacoor",
       "Bukidnon Province",
       "Cebu",
@@ -5624,7 +5624,7 @@
   {
     "isoCode": "PK",
     "cities": [
-      "",
+      "{unlisted}",
       "Bhalwal",
       "Gujranwala",
       "Islamabad",
@@ -5635,7 +5635,7 @@
   {
     "isoCode": "PL",
     "cities": [
-      "",
+      "{unlisted}",
       "Andrychów",
       "Bialystok",
       "Białystok",
@@ -5734,7 +5734,7 @@
   {
     "isoCode": "PR",
     "cities": [
-      "",
+      "{unlisted}",
       "Arecibo",
       "Bayamon",
       "Caguas",
@@ -5752,7 +5752,7 @@
   {
     "isoCode": "PS",
     "cities": [
-      "",
+      "{unlisted}",
       "Bethlehem",
       "Gaza",
       "Hebron",
@@ -5763,7 +5763,7 @@
   {
     "isoCode": "PT",
     "cities": [
-      "",
+      "{unlisted}",
       "Albergaria-a-velha",
       "Albufeira",
       "Alcobaça",
@@ -5828,7 +5828,7 @@
   {
     "isoCode": "PY",
     "cities": [
-      "",
+      "{unlisted}",
       "Alto Paraná",
       "Asuncion",
       "Asunción",
@@ -5862,7 +5862,7 @@
   {
     "isoCode": "RE",
     "cities": [
-      "",
+      "{unlisted}",
       "Praia República de Cabo Verde",
       "Saint-Denis",
       "Sainte-Clotilde",
@@ -5872,7 +5872,7 @@
   {
     "isoCode": "RO",
     "cities": [
-      "",
+      "{unlisted}",
       "Alba Iulia",
       "Alexandria - Teleorman",
       "Alexdandria",
@@ -5942,13 +5942,13 @@
   {
     "isoCode": "RS",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
     "isoCode": "RU",
     "cities": [
-      "",
+      "{unlisted}",
       "Abakan",
       "Altai",
       "Arkhangelsk",
@@ -6033,14 +6033,14 @@
   {
     "isoCode": "RW",
     "cities": [
-      "",
+      "{unlisted}",
       "Kigali"
     ]
   },
   {
     "isoCode": "SA",
     "cities": [
-      "",
+      "{unlisted}",
       "Ar-Riyadh",
       "Bahrain",
       "Dammam",
@@ -6064,7 +6064,7 @@
   {
     "isoCode": "SC",
     "cities": [
-      "",
+      "{unlisted}",
       "Victoria",
       "victoria"
     ]
@@ -6072,7 +6072,7 @@
   {
     "isoCode": "SD",
     "cities": [
-      "",
+      "{unlisted}",
       "Djibouti",
       "Khartoum",
       "Omdurman",
@@ -6082,7 +6082,7 @@
   {
     "isoCode": "SE",
     "cities": [
-      "",
+      "{unlisted}",
       "Avesta",
       "Bjuv",
       "Blekinge",
@@ -6121,7 +6121,7 @@
   {
     "isoCode": "SG",
     "cities": [
-      "",
+      "{unlisted}",
       "Singapore"
     ]
   },
@@ -6134,7 +6134,7 @@
   {
     "isoCode": "SI",
     "cities": [
-      "",
+      "{unlisted}",
       "Celje",
       "Jesenice",
       "Konjice",
@@ -6156,7 +6156,7 @@
   {
     "isoCode": "SK",
     "cities": [
-      "",
+      "{unlisted}",
       "Banska Bystrica",
       "Banská Bystrica",
       "Bratislava",
@@ -6174,7 +6174,7 @@
   {
     "isoCode": "SL",
     "cities": [
-      ""
+      "{unlisted}"
     ]
   },
   {
@@ -6186,7 +6186,7 @@
   {
     "isoCode": "SN",
     "cities": [
-      "",
+      "{unlisted}",
       "Bakel",
       "Dakar",
       "Dakkar",
@@ -6196,7 +6196,7 @@
   {
     "isoCode": "SR",
     "cities": [
-      "",
+      "{unlisted}",
       "Nieuw Nickerie",
       "Paramaribo"
     ]
@@ -6204,7 +6204,7 @@
   {
     "isoCode": "SV",
     "cities": [
-      "",
+      "{unlisted}",
       "Ahuachapan",
       "Armenia Sonsonate",
       "Chalatenango",
@@ -6224,7 +6224,7 @@
   {
     "isoCode": "SY",
     "cities": [
-      "",
+      "{unlisted}",
       "Aleppo",
       "Beirut",
       "Damascus",
@@ -6247,7 +6247,7 @@
   {
     "isoCode": "TC",
     "cities": [
-      "",
+      "{unlisted}",
       "Blue Hills Settlements",
       "Cockburn Town"
     ]
@@ -6267,7 +6267,7 @@
   {
     "isoCode": "TH",
     "cities": [
-      "",
+      "{unlisted}",
       "Bangkok",
       "Borabu",
       "Buriram",
@@ -6313,7 +6313,7 @@
   {
     "isoCode": "TN",
     "cities": [
-      "",
+      "{unlisted}",
       "Bizer",
       "Carthage",
       "Gafsa",
@@ -6330,7 +6330,7 @@
   {
     "isoCode": "TR",
     "cities": [
-      "",
+      "{unlisted}",
       "Adana",
       "Ankara",
       "Antalya",
@@ -6403,7 +6403,7 @@
   {
     "isoCode": "TT",
     "cities": [
-      "",
+      "{unlisted}",
       "Morichal",
       "Port of Spain",
       "Port-of-spain",
@@ -6429,7 +6429,7 @@
   {
     "isoCode": "UA",
     "cities": [
-      "",
+      "{unlisted}",
       "Dnipropetrovsk",
       "Donetsk",
       "Franko",
@@ -6450,7 +6450,7 @@
   {
     "isoCode": "UG",
     "cities": [
-      "",
+      "{unlisted}",
       "Kampala",
       "Kireka"
     ]
@@ -6458,14 +6458,14 @@
   {
     "isoCode": "UM",
     "cities": [
-      "",
+      "{unlisted}",
       "Hagatna"
     ]
   },
   {
     "isoCode": "US",
     "cities": [
-      "",
+      "{unlisted}",
       "ALPHARETTA",
       "AR",
       "ATLAH",
@@ -8769,7 +8769,7 @@
   {
     "isoCode": "UY",
     "cities": [
-      "",
+      "{unlisted}",
       "Anolles 441 Rivera",
       "Atlántida",
       "Canelones",
@@ -8820,7 +8820,7 @@
   {
     "isoCode": "VC",
     "cities": [
-      "",
+      "{unlisted}",
       "Kingstown",
       "Richmond Hill Kingstown"
     ]
@@ -8828,7 +8828,7 @@
   {
     "isoCode": "VE",
     "cities": [
-      "",
+      "{unlisted}",
       "Araure edo",
       "Barcelona",
       "Barinas",
@@ -8869,7 +8869,7 @@
   {
     "isoCode": "VG",
     "cities": [
-      "",
+      "{unlisted}",
       "Road Town",
       "St. Thomas",
       "St.Eustatius"
@@ -8894,7 +8894,7 @@
   {
     "isoCode": "ZA",
     "cities": [
-      "",
+      "{unlisted}",
       "Amanzimtoti",
       "Bloemfontein",
       "Brakpan",
@@ -8952,7 +8952,7 @@
   {
     "isoCode": "ZW",
     "cities": [
-      "",
+      "{unlisted}",
       "Mutare"
     ]
   }

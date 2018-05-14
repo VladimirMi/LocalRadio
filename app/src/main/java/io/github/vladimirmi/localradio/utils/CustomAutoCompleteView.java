@@ -97,6 +97,7 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
 
         @Override
         public boolean isValid(CharSequence text) {
+            if (text.toString().equals(" ")) return false;
             for (T element : list) {
                 if (element.toString().equals(text.toString())) {
                     return true;
@@ -107,6 +108,7 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
 
         @Override
         public CharSequence fixText(CharSequence invalidText) {
+            if (invalidText.toString().trim().isEmpty()) return "";
             int maxCharEquals = 0;
             int elementIndex = 0;
 
@@ -132,7 +134,7 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
                 }
             }
 
-            return list.get(elementIndex).toString();
+            return list.isEmpty() ? "" : list.get(elementIndex).toString();
         }
     }
 }

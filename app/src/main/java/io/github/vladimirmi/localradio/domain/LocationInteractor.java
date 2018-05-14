@@ -24,8 +24,6 @@ import io.reactivex.Completable;
 public class LocationInteractor {
 
     private static final String UNLISTED_CITY = "{unlisted}";
-    private Country anyCountry = Country.any();
-    public String anyCity = anyCountry.getCities().get(0);
 
     private final LocationRepository locationRepository;
 
@@ -59,21 +57,20 @@ public class LocationInteractor {
     public String getCountryName() {
         String countryCode = locationRepository.getCountryCode();
         if (countryCode.isEmpty()) {
-            return anyCountry.getName();
+            return countryCode;
         }
         return new Locale("", countryCode).getDisplayCountry();
     }
 
     public String getCity() {
         String city = locationRepository.getCity();
-        if (city.isEmpty()) return anyCity;
         if (city.equals(UNLISTED_CITY)) return unlistedCity;
         return city;
     }
 
     public void saveCountryNameCity(String countryName, String cityName) {
         String countryCode = "";
-        if (!countryName.equals(anyCountry.getName())) {
+        if (!countryName.isEmpty()) {
             for (Country country : locationRepository.getCountries()) {
                 if (country.getName().equals(countryName)) {
                     countryCode = country.getIsoCode();
@@ -81,14 +78,13 @@ public class LocationInteractor {
                 }
             }
         }
-        if (cityName.equals(anyCity)) cityName = "";
         if (cityName.equals(unlistedCity)) cityName = UNLISTED_CITY;
         locationRepository.saveCountryCodeCity(countryCode, cityName);
     }
 
     @Nullable
     public String findCountryName(String city) {
-        if (city.equals(anyCity) || city.equals(unlistedCity)) return null;
+        if (city.trim().isEmpty() || city.equals(unlistedCity)) return null;
 
         for (Country country : locationRepository.getCountries()) {
             if (country.getCities().contains(city)) {
@@ -100,24 +96,19 @@ public class LocationInteractor {
 
     public List<String> findCities(String countryName) {
         Set<String> cities = new TreeSet<>();
-        List<Country> countries = findCountries(countryName);
-
-        for (Country country : countries) {
+        for (Country country : findCountries(countryName)) {
             cities.addAll(country.getCities());
         }
-        cities.remove(anyCity);
-        // TODO: 5/2/18 change "" to "{unlisted}" in countries.json
-        boolean hasUnlistedCity = cities.remove("");
+        boolean hasUnlistedCity = cities.remove(UNLISTED_CITY);
 
-        ArrayList<String> cityList = new ArrayList<>(cities.size() + 2);
-        if (cities.size() > 1) cityList.add(anyCity);
+        ArrayList<String> cityList = new ArrayList<>(cities.size() + (hasUnlistedCity ? 1 : 0));
         if (hasUnlistedCity) cityList.add(unlistedCity);
         cityList.addAll(cities);
         return cityList;
     }
 
     public Completable checkCanSearch() {
-        if (getCountryName().equals(anyCountry.getName()) && getCity().equals(anyCity)) {
+        if (getCountryName().isEmpty() && getCity().isEmpty()) {
             return Completable.error(new MessageException(R.string.error_specify_location));
         } else {
             return Completable.complete();
@@ -133,7 +124,7 @@ public class LocationInteractor {
     }
 
     private List<Country> findCountries(String countryName) {
-        if (countryName.equals(anyCountry.getName())) {
+        if (countryName.isEmpty()) {
             return locationRepository.getCountries();
         } else {
             for (Country country : locationRepository.getCountries()) {

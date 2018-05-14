@@ -49,41 +49,44 @@
                 android:orientation="vertical"
                 >
 
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/countryTil"
+                <TextView
+                    android:id="@+id/countryLabelTv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:text="@string/country"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    />
+
+                <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+                    android:id="@+id/countryEt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:hint="@string/country"
-                    >
+                    android:hint="@string/any_country"
+                    android:imeOptions="actionNext"
+                    android:inputType="textNoSuggestions|textCapSentences"
+                    />
 
-                    <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
-                        android:id="@+id/countryEt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
-                        android:inputType="textNoSuggestions|textCapSentences"
-                        />
-                </android.support.design.widget.TextInputLayout>
-
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/cityTil"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/cityLabelTv"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
                     android:layout_marginTop="16dp"
-                    android:hint="@string/city"
-                    >
+                    android:text="@string/city"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    />
 
-                    <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
-                        android:id="@+id/cityEt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="textNoSuggestions|textCapSentences"
-                        />
-
-                </android.support.design.widget.TextInputLayout>
+                <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+                    android:id="@+id/cityEt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/any_city"
+                    android:imeOptions="actionDone"
+                    android:inputType="textNoSuggestions|textCapSentences"
+                    />
 
                 <TextView
                     android:id="@+id/searchResultTv"

@@ -3,7 +3,6 @@ package io.github.vladimirmi.localradio.presentation.search;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,7 +17,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.utils.CustomArrayAdapter;
@@ -33,8 +31,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
-    @BindView(R.id.countryTil) TextInputLayout countryTil;
-    @BindView(R.id.cityTil) TextInputLayout cityTil;
+    @BindView(R.id.countryLabelTv) TextView countryLabelTv;
+    @BindView(R.id.cityLabelTv) TextView cityLabelTv;
     @BindView(R.id.searchBt) FloatingActionButton searchBt;
     @BindView(R.id.searchResultTv) TextView searchResultTv;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
@@ -94,7 +92,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setCountrySuggestions(List<String> countries) {
         CustomArrayAdapter<String> countryAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, countries);
-        countryAdapter.setDefaultValue(Country.any().getName());
 
         countryEt.setAdapter(countryAdapter);
         countryEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(countries));
@@ -104,7 +101,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setCitySuggestions(List<String> cities) {
         CustomArrayAdapter<String> cityAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, cities);
-        cityAdapter.setDefaultValue(Country.any().getCities().get(0));
 
         cityEt.setAdapter(cityAdapter);
         cityEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(cities));
@@ -112,13 +108,13 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public void setCountryName(String name) {
-        setTextNoAnimate(countryTil, name);
+        countryEt.setText(name);
         countryEt.setSelection(name.length());
     }
 
     @Override
     public void setCity(String city) {
-        setTextNoAnimate(cityTil, city);
+        cityEt.setText(city);
         cityEt.setSelection(city.length());
     }
 
@@ -162,7 +158,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public void showCity(boolean visible) {
-        setVisible(cityTil, visible);
+        setVisible(cityEt, visible);
+        setVisible(cityLabelTv, visible);
     }
 
     @Override
@@ -206,12 +203,5 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     private void setVisible(View view, boolean visible) {
         view.setVisibility(visible ? View.VISIBLE : View.GONE);
-    }
-
-    private void setTextNoAnimate(TextInputLayout til, String text) {
-        til.setHintAnimationEnabled(false);
-        //noinspection ConstantConditions
-        til.getEditText().setText(text);
-        til.setHintAnimationEnabled(true);
     }
 }
