@@ -121,9 +121,9 @@ public class SearchService extends IntentService {
             cacheSource.cleanCache(countryCode, city);
         }
         return restService.getStationsByLocation(countryCode, city, 1)
-                .map(StationsResult::getStations)
                 .doOnError(e -> cacheSource.cleanCache(countryCode, city, "1"))
                 .compose(new RxRetryTransformer<>())
+                .map(StationsResult::getStations)
                 .subscribeOn(Schedulers.io());
     }
 
@@ -132,9 +132,9 @@ public class SearchService extends IntentService {
             cacheSource.cleanCache(coordinates.first.toString(), coordinates.second.toString());
         }
         return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
-                .map(StationsResult::getStations)
                 .doOnError(e -> cacheSource.cleanCache(coordinates.first.toString(), coordinates.second.toString()))
                 .compose(new RxRetryTransformer<>())
+                .map(StationsResult::getStations)
                 .subscribeOn(Schedulers.io());
     }
 
