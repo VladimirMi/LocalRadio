@@ -81,9 +81,7 @@ public class LocationSource {
                 if (!emitter.isDisposed()) emitter.onComplete();
             });
 
-            task.addOnFailureListener(e -> {
-                if (!emitter.isDisposed()) emitter.onError(e);
-            });
+            task.addOnFailureListener(emitter::tryOnError);
         });
     }
 
@@ -127,8 +125,9 @@ public class LocationSource {
 
                 @Override
                 public void onLocationAvailability(LocationAvailability locationAvailability) {
+                    Timber.d("onLocationAvailability: %s", locationAvailability);
                     if (!locationAvailability.isLocationAvailable()) {
-                        emitter.onError(new NoSuchElementException());
+                        emitter.tryOnError(new NoSuchElementException());
                     }
                 }
             };

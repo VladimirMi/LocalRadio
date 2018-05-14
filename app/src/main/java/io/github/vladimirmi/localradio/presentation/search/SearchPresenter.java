@@ -40,6 +40,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCountryName(countryName);
         view.setCity(locationInteractor.getCity());
         view.setAutodetect(locationInteractor.isAutodetect());
+        view.showSearchBtn(!locationInteractor.isAutodetect());
         setSearchDone(searchInteractor.isSearchDone());
         view.enableAutodetect(locationInteractor.isServicesAvailable());
     }
