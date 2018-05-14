@@ -82,8 +82,7 @@ public class SearchService extends IntentService {
         } else {
             search = searchStationsManual(skipCache);
         }
-        return search.compose(new RxRetryTransformer<>())
-                .doOnSuccess(stations -> {
+        return search.doOnSuccess(stations -> {
                     stationsRepository.setSearchResult(stations);
                     favoriteInteractor.updateStationsWithFavorites();
                 })
@@ -124,6 +123,7 @@ public class SearchService extends IntentService {
         return restService.getStationsByLocation(countryCode, city, 1)
                 .map(StationsResult::getStations)
                 .doOnError(e -> cacheSource.cleanCache(countryCode, city, "1"))
+                .compose(new RxRetryTransformer<>())
                 .subscribeOn(Schedulers.io());
     }
 
@@ -134,6 +134,7 @@ public class SearchService extends IntentService {
         return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
                 .map(StationsResult::getStations)
                 .doOnError(e -> cacheSource.cleanCache(coordinates.first.toString(), coordinates.second.toString()))
+                .compose(new RxRetryTransformer<>())
                 .subscribeOn(Schedulers.io());
     }
 
@@ -142,7 +143,8 @@ public class SearchService extends IntentService {
                 .flatMap(ip -> {
                     if (skipCache) cacheSource.cleanCache(ip);
                     return restService.getStationsByIp(ip)
-                            .doOnError(e -> cacheSource.cleanCache(ip));
+                            .doOnError(e -> cacheSource.cleanCache(ip))
+                            .compose(new RxRetryTransformer<>());
                 })
                 .map(StationsResult::getStations)
                 .doOnSuccess(locationRepository::saveCountryCodeCity)

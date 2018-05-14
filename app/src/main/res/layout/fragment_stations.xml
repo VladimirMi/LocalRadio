@@ -23,10 +23,11 @@
         android:background="@color/grey_50"
         android:gravity="center"
         android:paddingBottom="@dimen/player_controls_height"
+        android:text="@string/search_result_empty"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorPrimary"
-        android:text="@string/search_result_empty"
-        tools:visibility="gone"
+        android:visibility="gone"
+        tools:visibility="visible"
         />
 
     <ProgressBar
@@ -35,6 +36,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true"
-        android:visibility="gone"
         />
 </FrameLayout>

@@ -72,8 +72,8 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
                     public void onNext(Boolean isSearching) {
-                        view.setSearching(isSearching);
                         if (isSearching) view.hidePlaceholder();
+                        view.setSearching(isSearching);
                     }
                 }));
     }
