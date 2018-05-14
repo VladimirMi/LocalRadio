@@ -44,9 +44,9 @@
     <string name="favorites_empty">The favorites list is empty</string>
 
     <string name="description">
-        Local Radio is an open source app for listening to radio broadcasts over the internet.
-        It can search stations by country and city.
-        It can also automatically detect the location and perform a search based on this.
+        Local Radio is an open source app for searching and listening to radio broadcasts over the internet.
+        It can search stations by country and city and also automatically detect the location
+        and perform a search based on this.
     </string>
     <string name="project_page">Project page</string>
     <string name="developer">Developer</string>
