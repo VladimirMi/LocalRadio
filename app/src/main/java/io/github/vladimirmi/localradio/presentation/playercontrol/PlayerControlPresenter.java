@@ -39,7 +39,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     @Override
-    protected void onAttach(PlayerControlView view) {
+    protected void onAttach(PlayerControlView view, boolean isFirstAttach) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(station -> view.setFavorite(station.isFavorite()))

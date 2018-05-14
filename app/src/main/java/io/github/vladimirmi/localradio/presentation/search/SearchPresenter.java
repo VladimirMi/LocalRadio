@@ -14,7 +14,6 @@ import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -33,7 +32,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     @Override
-    protected void onFirstAttach(SearchView view, CompositeDisposable disposables) {
+    protected void onAttach(SearchView view, boolean isFirstAttach) {
         view.setCountrySuggestions(locationInteractor.getCountriesName());
         String countryName = locationInteractor.getCountryName();
         view.setCitySuggestions(locationInteractor.findCities(countryName));
@@ -43,10 +42,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.showSearchBtn(!locationInteractor.isAutodetect());
         setSearchDone(searchInteractor.isSearchDone());
         view.enableAutodetect(locationInteractor.isServicesAvailable());
-    }
 
-    @Override
-    protected void onAttach(SearchView view) {
+
         disposables.add(searchInteractor.getSearchResults()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {

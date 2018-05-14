@@ -13,7 +13,6 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 13.04.2018.
@@ -34,7 +33,7 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
     }
 
     @Override
-    protected void onFirstAttach(FavoriteView view, CompositeDisposable disposables) {
+    protected void onAttach(FavoriteView view, boolean isFirstAttach) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
@@ -43,10 +42,8 @@ public class FavoritePresenter extends BasePresenter<FavoriteView> {
                         view.selectStation(station);
                     }
                 }));
-    }
 
-    @Override
-    protected void onAttach(FavoriteView view) {
+
         disposables.add(controlInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {

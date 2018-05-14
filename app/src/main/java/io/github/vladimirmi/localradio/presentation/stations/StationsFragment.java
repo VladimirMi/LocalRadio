@@ -111,8 +111,8 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         loadingPb.setVisibility(isSearching ? View.VISIBLE : View.GONE);
     }
 
-    //endregion
 
+    //endregion
     @Override
     public void onStationClick(Station station) {
         presenter.selectStation(station);
@@ -142,11 +142,11 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         }
 
         if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
-            getView().postDelayed(() -> layoutManager
-                    .scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3), 100);
+            layoutManager.scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3);
 
         } else {
             layoutManager.scrollToPosition(stationPosition);
         }
     }
 }
+
