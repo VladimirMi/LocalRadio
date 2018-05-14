@@ -30,7 +30,9 @@ import com.bumptech.glide.request.FutureTarget;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
+import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.CRC32;
@@ -117,12 +119,19 @@ public class UiUtils {
 
         BitmapDrawable placeholder = new BitmapDrawable(resources,
                 textAsBitmap(context, station.getName()));
+
+        URL url;
+        try {
+            url = new URL(station.getImageUrl());
+        } catch (MalformedURLException e) {
+            view.setImageDrawable(placeholder);
+            return;
+        }
+
         Glide.with(context)
-                .load(station.getImageUrl())
-                .skipMemoryCache(true)
+                .load(url.toString())
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .placeholder(placeholder)
-                .fitCenter()
                 .override(width, height)
                 .into(view);
     }
@@ -135,7 +144,6 @@ public class UiUtils {
         return Glide.with(context.getApplicationContext())
                 .load(station.getImageUrl())
                 .asBitmap()
-                .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .fitCenter()
                 .into(width, height);

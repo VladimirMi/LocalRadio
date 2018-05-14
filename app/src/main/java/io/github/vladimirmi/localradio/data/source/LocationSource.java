@@ -127,7 +127,6 @@ public class LocationSource {
 
                 @Override
                 public void onLocationAvailability(LocationAvailability locationAvailability) {
-                    Timber.w("onLocationAvailability: %s", locationAvailability);
                     if (!locationAvailability.isLocationAvailable()) {
                         emitter.onError(new NoSuchElementException());
                     }

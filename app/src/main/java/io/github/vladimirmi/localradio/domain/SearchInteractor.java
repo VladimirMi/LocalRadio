@@ -44,6 +44,7 @@ public class SearchInteractor {
     }
 
     public Completable searchStations() {
+        resetSearch();
         return performSearch(false);
     }
 

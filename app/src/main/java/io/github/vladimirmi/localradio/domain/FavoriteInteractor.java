@@ -86,6 +86,7 @@ public class FavoriteInteractor {
     }
 
     public void updateStationsWithFavorites() {
+        // TODO: 5/14/18 передавать список избранных в результат поиска
         List<Station> list = new ArrayList<>(stationsRepository.getStations());
         boolean updated = updateStationsIfFavorite(list);
         if (updated) stationsRepository.setStations(list);

@@ -18,7 +18,6 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -74,7 +73,7 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
 
-        loadingPb.getIndeterminateDrawable().mutate().setColorFilter(getResources()
+        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
                 .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
@@ -104,13 +103,11 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     @Override
     public void hidePlaceholder() {
-        Timber.e("hidePlaceholder: ");
         placeholder.setVisibility(View.GONE);
     }
 
     @Override
     public void setSearching(boolean isSearching) {
-        Timber.e("setSearching: " + isSearching);
         loadingPb.setVisibility(isSearching ? View.VISIBLE : View.GONE);
     }
 
@@ -145,7 +142,8 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         }
 
         if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
-            layoutManager.scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3);
+            getView().postDelayed(() -> layoutManager
+                    .scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3), 100);
 
         } else {
             layoutManager.scrollToPosition(stationPosition);

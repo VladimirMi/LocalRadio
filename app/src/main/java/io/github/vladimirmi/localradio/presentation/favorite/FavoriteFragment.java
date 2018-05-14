@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     public static final int LOADER_ID = 0;
     @BindView(R.id.stationList) RecyclerView stationList;
     @BindView(R.id.placeholder) TextView placeholder;
+    @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
     private StationsAdapter stationsAdapter;
     private LinearLayoutManager layoutManager;
@@ -63,6 +65,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
 
     @Override
     protected void setupView(View view) {
+        loadingPb.setVisibility(View.GONE);
         placeholder.setText(R.string.favorites_empty);
 
         layoutManager = new LinearLayoutManager(getContext());
