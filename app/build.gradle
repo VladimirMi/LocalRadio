@@ -11,8 +11,8 @@ ext {
     }
 }
 
-ext.versionMajor = 0
-ext.versionMinor = 9
+ext.versionMajor = 1
+ext.versionMinor = 0
 ext.versionPatch = 0
 
 android {
