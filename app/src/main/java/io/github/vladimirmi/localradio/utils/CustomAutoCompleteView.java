@@ -11,8 +11,6 @@ import android.widget.ListPopupWindow;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import timber.log.Timber;
-
 /**
  * Created by Vladimir Mikhalev 05.04.2018.
  */
@@ -35,12 +33,10 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
         super(context, attrs, defStyleAttr);
 
         setOnClickListener(v -> {
-            Timber.e("click: " + isPopupDismissed);
             if (isPopupDismissed) showPopup();
         });
 
         setOnFocusChangeListener((v, hasFocus) -> {
-            Timber.e("focus: " + hasFocus);
             if (hasFocus) showPopup();
             if (label != null) label.setFocused(hasFocus);
         });
@@ -154,7 +150,8 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
     private EditTextLabelView findLabel() {
         ViewGroup parent = (ViewGroup) getParent();
         for (int i = 0; i < parent.getChildCount(); i++) {
-            if (parent.getChildAt(i).getLabelFor() == getId()) {
+            if (Build.VERSION.SDK_INT >= 17 && parent.getChildAt(i).getLabelFor() == getId()
+                    || Build.VERSION.SDK_INT < 17 && parent.getChildAt(i) instanceof EditTextLabelView) {
                 return (EditTextLabelView) parent.getChildAt(i);
             }
         }

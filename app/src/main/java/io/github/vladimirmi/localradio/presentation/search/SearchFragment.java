@@ -157,11 +157,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         setVisible(searchBt, visible);
     }
 
-    @Override
-    public void showCity(boolean visible) {
-        setVisible(cityEt, visible);
-        setVisible(cityLabelTv, visible);
-    }
 
     @Override
     public void setSearchResult(int foundStations) {

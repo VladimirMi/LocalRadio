@@ -141,7 +141,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCountryName(locationInteractor.getCountryName());
         String city = locationInteractor.getCity();
         view.setCity(city);
-        view.showCity(!city.isEmpty() || !locationInteractor.isAutodetect());
     }
 
     private void handleIsSearching(boolean isSearching) {
@@ -175,7 +174,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     private void setSearchDone(boolean isSearchDone) {
         view.setSearchDone(isSearchDone);
-        if (!isSearchDone) view.showCity(true);
         view.enableRefresh(isSearchDone);
     }
 }

@@ -65,6 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/any_country"
+                    android:textColorHint="@color/grey_400"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions|textCapSentences"
                     />
@@ -86,6 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/any_city"
+                    android:textColorHint="@color/grey_400"
                     android:imeOptions="actionDone"
                     android:inputType="textNoSuggestions|textCapSentences"
                     />
