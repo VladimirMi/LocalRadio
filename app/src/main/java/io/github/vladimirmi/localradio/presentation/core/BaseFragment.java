@@ -47,8 +47,6 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         setupView(view);
-        //noinspection unchecked
-        presenter.attachView(this);
     }
 
     protected abstract void setupView(View view);
@@ -57,6 +55,13 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection unchecked
+        presenter.attachView(this);
     }
 
     @Override
