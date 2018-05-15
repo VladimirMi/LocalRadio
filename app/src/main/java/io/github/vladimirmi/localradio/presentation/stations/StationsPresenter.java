@@ -13,7 +13,6 @@ import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -35,20 +34,14 @@ public class StationsPresenter extends BasePresenter<StationsView> {
     }
 
     @Override
-    protected void onFirstAttach(StationsView view, CompositeDisposable disposables) {
-        if (!searchInteractor.isSearchDone()) view.showPlaceholder(false);
-
+    protected void onAttach(StationsView view, boolean isFirstAttach) {
         disposables.add(stationsInteractor.getStationsObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
                     public void onNext(List<Station> stations) {
                         view.setStations(stations);
-                        if (stations.size() == 0) {
-                            view.showPlaceholder(searchInteractor.isSearchDone());
-                        } else {
-                            view.hidePlaceholder();
-                        }
+                        decideShowPlaceholder(stations);
                     }
                 }));
 
@@ -69,6 +62,16 @@ public class StationsPresenter extends BasePresenter<StationsView> {
                         view.setSelectedPlaying(state.getState() == PlaybackStateCompat.STATE_PLAYING);
                     }
                 }));
+
+        disposables.add(searchInteractor.isSearching()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
+                    @Override
+                    public void onNext(Boolean isSearching) {
+                        if (isSearching) view.hidePlaceholder();
+                        view.setSearching(isSearching);
+                    }
+                }));
     }
 
     public void selectStation(Station station) {
@@ -81,5 +84,13 @@ public class StationsPresenter extends BasePresenter<StationsView> {
 
     public String getFilter() {
         return stationsInteractor.getFilter();
+    }
+
+    private void decideShowPlaceholder(List<Station> stations) {
+        if (stations.size() == 0) {
+            view.showPlaceholder();
+        } else {
+            view.hidePlaceholder();
+        }
     }
 }

@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -75,14 +74,15 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(Schedulers.io())
-                .filter(station -> !station.isNullStation())
-                .subscribeWith(new RxUtils.ErrorObserver<Station>(null) {
-                    @Override
-                    public void onNext(Station station) {
-                        appInitialized = true;
-                        handleCurrentStation(station);
-                    }
-                }));
+                .distinctUntilChanged(Station::getId)
+                .doOnNext(station -> {
+                    appInitialized = true;
+                    handleCurrentStation(station);
+                })
+                .switchMap(station -> UiUtils.loadBitmapForStation(this, station))
+                .doOnNext(this::handleStationIcon)
+                .subscribe()
+        );
     }
 
     private void initSession() {
@@ -101,21 +101,38 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         serviceStarted = true;
         session.setActive(true);
 
-        if (isPaused()) scheduleStopTask(SessionCallback.STOP_DELAY);
+        if (isPaused()) scheduleStopTask(Playback.STOP_DELAY);
 
         if (!appInitialized) {
-            compDisp.add(mainInteractor.initApp()
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnComplete(() -> {
-                        appInitialized = true;
-                        MediaButtonReceiver.handleIntent(session, intent);
-                    })
-                    .doOnError(e -> notification.stopForeground(true))
-                    .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
+            initApp(intent);
+        } else if (mainInteractor.isHaveStations()) {
+            handleIntent(intent);
         } else {
-            MediaButtonReceiver.handleIntent(session, intent);
+            stopForeground();
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void initApp(Intent intent) {
+        compDisp.add(mainInteractor.initApp()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnError(e -> stopForeground())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(this) {
+                    @Override
+                    public void onComplete() {
+                        appInitialized = true;
+                        if (mainInteractor.isHaveStations()) {
+                            handleIntent(intent);
+                        } else {
+                            stopForeground();
+                        }
+                    }
+                }));
+    }
+
+    private void stopForeground() {
+        notification.stopForeground(true);
+        stopSelf();
     }
 
     @Override
@@ -145,17 +162,23 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         }
     }
 
-    @WorkerThread
     private void handleCurrentStation(Station station) {
         currentStationId = station.getId();
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
 
-        Bitmap icon = UiUtils.loadBitmapForStation(this, station);
-
         clearMetadata();
         mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.getName())
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, icon)
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
+                        UiUtils.textAsBitmap(this, station.getName()))
+                .build();
+        session.setMetadata(mediaMetadata);
+        updateRemoteViews();
+    }
+
+    private void handleStationIcon(Bitmap bitmap) {
+        mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, bitmap)
                 .build();
         session.setMetadata(mediaMetadata);
         updateRemoteViews();
@@ -174,6 +197,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
+        if (station.isNullStation()) return;
         playingStationId = station.getId();
         playback.play(Uri.parse(station.getUrl()));
     }
@@ -205,7 +229,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
-        if (mainInteractor.isFavoritePage()) {
+        if (stationsInteractor.getCurrentStation().isFavorite()) {
             favoriteInteractor.previousStation();
         } else {
             stationsInteractor.previousStation();
@@ -214,7 +238,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToNextCommand() {
-        if (mainInteractor.isFavoritePage()) {
+        if (stationsInteractor.getCurrentStation().isFavorite()) {
             favoriteInteractor.nextStation();
         } else {
             stationsInteractor.nextStation();
@@ -247,6 +271,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerError(MessageException error) {
+            // TODO: 5/7/18 player internally stops. try to keep notification
             onStopCommand();
             UiUtils.handleError(PlayerService.this, error);
         }
@@ -277,5 +302,13 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
             }
         };
         stopTimer.schedule(stopTask, stopDelay);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && PlayerWidget.ACTION_WIDGET_UPDATE.equals(intent.getAction())) {
+            updateRemoteViews();
+        } else {
+            MediaButtonReceiver.handleIntent(session, intent);
+        }
     }
 }

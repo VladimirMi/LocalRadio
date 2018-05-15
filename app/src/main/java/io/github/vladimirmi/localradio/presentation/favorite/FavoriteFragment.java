@@ -7,10 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -34,8 +36,10 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     public static final int LOADER_ID = 0;
     @BindView(R.id.stationList) RecyclerView stationList;
     @BindView(R.id.placeholder) TextView placeholder;
+    @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
     private StationsAdapter stationsAdapter;
+    private LinearLayoutManager layoutManager;
 
     @Override
     protected int getLayout() {
@@ -55,14 +59,17 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_common, menu);
+    }
+
+    @Override
     protected void setupView(View view) {
+        loadingPb.setVisibility(View.GONE);
         placeholder.setText(R.string.favorites_empty);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager = new LinearLayoutManager(getContext());
         stationList.setLayoutManager(layoutManager);
-        DividerItemDecoration itemDecoration = new DividerItemDecoration(stationList.getContext(),
-                layoutManager.getOrientation());
-        stationList.addItemDecoration(itemDecoration);
         stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
     }
@@ -70,6 +77,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void selectStation(Station station) {
         stationsAdapter.select(station);
+        scrollToSelectedStation();
     }
 
     @Override
@@ -98,7 +106,7 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         List<Station> list = ValuesMapper.getList(data, ValuesMapper::cursorToStation);
-        stationsAdapter.submitList(list);
+        setStations(list);
         presenter.listChanged(list);
     }
 
@@ -110,5 +118,29 @@ public class FavoriteFragment extends BaseFragment<FavoritePresenter>
     @Override
     public void onStationClick(Station station) {
         presenter.selectStation(station);
+    }
+
+    private void setStations(List<Station> stations) {
+        stationsAdapter.submitList(stations);
+        scrollToSelectedStation();
+    }
+
+    private void scrollToSelectedStation() {
+        int stationPosition = stationsAdapter.getSelectedPosition();
+        if (stationPosition < 0) return;
+
+        int firstPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+        int lastPosition = layoutManager.findLastCompletelyVisibleItemPosition();
+
+        if (firstPosition < stationPosition && stationPosition < lastPosition) {
+            return;
+        }
+
+        if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
+            layoutManager.scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3);
+
+        } else {
+            layoutManager.scrollToPosition(stationPosition);
+        }
     }
 }

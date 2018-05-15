@@ -32,7 +32,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
     private Station selectedStation = Station.nullStation();
-    // TODO: 5/6/18 remove selectedPosition
     private int selectedPosition;
     private boolean playing;
 
@@ -75,11 +74,14 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
+        Station station = getItem(position);
+        holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
+
         if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
-            holder.select(position == selectedPosition, playing);
+            holder.select(station.getId() == selectedStation.getId(), playing);
 
         } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
-            holder.setFavorite(getItem(position));
+            holder.setFavorite(station);
 
         } else {
             super.onBindViewHolder(holder, position, payloads);
@@ -91,8 +93,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         Station station = getItem(position);
         holder.bind(station);
         holder.setFavorite(station);
-        holder.select(position == selectedPosition, playing);
-        holder.itemView.setOnClickListener(view -> listener.onStationClick(getItem(position)));
+        holder.select(station.getId() == selectedStation.getId(), playing);
     }
 
     public void select(Station station) {
@@ -141,13 +142,7 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         void bind(Station station) {
             titleTv.setText(station.getName());
             genresTv.setText(station.getGenre());
-            String band;
-            if (station.getBand().equals("net")) {
-                band = station.getBand();
-            } else {
-                band = String.format("%s %s", station.getDial(), station.getBand());
-            }
-            bandTv.setText(band);
+            bandTv.setText(station.getBandString());
 
             UiUtils.loadImageInto(imageIv, station);
         }

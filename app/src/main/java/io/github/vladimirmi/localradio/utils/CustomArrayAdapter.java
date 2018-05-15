@@ -12,6 +12,7 @@ import java.util.List;
  * Created by Vladimir Mikhalev 05.04.2018.
  */
 
+@SuppressWarnings("unused")
 public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
 
     private List<T> data;
@@ -20,8 +21,6 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
     private ListFilter listFilter = new ListFilter();
     private List<T> originalValues;
     private final Object lock = new Object();
-
-    private T defaultValue;
 
     public CustomArrayAdapter(Context context, int resource, List<T> objects) {
         super(context, resource, objects);
@@ -42,10 +41,6 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
     @Override
     public Filter getFilter() {
         return listFilter;
-    }
-
-    public void setDefaultValue(T defaultValue) {
-        this.defaultValue = defaultValue;
     }
 
     public void setOnFilteringListener(OnFilteringListener<T> onFilteringListener) {
@@ -74,8 +69,7 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
                 }
             }
 
-            if (prefix == null || prefix.length() == 0
-                    || prefix.toString().equalsIgnoreCase(defaultValue.toString())) {
+            if (prefix == null || prefix.length() == 0) {
                 final ArrayList<T> list;
                 synchronized (lock) {
                     list = new ArrayList<>(originalValues);
@@ -94,12 +88,9 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
 
                 for (T value : values) {
                     final String valueText = value.toString().toLowerCase();
-                    // keep default value
-                    if (value.equals(defaultValue)) {
-                        newValues.add(defaultValue);
 
-                        // First match against the whole, non-splitted value
-                    } else if (valueText.startsWith(prefixString)) {
+                    // First match against the whole, non-splitted value
+                    if (valueText.startsWith(prefixString)) {
                         newValues.add(value);
                     } else {
                         final String[] words = valueText.split(" ");

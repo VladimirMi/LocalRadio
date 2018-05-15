@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
+<!--suppress AndroidDomInspection -->
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimaryDark"
@@ -28,6 +30,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:background="@drawable/ic_skip_previous"
         android:contentDescription="@string/desc_skip_previous_button"
         android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -38,14 +41,15 @@
 
     <ProgressBar
         android:id="@+id/loadingPb"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="22dp"
         android:indeterminate="true"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible"
         />
 
     <io.github.vladimirmi.playerbutton.PlayerButton
@@ -64,6 +68,7 @@
         android:id="@+id/nextBt"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/ic_skip_next"
         android:contentDescription="@string/desc_skip_next_button"
@@ -78,6 +83,7 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:background="@drawable/ic_star"
         android:contentDescription="@string/desc_favorite"
         android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -90,8 +96,8 @@
         android:id="@+id/metadataTv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="4dp"
         android:ellipsize="marquee"
         android:marqueeRepeatLimit="marquee_forever"

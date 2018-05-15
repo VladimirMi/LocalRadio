@@ -17,8 +17,9 @@ public class NetworkChecker {
 
     private final Context context;
     private final OkHttpClient client;
-    public static final String API_CHECK = "https://api.ipify.org/";
+    private static final String API_CHECK = "https://api.ipify.org/";
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public NetworkChecker(Context context, OkHttpClient client) {
         this.context = context;
@@ -39,6 +40,7 @@ public class NetworkChecker {
                 .build();
         Response response = client.newCall(request).execute();
 
+        //noinspection ConstantConditions
         return response.body().string();
     }
 }

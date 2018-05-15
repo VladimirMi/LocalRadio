@@ -1,12 +1,9 @@
 package io.github.vladimirmi.playerbutton;
 
 import android.content.Context;
-import android.graphics.drawable.AnimatedVectorDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.graphics.drawable.Animatable;
 import android.support.annotation.Nullable;
 import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 
 
@@ -66,16 +63,17 @@ public class PlayerButton extends android.support.v7.widget.AppCompatImageButton
     }
 
     private void setDrawable() {
-        Drawable drawable = ContextCompat.getDrawable(getContext(),
-                isPlaying ? R.drawable.pause_to_play_animation : R.drawable.play_to_pause_animation);
+        AnimatedVectorDrawableCompat drawable
+                = AnimatedVectorDrawableCompat.create(getContext(), getDrawableResId());
+
         setImageDrawable(drawable);
     }
 
     private void startAnimation() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            ((AnimatedVectorDrawableCompat) getDrawable()).start();
-        } else {
-            ((AnimatedVectorDrawable) getDrawable()).start();
-        }
+        ((Animatable) getDrawable()).start();
+    }
+
+    private int getDrawableResId() {
+        return isPlaying ? R.drawable.pause_to_play_animation : R.drawable.play_to_pause_animation;
     }
 }

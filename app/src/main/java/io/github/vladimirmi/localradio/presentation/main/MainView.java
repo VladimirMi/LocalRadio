@@ -14,7 +14,7 @@ public interface MainView extends BaseView {
 
     void showSearch();
 
-    void hideControls();
+    void showControls(boolean horizontal);
 
-    void showControls();
+    void hideControls(boolean horizontal);
 }

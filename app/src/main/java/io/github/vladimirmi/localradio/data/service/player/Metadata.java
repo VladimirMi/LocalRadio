@@ -8,7 +8,7 @@ import timber.log.Timber;
 /**
  * Created by Vladimir Mikhalev 07.04.2018.
  */
-
+// TODO: 5/7/18 Include station name. bitmap
 public class Metadata {
 
     private static final String unsupported = "unsupported";
@@ -16,17 +16,19 @@ public class Metadata {
     public final String artist;
     public final String title;
     public final boolean isSupported;
+    public final boolean isEmpty;
 
     private Metadata(String artist, String title) {
         this.artist = artist;
         this.title = title;
         isSupported = !artist.equals(unsupported) && !title.equals(unsupported);
+        isEmpty = artist.isEmpty() && title.isEmpty();
     }
 
     public static Metadata UNSUPPORTED = new Metadata(unsupported, unsupported);
 
     public static Metadata create(String meta) {
-        Timber.e("create: " + meta);
+        Timber.d("create: " + meta);
         String artistTitle = new StringUtils.Builder(meta).substringAfter("StreamTitle=", unsupported)
                 .substringBefore(";")
                 .trim(' ', '\'')
@@ -53,10 +55,7 @@ public class Metadata {
         if (meta == null) return UNSUPPORTED;
         String subtitle = meta.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
         String title = meta.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
-        return new Metadata(
-                subtitle.isEmpty() ? unsupported : subtitle,
-                title.isEmpty() ? unsupported : title
-        );
+        return new Metadata(subtitle, title);
     }
 
     public MediaMetadataCompat toMediaMetadata() {
@@ -66,17 +65,13 @@ public class Metadata {
                 .build();
     }
 
-    public String toLogString() {
-        if (!isSupported) {
-            return "Metadata(Unsupported)";
-        } else {
-            return String.format("Metadata(artist='%s', title='%s')", artist, title);
-        }
-    }
-
     @Override
     public String toString() {
-        return String.format("%s - %s", artist, title);
+        if (isEmpty) {
+            return "";
+        } else {
+            return String.format("%s - %s", artist, title);
+        }
     }
 
     @Override
@@ -96,6 +91,7 @@ public class Metadata {
         return result;
     }
 
+    //todo refactor
     private static String[] splitOnArtistTitle(String artistTitle) {
         String[] strings;
         int i = artistTitle.indexOf('-');

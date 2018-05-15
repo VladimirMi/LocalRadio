@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.presentation.playercontrol;
 
-import android.support.annotation.Nullable;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import javax.inject.Inject;
@@ -8,12 +7,12 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.MainInteractor;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -24,25 +23,31 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     private final PlayerControlInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final FavoriteInteractor favoriteInteractor;
+    private final MainInteractor mainInteractor;
 
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
-    PlayerControlPresenter(PlayerControlInteractor controlInteractor,
-                           StationsInteractor stationsInteractor,
-                           FavoriteInteractor favoriteInteractor) {
+    public PlayerControlPresenter(PlayerControlInteractor controlInteractor,
+                                  StationsInteractor stationsInteractor,
+                                  FavoriteInteractor favoriteInteractor,
+                                  MainInteractor mainInteractor) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
         this.favoriteInteractor = favoriteInteractor;
+        this.mainInteractor = mainInteractor;
     }
 
     @Override
-    protected void onFirstAttach(@Nullable PlayerControlView view, CompositeDisposable disposables) {
+    protected void onAttach(PlayerControlView view, boolean isFirstAttach) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(station -> view.setFavorite(station.isFavorite()))
+                .distinctUntilChanged(Station::getId)
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
                     public void onNext(Station station) {
-                        handleCurrentStation(station);
+                        view.setStation(station);
                     }
                 }));
 
@@ -65,14 +70,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                 }));
     }
 
-    private void handleCurrentStation(Station station) {
-        if (view == null) return;
-        view.setStation(station);
-    }
-
-    // TODO: 5/5/18 loading button
     private void handleState(PlaybackStateCompat state) {
-        if (view == null) return;
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
                 view.showPlaying();
@@ -90,10 +88,9 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     private void handleMetadata(Metadata metadata) {
-        if (view == null) return;
-        if (metadata.isSupported) {
+        if (metadata.isSupported && !metadata.isEmpty) {
             view.setMetadata(metadata.toString());
-        } else {
+        } else if (stationsInteractor.getCurrentStation() != null) {
             view.setMetadata(stationsInteractor.getCurrentStation().getName());
         }
     }
@@ -103,11 +100,19 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void skipToPrevious() {
-        controlInteractor.skipToPrevious();
+        if (mainInteractor.isFavoritePage()) {
+            favoriteInteractor.previousStation();
+        } else {
+            stationsInteractor.previousStation();
+        }
     }
 
     public void skipToNext() {
-        controlInteractor.skipToNext();
+        if (mainInteractor.isFavoritePage()) {
+            favoriteInteractor.nextStation();
+        } else {
+            stationsInteractor.nextStation();
+        }
     }
 
     public void switchFavorite() {

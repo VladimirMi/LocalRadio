@@ -18,6 +18,8 @@ import java.lang.reflect.Field;
 
 public class NonSwipeableViewPager extends ViewPager {
 
+    public static final int ANIMATION_DURATION = 300;
+
     public NonSwipeableViewPager(@NonNull Context context) {
         this(context, null);
     }
@@ -57,7 +59,7 @@ public class NonSwipeableViewPager extends ViewPager {
 
         @Override
         public void startScroll(int startX, int startY, int dx, int dy, int duration) {
-            super.startScroll(startX, startY, dx, dy, 300);
+            super.startScroll(startX, startY, dx, dy, ANIMATION_DURATION);
         }
     }
 }

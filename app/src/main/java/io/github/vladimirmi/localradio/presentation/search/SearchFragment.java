@@ -1,22 +1,27 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.support.design.widget.FloatingActionButton;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.CheckedTextView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Country;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.utils.CustomArrayAdapter;
 import io.github.vladimirmi.localradio.utils.CustomAutoCompleteView;
+import io.github.vladimirmi.localradio.utils.EditTextLabelView;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -26,12 +31,14 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
-    @BindView(R.id.cityLabelTv) TextView cityLabelTv;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
-    @BindView(R.id.searchBt) Button searchBt;
-    @BindView(R.id.refreshBt) Button refreshBt;
-    @BindView(R.id.newSearchBt) Button newSearchBt;
+    @BindView(R.id.countryLabelTv) EditTextLabelView countryLabelTv;
+    @BindView(R.id.cityLabelTv) EditTextLabelView cityLabelTv;
+    @BindView(R.id.searchBt) FloatingActionButton searchBt;
     @BindView(R.id.searchResultTv) TextView searchResultTv;
+    @BindView(R.id.loadingPb) ProgressBar loadingPb;
+
+    private boolean isRefreshEnabled = false;
 
     @Override
     protected int getLayout() {
@@ -43,10 +50,25 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         return Scopes.getAppScope().getInstance(SearchPresenter.class);
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(isRefreshEnabled ? R.menu.menu_refresh : R.menu.menu_common, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_refresh) {
+            presenter.refreshSearch();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
-        autodetectCb.setOnClickListener(v -> presenter.setAutodetect(!autodetectCb.isChecked()));
+        autodetectCb.requestFocus();
+        autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
         countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
         cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
 
@@ -63,27 +85,23 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         searchBt.setOnClickListener(v -> presenter.search(countryEt.getText().toString(),
                 cityEt.getText().toString()));
 
-        refreshBt.setOnClickListener(v -> presenter.refreshSearch());
-        newSearchBt.setOnClickListener(v -> presenter.newSearch());
+        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
-    public void setCountries(List<String> countries) {
+    public void setCountrySuggestions(List<String> countries) {
         CustomArrayAdapter<String> countryAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, countries);
-        countryAdapter.setDefaultValue(Country.any().getName());
 
         countryEt.setAdapter(countryAdapter);
         countryEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(countries));
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
-    public void setCities(List<String> cities) {
+    public void setCitySuggestions(List<String> cities) {
         CustomArrayAdapter<String> cityAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, cities);
-        cityAdapter.setDefaultValue(Country.any().getCities().get(0));
 
         cityEt.setAdapter(cityAdapter);
         cityEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(cities));
@@ -128,24 +146,17 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     }
 
     @Override
-    public void setAutoSearchDone(boolean done) {
-        enableView(countryEt, !done);
-        enableView(cityEt, !done);
-        setVisible(searchBt, !done);
-        setVisible(newSearchBt, !done);
-        setVisible(refreshBt, done);
-        hideCity(done);
+    public void setSearchDone(boolean done) {
+        enableTextView(countryEt, !done);
+        enableTextView(cityEt, !done);
+        searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
     }
 
     @Override
-    public void setManualSearchDone(boolean done) {
-        enableView(countryEt, !done);
-        enableView(cityEt, !done);
-        setVisible(searchBt, !done);
-        setVisible(newSearchBt, done);
-        setVisible(refreshBt, done);
-        hideCity(false);
+    public void showSearchBtn(boolean visible) {
+        setVisible(searchBt, visible);
     }
+
 
     @Override
     public void setSearchResult(int foundStations) {
@@ -160,34 +171,33 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public void setSearching(boolean enabled) {
-        if (enabled) {
-            searchResultTv.setText(getString(R.string.searching));
-        } else {
-            resetSearchResult();
-        }
+        setVisible(loadingPb, enabled);
     }
 
-    private void hideCity(boolean hide) {
-        if (hide && cityEt.getText().toString().equals(getString(R.string.any_city))) {
-            setVisible(cityLabelTv, false);
-            setVisible(cityEt, false);
-        } else {
-            setVisible(cityLabelTv, true);
-            setVisible(cityEt, true);
-        }
+    @Override
+    public void enableAutodetect(boolean enabled) {
+        autodetectCb.setEnabled(enabled);
     }
 
-    private void enableView(TextView view, boolean enable) {
+    @Override
+    public void enableSearch(boolean enabled) {
+        searchBt.setEnabled(enabled);
+    }
+
+    @Override
+    public void enableRefresh(boolean enabled) {
+        isRefreshEnabled = enabled;
+        //noinspection ConstantConditions
+        getActivity().invalidateOptionsMenu();
+    }
+
+    private void enableTextView(TextView view, boolean enable) {
         view.setEnabled(enable);
         view.setFocusable(enable);
         view.setFocusableInTouchMode(enable);
     }
 
     private void setVisible(View view, boolean visible) {
-        if (visible) {
-            view.setVisibility(View.VISIBLE);
-        } else {
-            view.setVisibility(View.GONE);
-        }
+        view.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 }

@@ -14,7 +14,6 @@ import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -33,35 +32,42 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     @Override
-    protected void onFirstAttach(SearchView view, CompositeDisposable disposables) {
-        view.setCountries(locationInteractor.getCountriesName());
+    protected void onAttach(SearchView view, boolean isFirstAttach) {
+        view.setCountrySuggestions(locationInteractor.getCountriesName());
         String countryName = locationInteractor.getCountryName();
-        view.setCities(locationInteractor.findCities(countryName));
+        view.setCitySuggestions(locationInteractor.findCities(countryName));
         view.setCountryName(countryName);
         view.setCity(locationInteractor.getCity());
         view.setAutodetect(locationInteractor.isAutodetect());
+        view.showSearchBtn(!locationInteractor.isAutodetect());
         setSearchDone(searchInteractor.isSearchDone());
+        view.enableAutodetect(locationInteractor.isServicesAvailable());
+
 
         disposables.add(searchInteractor.getSearchResults()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
                     @Override
                     public void onNext(Integer integer) {
-                        if (hasView()) {
-                            //noinspection ConstantConditions
-                            getView().setSearchResult(integer);
-                            getView().setCountryName(locationInteractor.getCountryName());
-                            getView().setCity(locationInteractor.getCity());
-                            setSearchDone(true);
-                        }
+                        handleSearchResults(integer);
+                    }
+                }));
+
+        disposables.add(searchInteractor.isSearching()
+                .distinctUntilChanged()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
+                    @Override
+                    public void onNext(Boolean isSearching) {
+                        handleIsSearching(isSearching);
                     }
                 }));
     }
 
     public void selectCountry(String countryName) {
         List<String> cities = locationInteractor.findCities(countryName);
-        view.setCities(cities);
-        view.setCity(cities.get(0));
+        view.setCitySuggestions(cities);
+        view.setCountryName(countryName);
     }
 
     public void selectCity(String city) {
@@ -69,101 +75,105 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         if (countryName != null) {
             view.setCountryName(countryName);
         }
+        view.setCity(city);
     }
 
     @SuppressLint("CheckResult")
-    public void setAutodetect(boolean autodetect) {
+    public void enableAutodetect(boolean autodetect) {
         searchInteractor.checkCanSearch()
+                .andThen(locationInteractor.checkCanGetLocation())
                 .andThen(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION))
+                .delay(300, TimeUnit.MILLISECONDS)
                 .doOnNext(enabled -> {
-                    // TODO: 4/27/18 action with settings to snackbar
+                    // TODO: 4/27/18 add action that opens settings to the snackbar
                     if (!enabled) view.showMessage(R.string.need_permission);
                 })
                 .map(enabled -> enabled && autodetect)
-                .delay(100, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(enabled -> {
-                    enableAutodetect(enabled);
-                    if (enabled) {
-                        view.setSearching(true);
-                        setSearchDone(true);
-                        searchInteractor.searchStations();
-                    }
+                    setAutodetect(enabled);
+                    if (enabled) setSearchDone(true);
                 })
-                .ignoreElements()
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
-                    @Override
-                    public void onError(Throwable e) {
-                        super.onError(e);
-                        view.setSearching(false);
-                        setSearchDone(false);
-                    }
-                });
+                .filter(enabled -> enabled)
+                .flatMapCompletable(enabled -> searchInteractor.searchStations())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+    }
+
+
+    @SuppressLint("CheckResult")
+    public void refreshSearch() {
+        searchInteractor.checkCanSearch()
+                .doOnComplete(() -> {
+                    setSearchDone(true);
+                    view.resetSearchResult();
+                })
+                .andThen(searchInteractor.refreshStations())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
     public void search(String countryName, String city) {
+        if (!searchInteractor.isSearchDone()) {
+            performSearch(countryName, city);
+        } else {
+            newSearch();
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    private void performSearch(String countryName, String city) {
         locationInteractor.saveCountryNameCity(countryName, city);
 
-        disposables.add(locationInteractor.checkCanSearch()
+        locationInteractor.checkCanSearch()
                 .andThen(searchInteractor.checkCanSearch())
-                .doOnComplete(() -> {
-                    searchInteractor.resetSearch();
-                    searchInteractor.searchStations();
-                    view.setSearching(true);
-                    setSearchDone(true);
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
-                    @Override
-                    public void onError(Throwable e) {
-                        super.onError(e);
-                        view.setSearching(false);
-                        setSearchDone(false);
-                    }
-                }));
+                .doOnComplete(() -> setSearchDone(true))
+                .andThen(searchInteractor.searchStations())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
     }
 
-    public void refreshSearch() {
-        disposables.add(searchInteractor.checkCanSearch()
-                .doOnComplete(() -> {
-                    searchInteractor.refreshStations();
-                    view.setSearching(true);
-                    setSearchDone(true);
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view) {
-                    @Override
-                    public void onError(Throwable e) {
-                        super.onError(e);
-                        view.setSearching(false);
-                        setSearchDone(false);
-                    }
-                }));
-    }
-
-    public void newSearch() {
-        view.setManualSearchDone(false);
-        view.resetSearchResult();
+    private void newSearch() {
         searchInteractor.resetSearch();
+        view.resetSearchResult();
+        setSearchDone(false);
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private void setSearchDone(boolean isSearchDone) {
-        if (locationInteractor.isAutodetect()) {
-            getView().setAutoSearchDone(isSearchDone);
+    private void handleSearchResults(Integer integer) {
+        view.setSearchResult(integer);
+        view.setCountryName(locationInteractor.getCountryName());
+        String city = locationInteractor.getCity();
+        view.setCity(city);
+    }
+
+    private void handleIsSearching(boolean isSearching) {
+        view.setSearching(isSearching);
+        if (!isSearching) {
+            view.enableSearch(true);
+            view.enableAutodetect(locationInteractor.isServicesAvailable());
+            if (!searchInteractor.isSearchDone()) {
+                handleFailedSearch();
+            }
         } else {
-            getView().setManualSearchDone(isSearchDone);
+            view.enableSearch(false);
+            view.enableAutodetect(false);
         }
     }
 
-    private void enableAutodetect(boolean enabled) {
+    private void handleFailedSearch() {
+        if (locationInteractor.isAutodetect()) {
+            setAutodetect(false);
+        } else {
+            newSearch();
+        }
+    }
+
+    private void setAutodetect(boolean enabled) {
         locationInteractor.saveAutodetect(enabled);
         view.setAutodetect(enabled);
-        view.setSearching(enabled);
-        if (!enabled) {
-            view.setAutoSearchDone(false);
-            view.resetSearchResult();
-            searchInteractor.resetSearch();
-        }
+        view.showSearchBtn(!enabled);
+        if (!enabled) newSearch();
+    }
+
+    private void setSearchDone(boolean isSearchDone) {
+        view.setSearchDone(isSearchDone);
+        view.enableRefresh(isSearchDone);
     }
 }

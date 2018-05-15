@@ -31,7 +31,7 @@ public class CountrySource {
     @SuppressWarnings("WeakerAccess")
     @Inject
     public CountrySource(Context context) {
-
+        // TODO: 5/15/18 move to background
         try (BufferedReader br = new BufferedReader(new InputStreamReader(
                 context.getResources().openRawResource(R.raw.countries)))) {
             StringBuilder sb = new StringBuilder();
@@ -46,7 +46,6 @@ public class CountrySource {
             JsonAdapter<List<Country>> adapter =
                     moshi.adapter(Types.newParameterizedType(List.class, Country.class));
             countries = adapter.fromJson(sb.toString());
-            countries.add(0, Country.any());
 
         } catch (IOException e) {
             e.printStackTrace();

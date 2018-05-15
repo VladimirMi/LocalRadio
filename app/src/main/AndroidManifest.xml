@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
@@ -19,14 +18,19 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".presentation.main.MainActivity"
-            android:theme="@style/AppTheme.Splash"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".presentation.about.AboutActivity"
+            android:label="@string/about"/>
 
         <service
             android:name=".data.service.player.PlayerService"
@@ -36,7 +40,6 @@
                 <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
-
         <service
             android:name=".data.service.search.SearchService"
             android:exported="false"/>

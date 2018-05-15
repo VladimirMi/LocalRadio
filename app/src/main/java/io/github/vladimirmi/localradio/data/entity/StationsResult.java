@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.data.entity;
 
 import com.squareup.moshi.Json;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class StationsResult {
     }
 
     public List<Station> getStations() {
-        return result.get(0).getStations();
+        return success ? result.get(0).getStations() : Collections.emptyList();
     }
 
     private static class ResultBean {

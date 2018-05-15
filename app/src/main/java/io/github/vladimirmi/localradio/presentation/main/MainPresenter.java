@@ -5,12 +5,10 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.domain.MainInteractor;
 import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -20,23 +18,32 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private final PlayerControlInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
-    private final SearchInteractor searchInteractor;
     private final MainInteractor mainInteractor;
 
     @Inject
     MainPresenter(PlayerControlInteractor controlInteractor,
                   StationsInteractor stationsInteractor,
-                  SearchInteractor searchInteractor, MainInteractor mainInteractor) {
+                  MainInteractor mainInteractor) {
         this.controlInteractor = controlInteractor;
         this.stationsInteractor = stationsInteractor;
-        this.searchInteractor = searchInteractor;
         this.mainInteractor = mainInteractor;
     }
 
     @Override
-    protected void onFirstAttach(MainView view, CompositeDisposable disposables) {
+    protected void onFirstAttach(MainView view) {
+        controlInteractor.connect();
         initPage(mainInteractor.getPagePosition());
 
+        disposables.add(mainInteractor.initApp()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(() -> {
+                    if (!mainInteractor.isHaveStations()) selectPage(MainActivity.PAGE_SEARCH);
+                })
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+    }
+
+    @Override
+    protected void onAttach(MainView view, boolean isFirstAttach) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .map(Station::isNullStation)
                 .distinctUntilChanged()
@@ -48,22 +55,10 @@ public class MainPresenter extends BasePresenter<MainView> {
                     }
                 }));
 
-        disposables.add(mainInteractor.initApp()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
-
-        if (!searchInteractor.isSearchDone()) {
-            selectPage(MainActivity.PAGE_SEARCH);
-        }
     }
 
     @Override
-    protected void onAttach(MainView view) {
-        controlInteractor.connect();
-    }
-
-    @Override
-    protected void onDetach() {
+    protected void onDestroy() {
         controlInteractor.disconnect();
     }
 
@@ -72,12 +67,16 @@ public class MainPresenter extends BasePresenter<MainView> {
         if (hasView()) initPage(position);
     }
 
+    public void exit() {
+        controlInteractor.stop();
+    }
+
     private void handleIsNullStation(boolean isNull) {
         if (view == null) return;
         if (isNull) {
-            view.hideControls();
-        } else {
-            view.showControls();
+            view.hideControls(false);
+        } else if (!mainInteractor.isSearchPage()) {
+            view.showControls(false);
         }
     }
 
@@ -85,12 +84,19 @@ public class MainPresenter extends BasePresenter<MainView> {
         switch (position) {
             case MainActivity.PAGE_FAVORITE:
                 view.showFavorite();
+                if (!stationsInteractor.getCurrentStation().isNullStation()) {
+                    view.showControls(true);
+                }
                 break;
             case MainActivity.PAGE_STATIONS:
                 view.showStations();
+                if (!stationsInteractor.getCurrentStation().isNullStation()) {
+                    view.showControls(true);
+                }
                 break;
             case MainActivity.PAGE_SEARCH:
                 view.showSearch();
+                view.hideControls(true);
                 break;
         }
     }

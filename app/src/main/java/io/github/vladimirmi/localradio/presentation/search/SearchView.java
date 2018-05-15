@@ -10,9 +10,9 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 public interface SearchView extends BaseView {
 
-    void setCountries(List<String> countries);
+    void setCountrySuggestions(List<String> countries);
 
-    void setCities(List<String> cities);
+    void setCitySuggestions(List<String> cities);
 
     void setCountryName(String name);
 
@@ -20,13 +20,19 @@ public interface SearchView extends BaseView {
 
     void setAutodetect(boolean enabled);
 
-    void setAutoSearchDone(boolean done);
+    void setSearchDone(boolean done);
 
-    void setManualSearchDone(boolean done);
+    void showSearchBtn(boolean visible);
 
     void setSearchResult(int foundStations);
 
     void resetSearchResult();
 
     void setSearching(boolean enabled);
+
+    void enableAutodetect(boolean enabled);
+
+    void enableSearch(boolean enabled);
+
+    void enableRefresh(boolean enabled);
 }

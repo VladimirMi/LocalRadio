@@ -26,6 +26,7 @@ public class FavoriteRepository {
 
     private List<Station> favoriteStations = Collections.emptyList();
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public FavoriteRepository(ContentResolver contentResolver,
                               Preferences preferences) {
@@ -52,9 +53,11 @@ public class FavoriteRepository {
     }
 
     public Station findCurrentFavoriteStation() {
-        int curId = preferences.currentStationId.get();
+        int currentId = preferences.currentStationId.get();
+        // return first if current station is null object
+        if (currentId == 0 && !favoriteStations.isEmpty()) return favoriteStations.get(0);
         for (Station station : favoriteStations) {
-            if (station.getId() == curId) {
+            if (station.getId() == currentId) {
                 return station;
             }
         }

@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.github.vladimirmi.localradio.di.Scopes;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
@@ -19,12 +20,16 @@ public class FavoriteInteractor {
 
     private final StationsRepository stationsRepository;
     private final FavoriteRepository favoriteRepository;
+    private final PlayerControlInteractor controlInteractor;
+    private MainInteractor mainInteractor;
 
     @Inject
     public FavoriteInteractor(StationsRepository stationsRepository,
-                              FavoriteRepository favoriteRepository) {
+                              FavoriteRepository favoriteRepository,
+                              PlayerControlInteractor controlInteractor) {
         this.stationsRepository = stationsRepository;
         this.favoriteRepository = favoriteRepository;
+        this.controlInteractor = controlInteractor;
     }
 
     public Completable initFavorites() {
@@ -41,6 +46,13 @@ public class FavoriteInteractor {
         setCurrentStationIfFavorite();
     }
 
+    private MainInteractor getMainInteractor() {
+        if (mainInteractor == null) {
+            mainInteractor = Scopes.getAppScope().getInstance(MainInteractor.class);
+        }
+        return mainInteractor;
+    }
+
     public Completable switchCurrentFavorite() {
         return Single.fromCallable(stationsRepository::getCurrentStation)
                 .flatMapCompletable(station -> {
@@ -49,6 +61,7 @@ public class FavoriteInteractor {
                     if (newStation.isFavorite()) {
                         return favoriteRepository.addFavorite(newStation);
                     } else {
+                        changeCurrentStationOnNextFavorite();
                         return favoriteRepository.removeFavorite(newStation);
                     }
                 }).subscribeOn(Schedulers.io());
@@ -56,7 +69,7 @@ public class FavoriteInteractor {
 
     public void previousStation() {
         List<Station> source = favoriteRepository.getFavoriteStations();
-        int indexOfCurrent = source.indexOf(stationsRepository.getCurrentStation());
+        int indexOfCurrent = getIndexOfCurrent();
         if (indexOfCurrent == -1) return;
 
         int indexOfPrevious = (indexOfCurrent + source.size() - 1) % source.size();
@@ -65,7 +78,7 @@ public class FavoriteInteractor {
 
     public void nextStation() {
         List<Station> source = favoriteRepository.getFavoriteStations();
-        int indexOfCurrent = source.indexOf(stationsRepository.getCurrentStation());
+        int indexOfCurrent = getIndexOfCurrent();
         if (indexOfCurrent == -1) return;
 
         int indexOfNext = (indexOfCurrent + 1) % source.size();
@@ -73,6 +86,7 @@ public class FavoriteInteractor {
     }
 
     public void updateStationsWithFavorites() {
+        // TODO: 5/14/18 передавать список избранных в результат поиска
         List<Station> list = new ArrayList<>(stationsRepository.getStations());
         boolean updated = updateStationsIfFavorite(list);
         if (updated) stationsRepository.setStations(list);
@@ -102,5 +116,35 @@ public class FavoriteInteractor {
             }
         }
         return updated;
+    }
+
+    private void changeCurrentStationOnNextFavorite() {
+        if (!getMainInteractor().isFavoritePage() || controlInteractor.isPlaying()) {
+            return;
+        }
+        if (favoriteRepository.getFavoriteStations().size() == 1) {
+            if (stationsRepository.getStations().isEmpty()) {
+                stationsRepository.setCurrentStation(Station.nullStation());
+            }
+            return;
+        }
+        int indexOfCurrent = getIndexOfCurrent();
+        if (indexOfCurrent + 1 == favoriteRepository.getFavoriteStations().size()) {
+            previousStation();
+        } else {
+            nextStation();
+        }
+    }
+
+    private int getIndexOfCurrent() {
+        List<Station> stations = favoriteRepository.getFavoriteStations();
+        Station currentStation = stationsRepository.getCurrentStation();
+
+        for (int i = 0; i < stations.size(); i++) {
+            if (stations.get(i).getId() == currentStation.getId()) {
+                return i;
+            }
+        }
+        return -1;
     }
 }

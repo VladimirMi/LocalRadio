@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.annotation.WorkerThread;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
@@ -16,10 +15,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.utils.RxUtils;
-import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 22.04.2018.
@@ -41,6 +37,7 @@ public class MediaNotification {
 
     private Disposable notificationUpdate;
 
+    @SuppressWarnings("WeakerAccess")
     public MediaNotification(PlayerService service, MediaSessionCompat session) {
         this.service = service;
         this.session = session;
@@ -58,7 +55,6 @@ public class MediaNotification {
                 .setShowActionsInCompactView(0, 1, 2)
                 .setCancelButtonIntent(stopIntent);
 
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel();
         }
@@ -74,13 +70,6 @@ public class MediaNotification {
     }
 
     public void update() {
-        if (notificationUpdate != null) notificationUpdate.dispose();
-        notificationUpdate = Completable.fromAction(this::updateInBackground)
-                .subscribeOn(Schedulers.io())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(null));
-    }
-
-    private void updateInBackground() {
         int state = session.getController().getPlaybackState().getState();
         if (state == PlaybackStateCompat.STATE_PLAYING) {
             startForeground();
@@ -96,11 +85,10 @@ public class MediaNotification {
         }
     }
 
-    @WorkerThread
     private Notification createNotification() {
         NotificationCompat.Builder builder = createStandardBuilder();
-        PlaybackStateCompat playbackState = session.getController().getPlaybackState();
         MediaMetadataCompat mediaMetadata = session.getController().getMetadata();
+        int playbackState = session.getController().getPlaybackState().getState();
         Metadata metadata = Metadata.create(mediaMetadata);
 
         String stationName = mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
@@ -113,15 +101,19 @@ public class MediaNotification {
             builder.setContentTitle(metadata.title)
                     .setContentText(metadata.artist);
         } else {
-            builder.setContentText(service.getString(R.string.metadata_not_available));
+            builder.setContentTitle(service.getString(R.string.metadata_not_available));
+        }
+
+        if (playbackState == PlaybackStateCompat.STATE_BUFFERING) {
+            builder.setContentTitle(service.getString(R.string.metadata_buffering));
         }
 
         builder.addAction(generateAction(R.drawable.ic_skip_previous, "Previous", previousIntent));
-        if (playbackState.getState() == PlaybackStateCompat.STATE_STOPPED
-                || playbackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
+        if (playbackState == PlaybackStateCompat.STATE_STOPPED
+                || playbackState == PlaybackStateCompat.STATE_PAUSED) {
             builder.addAction(generateAction(R.drawable.ic_play, "Play", playPauseIntent));
         } else {
-            builder.addAction(generateAction(R.drawable.ic_stop, "Stop", playPauseIntent));
+            builder.addAction(generateAction(R.drawable.ic_pause, "Pause", playPauseIntent));
         }
         builder.addAction(generateAction(R.drawable.ic_skip_next, "Next", nextIntent));
 
@@ -145,7 +137,7 @@ public class MediaNotification {
         return new NotificationCompat.Builder(service, CHANNEL_ID)
                 .setShowWhen(false)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setSmallIcon(R.drawable.ic_radio)
+                .setSmallIcon(R.drawable.ic_headphones)
                 .setContentIntent(session.getController().getSessionActivity())
                 .setDeleteIntent(stopIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

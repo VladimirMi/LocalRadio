@@ -12,14 +12,14 @@ import retrofit2.http.Query;
 public interface RestService {
 
     @GET("darstations.php")
-    Single<StationsResult> getStationsByCoordinates(@Query(Api.QUERY_LATITUDE) float latitude,
-                                                    @Query(Api.QUERY_LONGITUDE) float longitude);
+    Single<StationsResult> getStationsByCoordinates(@Query("latitude") float latitude,
+                                                    @Query("longitude") float longitude);
 
     @GET("darstations.php")
-    Single<StationsResult> getStationsByIp(@Query(Api.QUERY_IP) String ip);
+    Single<StationsResult> getStationsByIp(@Query("ip") String ip);
 
     @GET("darstations.php")
-    Single<StationsResult> getStationsByLocation(@Query(Api.QUERY_COUNTRY) String countryCode,
-                                                 @Query(Api.QUERY_CITY) String city,
+    Single<StationsResult> getStationsByLocation(@Query("country") String countryCode,
+                                                 @Query("city") String city,
                                                  @Query("exact") int exact);
 }

@@ -1,5 +1,5 @@
 <resources>
 
     <dimen name="player_controls_height">88dp</dimen>
-
+    <dimen name="icon_size">72dp</dimen>
 </resources>

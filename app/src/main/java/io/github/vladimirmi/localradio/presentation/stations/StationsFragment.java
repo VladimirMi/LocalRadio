@@ -1,7 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
-import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -9,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -28,6 +28,7 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
 
     @BindView(R.id.stationList) RecyclerView stationList;
     @BindView(R.id.placeholder) TextView placeholder;
+    @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
     private StationsAdapter stationsAdapter;
     private SearchView searchView;
@@ -41,12 +42,6 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     @Override
     protected StationsPresenter providePresenter() {
         return Scopes.getAppScope().getInstance(StationsPresenter.class);
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -77,6 +72,9 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         stationList.setLayoutManager(layoutManager);
         stationsAdapter = new StationsAdapter(this);
         stationList.setAdapter(stationsAdapter);
+
+        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
     //region =============== StationsView ==============
@@ -99,14 +97,8 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
     }
 
     @Override
-    public void showPlaceholder(boolean searchDone) {
+    public void showPlaceholder() {
         placeholder.setVisibility(View.VISIBLE);
-        if (searchDone) {
-            String text = getResources().getQuantityString(R.plurals.search_result, 0, 0);
-            placeholder.setText(text);
-        } else {
-            placeholder.setText(R.string.search_result_empty);
-        }
     }
 
     @Override
@@ -114,8 +106,13 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         placeholder.setVisibility(View.GONE);
     }
 
-    //endregion
+    @Override
+    public void setSearching(boolean isSearching) {
+        loadingPb.setVisibility(isSearching ? View.VISIBLE : View.GONE);
+    }
 
+
+    //endregion
     @Override
     public void onStationClick(Station station) {
         presenter.selectStation(station);
@@ -137,22 +134,19 @@ public class StationsFragment extends BaseFragment<StationsPresenter>
         int stationPosition = stationsAdapter.getSelectedPosition();
         if (stationPosition < 0) return;
 
-        int firstPosition = layoutManager.findFirstVisibleItemPosition();
-        int lastPosition = layoutManager.findLastVisibleItemPosition();
-        int offset = (lastPosition - firstPosition) / 4;
+        int firstPosition = layoutManager.findFirstCompletelyVisibleItemPosition();
+        int lastPosition = layoutManager.findLastCompletelyVisibleItemPosition();
 
-        if (stationPosition > firstPosition + offset && stationPosition < lastPosition - offset) {
+        if (firstPosition < stationPosition && stationPosition < lastPosition) {
             return;
         }
 
         if (firstPosition == -1 && lastPosition == -1 && getView() != null) {
             layoutManager.scrollToPositionWithOffset(stationPosition, stationList.getHeight() / 3);
 
-        } else if (stationPosition + offset > lastPosition) {
-            layoutManager.scrollToPosition(stationPosition + offset);
-
         } else {
-            layoutManager.scrollToPosition(stationPosition - offset);
+            layoutManager.scrollToPosition(stationPosition);
         }
     }
 }
+

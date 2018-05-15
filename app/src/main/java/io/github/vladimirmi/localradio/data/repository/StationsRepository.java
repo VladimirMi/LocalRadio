@@ -17,11 +17,11 @@ import io.reactivex.Observable;
 
 public class StationsRepository {
 
-
     private final Preferences preferences;
 
     private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
     private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
+    private BehaviorRelay<Boolean> isSearching = BehaviorRelay.createDefault(false);
 
     @Inject
     public StationsRepository(Preferences preferences) {
@@ -34,13 +34,14 @@ public class StationsRepository {
 
     public void setSearchDone(boolean done) {
         preferences.isSearchDone.put(done);
+        setSearching(false);
     }
 
     public void resetSearch() {
         setSearchDone(false);
         stations.accept(Collections.emptyList());
         if (currentStation.hasValue() && !currentStation.getValue().isFavorite()) {
-            currentStation.accept(Station.nullStation());
+            setCurrentStation(Station.nullStation());
         }
     }
 
@@ -48,6 +49,14 @@ public class StationsRepository {
         setSearchDone(true);
         updateCurrentStationFromPreferences(stations);
         this.stations.accept(stations);
+    }
+
+    public void setSearching(boolean isSearching) {
+        this.isSearching.accept(isSearching);
+    }
+
+    public Observable<Boolean> isSearching() {
+        return isSearching;
     }
 
     public void setStations(List<Station> stations) {

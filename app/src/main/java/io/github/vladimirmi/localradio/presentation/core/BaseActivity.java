@@ -1,11 +1,13 @@
 package io.github.vladimirmi.localradio.presentation.core;
 
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import butterknife.BindView;
@@ -17,6 +19,8 @@ import io.reactivex.Observable;
  */
 
 public abstract class BaseActivity<P extends BasePresenter> extends AppCompatActivity implements BaseView {
+
+    private static final int REQUEST_CHECK_SETTINGS = 123;
 
     protected P presenter;
     protected @BindView(android.R.id.content) View contentView;
@@ -51,7 +55,9 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
 
     @Override
     protected void onDestroy() {
-        presenter.destroyView();
+        if (isFinishing()) {
+            presenter.destroyView();
+        }
         super.onDestroy();
     }
 
@@ -67,6 +73,15 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
 
     @Override
     public void showMessage(int messageId) {
-        Snackbar.make(contentView, messageId, Snackbar.LENGTH_LONG).show();
+        Snackbar.make(contentView, messageId, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void resolveApiException(ResolvableApiException resolvable) {
+        try {
+            resolvable.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
+        } catch (IntentSender.SendIntentException e) {
+            // Ignore the error.
+        }
     }
 }

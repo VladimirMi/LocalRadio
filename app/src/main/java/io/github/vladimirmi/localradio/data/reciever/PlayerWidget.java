@@ -7,23 +7,29 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.data.service.player.PlayerActions;
+import io.github.vladimirmi.localradio.data.service.player.PlayerService;
 import io.github.vladimirmi.localradio.presentation.main.MainActivity;
 
 public class PlayerWidget extends AppWidgetProvider {
 
-    public static final int REQUEST_CODE_WIDGET = 200;
+    public static final String ACTION_WIDGET_UPDATE = "ACTION_WIDGET_UPDATE";
+    private static final int REQUEST_CODE_WIDGET = 200;
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        updateAppWidgets(context, createRemoteViews(context));
+        Intent intent = new Intent(context, PlayerService.class);
+        intent.setAction(ACTION_WIDGET_UPDATE);
+        startForegroundService(context, intent);
     }
 
     @Override
@@ -46,29 +52,37 @@ public class PlayerWidget extends AppWidgetProvider {
         String stationName = mediaMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
         Bitmap stationIcon = mediaMetadata.getBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART);
 
-        views.setTextViewText(R.id.stationNameTv, stationName);
         views.setImageViewBitmap(R.id.iconIv, stationIcon);
 
-        if (metadata.isSupported) {
-            views.setTextViewText(R.id.metadataTv, metadata.toString());
+        if (metadata.isEmpty) {
+            views.setTextViewText(R.id.metadataTv, stationName);
+            views.setTextViewText(R.id.stationNameTv, "");
         } else {
-            views.setTextViewText(R.id.metadataTv, context.getString(R.string.metadata_not_available));
+            views.setTextViewText(R.id.stationNameTv, stationName);
+            if (metadata.isSupported) {
+                views.setTextViewText(R.id.metadataTv, metadata.toString());
+            } else {
+                views.setTextViewText(R.id.metadataTv, context.getString(R.string.metadata_not_available));
+            }
+        }
+
+        if (playbackState.getState() == PlaybackStateCompat.STATE_BUFFERING) {
+            views.setViewVisibility(R.id.loadingPb, View.VISIBLE);
+
+        } else if (playbackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            views.setViewVisibility(R.id.loadingPb, View.GONE);
         }
 
         if (playbackState.getState() == PlaybackStateCompat.STATE_STOPPED
                 || playbackState.getState() == PlaybackStateCompat.STATE_PAUSED) {
             views.setInt(R.id.playPauseBt, "setBackgroundResource", R.drawable.ic_play);
+            views.setViewVisibility(R.id.loadingPb, View.GONE);
+
         } else {
-            views.setInt(R.id.playPauseBt, "setBackgroundResource", R.drawable.ic_stop);
+            views.setInt(R.id.playPauseBt, "setBackgroundResource", R.drawable.ic_pause);
         }
 
         updateAppWidgets(context, views);
-    }
-
-    private static void updateAppWidgets(Context context, RemoteViews views) {
-        ComponentName appWidget = new ComponentName(context, PlayerWidget.class);
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        appWidgetManager.updateAppWidget(appWidget, views);
     }
 
     private static RemoteViews createRemoteViews(Context context) {
@@ -83,6 +97,20 @@ public class PlayerWidget extends AppWidgetProvider {
         views.setOnClickPendingIntent(R.id.iconIv, pendingIntent);
 
         return views;
+    }
+
+    private static void updateAppWidgets(Context context, RemoteViews views) {
+        ComponentName appWidget = new ComponentName(context, PlayerWidget.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        appWidgetManager.updateAppWidget(appWidget, views);
+    }
+
+    private static void startForegroundService(Context context, Intent intent) {
+        if (Build.VERSION.SDK_INT >= 26) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
     }
 }
 

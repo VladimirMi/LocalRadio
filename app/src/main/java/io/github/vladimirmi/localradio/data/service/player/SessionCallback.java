@@ -8,10 +8,9 @@ import android.support.v4.media.session.MediaSessionCompat;
 
 public class SessionCallback extends MediaSessionCompat.Callback {
 
-    /* default stop delay 1 min */
-    public static final int STOP_DELAY = 60000;
     private final Interface callback;
 
+    @SuppressWarnings("WeakerAccess")
     public SessionCallback(Interface callback) {
         super();
         this.callback = callback;
@@ -24,7 +23,7 @@ public class SessionCallback extends MediaSessionCompat.Callback {
 
     @Override
     public void onPause() {
-        callback.onPauseCommand(STOP_DELAY);
+        callback.onPauseCommand(Playback.STOP_DELAY);
     }
 
     @Override

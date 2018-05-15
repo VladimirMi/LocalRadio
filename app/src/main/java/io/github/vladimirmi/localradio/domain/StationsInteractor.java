@@ -29,13 +29,18 @@ public class StationsInteractor {
                 .map(this::filter);
     }
 
+    public List<Station> getStations() {
+        return stationsRepository.getStations();
+    }
+
     public Observable<Station> getCurrentStationObs() {
         return stationsRepository.getCurrentStationObs()
                 .distinctUntilChanged();
     }
 
     public Station getCurrentStation() {
-        return stationsRepository.getCurrentStation();
+        Station currentStation = stationsRepository.getCurrentStation();
+        return currentStation == null ? Station.nullStation() : currentStation;
     }
 
     public void setCurrentStation(Station station) {
@@ -66,6 +71,10 @@ public class StationsInteractor {
         stationsRepository.setStations(stationsRepository.getStations());
     }
 
+    public String getFilter() {
+        return filter;
+    }
+
     private List<Station> getFilteredStations() {
         if (filteredStations != null) {
             return filteredStations;
@@ -94,9 +103,5 @@ public class StationsInteractor {
 
     private boolean checkCanFilter(String field) {
         return field != null && field.toLowerCase().contains(filter);
-    }
-
-    public String getFilter() {
-        return filter;
     }
 }

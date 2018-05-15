@@ -15,6 +15,7 @@ public class MainInteractor {
     private final FavoriteInteractor favoriteInteractor;
     private final SearchInteractor searchInteractor;
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public MainInteractor(Preferences preferences,
                           FavoriteInteractor favoriteInteractor,
@@ -28,7 +29,7 @@ public class MainInteractor {
         Completable initStations;
         if (searchInteractor.isSearchDone()) {
             initStations = searchInteractor.checkCanSearch()
-                    .doOnComplete(searchInteractor::searchStations)
+                    .andThen(searchInteractor.searchStations())
                     .andThen(searchInteractor.getSearchResults())
                     .firstOrError().toCompletable();
         } else {
@@ -50,5 +51,13 @@ public class MainInteractor {
 
     public boolean isFavoritePage() {
         return getPagePosition() == 0;
+    }
+
+    public boolean isSearchPage() {
+        return getPagePosition() == 2;
+    }
+
+    public boolean isHaveStations() {
+        return preferences.currentStationId.get() != 0;
     }
 }

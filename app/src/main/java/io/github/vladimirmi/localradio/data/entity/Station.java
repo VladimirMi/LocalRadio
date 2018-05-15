@@ -129,6 +129,22 @@ public class Station {
         return url;
     }
 
+    public String getBandString() {
+        if (band.equals("net")) {
+            return band;
+        } else {
+            return String.format("%s %s", dial, band);
+        }
+    }
+
+    public String getLocationString() {
+        if (city.equals("{unlisted}") || city.isEmpty()) {
+            return countryCode;
+        } else {
+            return String.format("%s, %s", city, countryCode);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -136,8 +152,7 @@ public class Station {
 
         Station station = (Station) o;
 
-        if (id != station.id) return false;
-        return isFavorite == station.isFavorite;
+        return id == station.id && isFavorite == station.isFavorite;
     }
 
     @Override
