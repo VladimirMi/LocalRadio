@@ -21,6 +21,7 @@ import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.utils.CustomArrayAdapter;
 import io.github.vladimirmi.localradio.utils.CustomAutoCompleteView;
+import io.github.vladimirmi.localradio.utils.EditTextLabelView;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -31,8 +32,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
-    @BindView(R.id.countryLabelTv) TextView countryLabelTv;
-    @BindView(R.id.cityLabelTv) TextView cityLabelTv;
+    @BindView(R.id.countryLabelTv) EditTextLabelView countryLabelTv;
+    @BindView(R.id.cityLabelTv) EditTextLabelView cityLabelTv;
     @BindView(R.id.searchBt) FloatingActionButton searchBt;
     @BindView(R.id.searchResultTv) TextView searchResultTv;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
