@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckedTextView;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -21,7 +22,6 @@ import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.utils.CustomArrayAdapter;
 import io.github.vladimirmi.localradio.utils.CustomAutoCompleteView;
-import io.github.vladimirmi.localradio.utils.EditTextLabelView;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -32,11 +32,11 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
-    @BindView(R.id.countryLabelTv) EditTextLabelView countryLabelTv;
-    @BindView(R.id.cityLabelTv) EditTextLabelView cityLabelTv;
     @BindView(R.id.searchBt) FloatingActionButton searchBt;
     @BindView(R.id.searchResultTv) TextView searchResultTv;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
+    @BindView(R.id.clearCountryBt) ImageButton clearCountryBt;
+    @BindView(R.id.clearCityBt) ImageButton clearCityBt;
 
     private boolean isRefreshEnabled = false;
 
@@ -71,6 +71,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
         countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
         cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
+        clearCountryBt.setOnClickListener(v -> countryEt.setText(""));
+        clearCityBt.setOnClickListener(v -> cityEt.setText(""));
 
         cityEt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
