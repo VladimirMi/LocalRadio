@@ -38,4 +38,7 @@
         транслируемых через интеренет. Приложение может искать станции по стране и городу.
         Также оно может автоматически определять местоположение и выполнять поиск на основе этого.
     </string>
+    <string name="desc_clear_country_field">очистить полк страны</string>
+    <string name="desc_clear_city_field">очистить поле города</string>
+    <string name="desc_station_icon">Иконка станции</string>
 </resources>

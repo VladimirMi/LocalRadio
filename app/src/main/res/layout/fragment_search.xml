@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+            android:gravity="center_vertical"
             android:padding="4dp"
             android:text="@string/automatic_location_detection"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
@@ -43,10 +44,9 @@
             app:layout_constraintTop_toBottomOf="@+id/autodetectCb"
             >
 
-            <LinearLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_height="match_parent"
                 >
 
                 <io.github.vladimirmi.localradio.utils.EditTextLabelView
@@ -54,20 +54,37 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:layout_marginRight="4dp"
+                    android:layout_marginStart="4dp"
                     android:labelFor="@+id/countryEt"
                     android:text="@string/country"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintStart_toStartOf="parent"
                     />
 
                 <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
                     android:id="@+id/countryEt"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/any_country"
-                    android:textColorHint="@color/grey_400"
                     android:imeOptions="actionNext"
                     android:inputType="textNoSuggestions|textCapSentences"
+                    android:textColorHint="@color/grey_400"
+                    app:layout_constraintEnd_toStartOf="@id/clearCountryBt"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/countryLabelTv"
+                    />
+
+                <ImageButton
+                    android:id="@+id/clearCountryBt"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_clear"
+                    android:background="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/countryEt"
+                    app:layout_constraintTop_toTopOf="@id/countryEt"
+                    app:layout_constraintBottom_toBottomOf="@id/countryEt"
+                    android:contentDescription="@string/desc_clear_country_field"
                     />
 
                 <io.github.vladimirmi.localradio.utils.EditTextLabelView
@@ -75,21 +92,39 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:layout_marginRight="4dp"
+                    android:layout_marginStart="4dp"
                     android:layout_marginTop="16dp"
                     android:labelFor="@+id/cityEt"
                     android:text="@string/city"
                     android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/countryEt"
                     />
 
                 <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
                     android:id="@+id/cityEt"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:hint="@string/any_city"
-                    android:textColorHint="@color/grey_400"
                     android:imeOptions="actionDone"
                     android:inputType="textNoSuggestions|textCapSentences"
+                    android:textColorHint="@color/grey_400"
+                    app:layout_constraintEnd_toStartOf="@id/clearCityBt"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cityLabelTv"
+                    />
+
+                <ImageButton
+                    android:id="@+id/clearCityBt"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_clear"
+                    android:background="@null"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/cityEt"
+                    app:layout_constraintTop_toTopOf="@id/cityEt"
+                    app:layout_constraintBottom_toBottomOf="@id/cityEt"
+                    android:contentDescription="@string/desc_clear_city_field"
                     />
 
                 <TextView
@@ -98,9 +133,14 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="24dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cityEt"
                     tools:text="Ionicis tormento, index, et verpa."
                     />
-            </LinearLayout>
+
+
+            </android.support.constraint.ConstraintLayout>
 
         </android.support.v7.widget.CardView>
 
