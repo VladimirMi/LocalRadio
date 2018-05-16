@@ -27,7 +27,6 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorPrimary"
         android:visibility="gone"
-        tools:visibility="visible"
         />
 
     <ProgressBar
@@ -36,5 +35,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true"
+        android:visibility="gone"
         />
 </FrameLayout>

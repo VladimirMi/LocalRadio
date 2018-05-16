@@ -151,6 +151,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     public void setSearchDone(boolean done) {
         enableTextView(countryEt, !done);
         enableTextView(cityEt, !done);
+        setVisible(clearCountryBt, !done);
+        setVisible(clearCityBt, !done);
         searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
     }
 
