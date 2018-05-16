@@ -8,7 +8,7 @@
     <string name="any_city">Any city</string>
     <string name="unlisted_city">Unlisted city</string>
 
-    <string name="desc_station_icon" translatable="false">station icon</string>
+    <string name="desc_station_icon">Station icon</string>
     <string name="desc_favorite">add/remove favorite</string>
     <string name="desc_play_pause_button">play/pause</string>
     <string name="desc_skip_previous_button">skip previous station</string>
