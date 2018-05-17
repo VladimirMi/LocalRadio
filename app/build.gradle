@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 def secretsProperties = new Properties()
 
 ext {
-    file = new File("secrets.properties")
+    file = new File(rootDir, "secrets.properties")
     if (file.exists()) {
         secretsProperties.load(new FileInputStream(file))
     } else {
