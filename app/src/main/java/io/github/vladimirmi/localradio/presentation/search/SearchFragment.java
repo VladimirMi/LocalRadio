@@ -84,8 +84,11 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             return true;
         });
 
-        searchBt.setOnClickListener(v -> presenter.search(countryEt.getText().toString(),
-                cityEt.getText().toString()));
+        searchBt.setOnClickListener(v -> {
+            String countryName = countryEt.getText().toString();
+            String city = cityEt.getText().toString();
+            presenter.search(countryName, city);
+        });
 
         loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
                 .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);

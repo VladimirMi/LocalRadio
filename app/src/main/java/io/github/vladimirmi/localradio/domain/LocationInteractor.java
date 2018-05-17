@@ -1,7 +1,5 @@
 package io.github.vladimirmi.localradio.domain;
 
-import android.support.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +15,7 @@ import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 24.04.2018.
@@ -69,6 +68,7 @@ public class LocationInteractor {
     }
 
     public void saveCountryNameCity(String countryName, String cityName) {
+        Timber.e("saveCountryNameCity: %s, %s", countryName, cityName);
         String countryCode = "";
         if (!countryName.isEmpty()) {
             for (Country country : locationRepository.getCountries()) {
@@ -82,9 +82,8 @@ public class LocationInteractor {
         locationRepository.saveCountryCodeCity(countryCode, cityName);
     }
 
-    @Nullable
     public String findCountryName(String city) {
-        if (city.trim().isEmpty() || city.equals(unlistedCity)) return null;
+        if (city.isEmpty() || city.equals(unlistedCity)) return "";
 
         for (Country country : locationRepository.getCountries()) {
             if (country.getCities().contains(city)) {

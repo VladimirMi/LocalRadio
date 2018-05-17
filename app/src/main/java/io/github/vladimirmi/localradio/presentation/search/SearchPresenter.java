@@ -72,9 +72,10 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     public void selectCity(String city) {
         String countryName = locationInteractor.findCountryName(city);
-        if (countryName != null) {
+        if (!countryName.isEmpty()) {
             view.setCountryName(countryName);
         }
+        // TODO: 5/17/18 set country suggestions
         view.setCity(city);
     }
 
@@ -121,6 +122,10 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     @SuppressLint("CheckResult")
     private void performSearch(String countryName, String city) {
+        if (countryName.isEmpty()) {
+            countryName = locationInteractor.findCountryName(city);
+            view.setCountryName(countryName);
+        }
         locationInteractor.saveCountryNameCity(countryName, city);
 
         locationInteractor.checkCanSearch()
@@ -138,9 +143,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     private void handleSearchResults(Integer integer) {
         view.setSearchResult(integer);
-        view.setCountryName(locationInteractor.getCountryName());
-        String city = locationInteractor.getCity();
-        view.setCity(city);
+        selectCountry(locationInteractor.getCountryName());
+        selectCity(locationInteractor.getCity());
     }
 
     private void handleIsSearching(boolean isSearching) {
