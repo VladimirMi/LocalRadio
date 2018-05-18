@@ -229,7 +229,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
-        if (stationsInteractor.getCurrentStation().isFavorite()) {
+        if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.previousStation();
         } else {
             stationsInteractor.previousStation();
@@ -238,7 +238,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToNextCommand() {
-        if (stationsInteractor.getCurrentStation().isFavorite()) {
+        if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.nextStation();
         } else {
             stationsInteractor.nextStation();

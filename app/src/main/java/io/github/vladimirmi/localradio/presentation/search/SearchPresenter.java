@@ -97,7 +97,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 })
                 .filter(enabled -> enabled)
                 .flatMapCompletable(enabled -> searchInteractor.searchStations())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(getView()));
     }
 
 
@@ -109,7 +109,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                     view.resetSearchResult();
                 })
                 .andThen(searchInteractor.refreshStations())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(getView()));
     }
 
     public void search(String countryName, String city) {
@@ -132,7 +132,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .andThen(searchInteractor.checkCanSearch())
                 .doOnComplete(() -> setSearchDone(true))
                 .andThen(searchInteractor.searchStations())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(getView()));
     }
 
     private void newSearch() {

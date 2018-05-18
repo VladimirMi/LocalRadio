@@ -67,7 +67,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
-        autodetectCb.requestFocus();
         autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
         countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
         cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
