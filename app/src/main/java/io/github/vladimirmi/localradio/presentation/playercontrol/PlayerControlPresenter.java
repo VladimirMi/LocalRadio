@@ -4,12 +4,12 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
-import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.MainInteractor;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -42,8 +42,6 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     protected void onAttach(PlayerControlView view, boolean isFirstAttach) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(station -> view.setFavorite(station.isFavorite()))
-                .distinctUntilChanged(Station::getId)
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
                     public void onNext(Station station) {
@@ -66,6 +64,15 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                     @Override
                     public void onNext(Metadata metadata) {
                         handleMetadata(metadata);
+                    }
+                }));
+
+        disposables.add(favoriteInteractor.isCurrentStationFavorite()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
+                    @Override
+                    public void onNext(Boolean isFavorite) {
+                        view.setFavorite(isFavorite);
                     }
                 }));
     }
@@ -91,7 +98,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         if (metadata.isSupported && !metadata.isEmpty) {
             view.setMetadata(metadata.toString());
         } else if (stationsInteractor.getCurrentStation() != null) {
-            view.setMetadata(stationsInteractor.getCurrentStation().getName());
+            view.setMetadata(stationsInteractor.getCurrentStation().name);
         }
     }
 

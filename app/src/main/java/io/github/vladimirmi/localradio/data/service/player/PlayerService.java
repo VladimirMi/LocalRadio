@@ -21,12 +21,12 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.reciever.PlayerWidget;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.MainInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.github.vladimirmi.localradio.utils.UiUtils;
@@ -74,7 +74,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(Schedulers.io())
-                .distinctUntilChanged(Station::getId)
                 .doOnNext(station -> {
                     appInitialized = true;
                     handleCurrentStation(station);
@@ -163,14 +162,14 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     private void handleCurrentStation(Station station) {
-        currentStationId = station.getId();
+        currentStationId = station.id;
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
 
         clearMetadata();
         mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.getName())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.name)
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                        UiUtils.textAsBitmap(this, station.getName()))
+                        UiUtils.textAsBitmap(this, station.name))
                 .build();
         session.setMetadata(mediaMetadata);
         updateRemoteViews();
@@ -197,9 +196,9 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
-        if (station.isNullStation()) return;
-        playingStationId = station.getId();
-        playback.play(Uri.parse(station.getUrl()));
+        if (station.isNullObject) return;
+        playingStationId = station.id;
+        playback.play(Uri.parse(station.url));
     }
 
     //region =============== Session callbacks ==============

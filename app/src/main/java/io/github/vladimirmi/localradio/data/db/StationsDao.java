@@ -4,6 +4,8 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
+import java.util.List;
+
 import io.reactivex.Flowable;
 
 /**
@@ -19,5 +21,5 @@ public interface StationsDao {
     void deleteStation(int id);
 
     @Query("SELECT * from favorite_stations")
-    Flowable<StationEntity> getStations();
+    Flowable<List<StationEntity>> getStations();
 }

@@ -1,12 +1,12 @@
-package io.github.vladimirmi.localradio.domain;
+package io.github.vladimirmi.localradio.domain.interactors;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.reactivex.Observable;
 
 /**
@@ -40,7 +40,7 @@ public class StationsInteractor {
 
     public Station getCurrentStation() {
         Station currentStation = stationsRepository.getCurrentStation();
-        return currentStation == null ? Station.nullStation() : currentStation;
+        return currentStation == null ? Station.nullObject() : currentStation;
     }
 
     public void setCurrentStation(Station station) {
@@ -91,10 +91,10 @@ public class StationsInteractor {
         filteredStations = new ArrayList<>();
 
         for (Station station : stations) {
-            if (checkCanFilter(station.getName())
-                    || checkCanFilter(station.getGenre())
-                    || checkCanFilter(station.getDial())
-                    || checkCanFilter(station.getBand())) {
+            if (checkCanFilter(station.name)
+                    || checkCanFilter(station.genre)
+                    || checkCanFilter(station.dial)
+                    || checkCanFilter(station.band)) {
                 filteredStations.add(station);
             }
         }

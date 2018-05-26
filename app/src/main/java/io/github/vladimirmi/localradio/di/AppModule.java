@@ -1,12 +1,10 @@
 package io.github.vladimirmi.localradio.di;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.squareup.moshi.Moshi;
 
-import io.github.vladimirmi.localradio.data.db.StationDbHelper;
+import io.github.vladimirmi.localradio.data.db.AppDatabase;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
@@ -16,12 +14,12 @@ import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.data.repository.MediaController;
 import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
-import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.LocationInteractor;
-import io.github.vladimirmi.localradio.domain.MainInteractor;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.SearchInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.favorite.FavoritePresenter;
 import io.github.vladimirmi.localradio.presentation.main.MainPresenter;
 import io.github.vladimirmi.localradio.presentation.playercontrol.PlayerControlPresenter;
@@ -53,8 +51,7 @@ public class AppModule extends Module {
         bind(RestService.class).toInstance(RestServiceProvider.getService(client, factory));
         bind(NetworkChecker.class).singletonInScope();
 
-        bind(SQLiteDatabase.class).toInstance(new StationDbHelper(context).getWritableDatabase());
-        bind(ContentResolver.class).toInstance(context.getContentResolver());
+        bind(AppDatabase.class).toInstance(AppDatabase.getInstance(context));
 
         bind(Preferences.class).singletonInScope();
 

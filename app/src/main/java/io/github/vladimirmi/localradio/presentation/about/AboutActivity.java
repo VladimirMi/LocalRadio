@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.BuildConfig;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
 import toothpick.Toothpick;
 
 public class AboutActivity extends AppCompatActivity {

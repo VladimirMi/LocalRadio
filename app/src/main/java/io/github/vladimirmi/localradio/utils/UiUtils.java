@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.CRC32;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 import io.reactivex.Observable;
 import io.reactivex.ObservableOnSubscribe;
@@ -118,11 +118,11 @@ public class UiUtils {
         int height = resources.getDimensionPixelSize(R.dimen.icon_size);
 
         BitmapDrawable placeholder = new BitmapDrawable(resources,
-                textAsBitmap(context, station.getName()));
+                textAsBitmap(context, station.name));
 
         URL url;
         try {
-            url = new URL(station.getImageUrl());
+            url = new URL(station.imageUrl);
         } catch (MalformedURLException e) {
             view.setImageDrawable(placeholder);
             return;
@@ -142,7 +142,7 @@ public class UiUtils {
         int height = resources.getDimensionPixelSize(R.dimen.icon_size);
 
         return Glide.with(context.getApplicationContext())
-                .load(station.getImageUrl())
+                .load(station.imageUrl)
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .fitCenter()
@@ -158,7 +158,7 @@ public class UiUtils {
                     emitter.onNext(bitmap);
                 }
             } catch (Exception e) {
-                Timber.w("error loading image %s", station.getImageUrl());
+                Timber.w("error loading image %s", station.imageUrl);
             } finally {
                 Glide.clear(glideTarget);
                 if (!emitter.isDisposed()) {

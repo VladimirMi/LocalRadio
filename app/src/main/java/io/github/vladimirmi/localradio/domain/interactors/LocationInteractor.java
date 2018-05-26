@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.domain;
+package io.github.vladimirmi.localradio.domain.interactors;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Country;
+import io.github.vladimirmi.localradio.data.models.Country;
 import io.github.vladimirmi.localradio.data.repository.LocationRepository;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.utils.MessageException;

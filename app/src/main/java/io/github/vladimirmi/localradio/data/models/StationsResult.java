@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.entity;
+package io.github.vladimirmi.localradio.data.models;
 
 import com.squareup.moshi.Json;
 
@@ -18,15 +18,15 @@ public class StationsResult {
         return success;
     }
 
-    public List<Station> getStations() {
+    public List<StationRes> getStations() {
         return success ? result.get(0).getStations() : Collections.emptyList();
     }
 
     private static class ResultBean {
 
-        @Json(name = "stations") private List<Station> stations;
+        @Json(name = "stations") private List<StationRes> stations;
 
-        public List<Station> getStations() {
+        public List<StationRes> getStations() {
             return stations;
         }
     }

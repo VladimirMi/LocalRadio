@@ -23,7 +23,7 @@
         android:background="@color/grey_50"
         android:gravity="center"
         android:paddingBottom="@dimen/player_controls_height"
-        android:text="@string/search_result_empty"
+        android:text="@string/placeholder_search_result"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorPrimary"
         android:visibility="gone"

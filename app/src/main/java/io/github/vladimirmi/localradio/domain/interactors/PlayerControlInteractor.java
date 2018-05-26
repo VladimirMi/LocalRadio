@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.domain;
+package io.github.vladimirmi.localradio.domain.interactors;
 
 import android.support.v4.media.session.PlaybackStateCompat;
 

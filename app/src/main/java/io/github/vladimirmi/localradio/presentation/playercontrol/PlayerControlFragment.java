@@ -13,8 +13,8 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.utils.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.utils.UiUtils;
@@ -74,15 +74,15 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
         UiUtils.loadImageInto(iconIv, station);
 
-        setTextOrHideIfEmpty(titleTv, station.getName());
-        setTextOrHideIfEmpty(bandTv, station.getBandString());
-        setTextOrHideIfEmpty(sloganTv, station.getSlogan());
-        setTextOrHideIfEmpty(descriptionTv, station.getDescription());
-        setTextOrHideIfEmpty(genreTv, station.getGenre());
-        setTextOrHideIfEmpty(websiteTv, station.getWebsiteUrl());
-        setTextOrHideIfEmpty(emailTv, station.getEmail());
-        setTextOrHideIfEmpty(phoneTv, station.getPhone());
-        setTextOrHideIfEmpty(locationTv, station.getLocationString());
+        setTextOrHideIfEmpty(titleTv, station.name);
+        setTextOrHideIfEmpty(bandTv, station.bandString);
+        setTextOrHideIfEmpty(sloganTv, station.slogan);
+        setTextOrHideIfEmpty(descriptionTv, station.description);
+        setTextOrHideIfEmpty(genreTv, station.genre);
+        setTextOrHideIfEmpty(websiteTv, station.websiteUrl);
+        setTextOrHideIfEmpty(emailTv, station.email);
+        setTextOrHideIfEmpty(phoneTv, station.phone);
+        setTextOrHideIfEmpty(locationTv, station.locationString);
 
     }
 

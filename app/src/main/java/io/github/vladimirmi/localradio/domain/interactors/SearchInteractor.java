@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.domain;
+package io.github.vladimirmi.localradio.domain.interactors;
 
 import java.util.List;
 

@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.domain.LocationInteractor;
-import io.github.vladimirmi.localradio.domain.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;

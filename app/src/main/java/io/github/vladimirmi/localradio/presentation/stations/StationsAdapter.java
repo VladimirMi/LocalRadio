@@ -2,8 +2,6 @@ package io.github.vladimirmi.localradio.presentation.stations;
 
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.recyclerview.extensions.ListAdapter;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,52 +15,32 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
  */
 
-public class StationsAdapter extends ListAdapter<Station, StationsAdapter.StationVH> {
+public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.StationVH> {
 
     private static final String PAYLOAD_SELECTED_CHANGE = "PAYLOAD_SELECTED_CHANGE";
-    private static final String PAYLOAD_FAVORITE_CHANGE = "PAYLOAD_FAVORITE_CHANGE";
 
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
-    private Station selectedStation = Station.nullStation();
+    private Station selectedStation = Station.nullObject();
     private int selectedPosition;
     private boolean playing;
 
-    private static final DiffUtil.ItemCallback CALLBACK = new DiffUtil.ItemCallback<Station>() {
-        @Override
-        public boolean areItemsTheSame(Station oldItem, Station newItem) {
-            return oldItem.getId() == newItem.getId();
-        }
-
-        @Override
-        public boolean areContentsTheSame(Station oldItem, Station newItem) {
-            return oldItem.isFavorite() == newItem.isFavorite();
-        }
-
-        @Override
-        public Object getChangePayload(Station oldItem, Station newItem) {
-            return PAYLOAD_FAVORITE_CHANGE;
-        }
-    };
 
     public StationsAdapter(onStationListener listener) {
-        //noinspection unchecked
-        super(CALLBACK);
         this.listener = listener;
     }
 
-    @Override
-    public void submitList(List<Station> list) {
+    public void setData(List<Station> list) {
         stations = list;
-        selectedPosition = getPosition(selectedStation);
-        super.submitList(list);
+        selectedPosition = stations.indexOf(selectedStation);
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -74,14 +52,11 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position, @NonNull List<Object> payloads) {
-        Station station = getItem(position);
+        Station station = stations.get(position);
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
 
         if (payloads.contains(PAYLOAD_SELECTED_CHANGE)) {
-            holder.select(station.getId() == selectedStation.getId(), playing);
-
-        } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
-            holder.setFavorite(station);
+            holder.select(station.id == selectedStation.id, playing);
 
         } else {
             super.onBindViewHolder(holder, position, payloads);
@@ -90,14 +65,18 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
 
     @Override
     public void onBindViewHolder(@NonNull StationVH holder, int position) {
-        Station station = getItem(position);
+        Station station = stations.get(position);
         holder.bind(station);
         holder.setFavorite(station);
-        holder.select(station.getId() == selectedStation.getId(), playing);
+    }
+
+    @Override
+    public int getItemCount() {
+        return stations.size();
     }
 
     public void select(Station station) {
-        int newSelectedPos = getPosition(station);
+        int newSelectedPos = stations.indexOf(station);
         int oldSelectedPos = selectedPosition;
 
         selectedPosition = newSelectedPos;
@@ -117,15 +96,6 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
     }
 
 
-    private int getPosition(Station station) {
-        for (int i = 0; i < stations.size(); i++) {
-            if (stations.get(i).getId() == station.getId()) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     static class StationVH extends RecyclerView.ViewHolder {
 
         @BindView(R.id.iconIv) ImageView imageIv;
@@ -140,15 +110,15 @@ public class StationsAdapter extends ListAdapter<Station, StationsAdapter.Statio
         }
 
         void bind(Station station) {
-            titleTv.setText(station.getName());
-            genresTv.setText(station.getGenre());
-            bandTv.setText(station.getBandString());
+            titleTv.setText(station.name);
+            genresTv.setText(station.genre);
+            bandTv.setText(station.bandString);
 
             UiUtils.loadImageInto(imageIv, station);
         }
 
         void setFavorite(Station station) {
-            favoriteIv.setVisibility(station.isFavorite() ? View.VISIBLE : View.GONE);
+//            favoriteIv.setVisibility(station.isFavorite() ? View.VISIBLE : View.GONE);
         }
 
         void select(boolean select, boolean playing) {

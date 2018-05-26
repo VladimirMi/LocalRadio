@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.data.net;
 
-import io.github.vladimirmi.localradio.data.entity.StationsResult;
+import io.github.vladimirmi.localradio.data.models.StationsResult;
 import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Query;

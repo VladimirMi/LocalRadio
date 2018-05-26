@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.entity;
+package io.github.vladimirmi.localradio.data.models;
 
 import android.support.annotation.NonNull;
 

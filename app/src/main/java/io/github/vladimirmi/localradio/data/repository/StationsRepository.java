@@ -7,8 +7,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.reactivex.Observable;
 
 /**
@@ -40,8 +40,8 @@ public class StationsRepository {
     public void resetSearch() {
         setSearchDone(false);
         stations.accept(Collections.emptyList());
-        if (currentStation.hasValue() && !currentStation.getValue().isFavorite()) {
-            setCurrentStation(Station.nullStation());
+        if (currentStation.hasValue()) {
+            setCurrentStation(Station.nullObject());
         }
     }
 
@@ -72,8 +72,8 @@ public class StationsRepository {
     }
 
     public void setCurrentStation(Station station) {
-        preferences.currentStationIsFavorite.put(station.isFavorite());
-        preferences.currentStationId.put(station.getId());
+//        preferences.currentStationIsFavorite.put(station.isFavorite());
+        preferences.currentStationId.put(station.id);
         currentStation.accept(station);
     }
 
@@ -88,15 +88,15 @@ public class StationsRepository {
     private void updateCurrentStationFromPreferences(List<Station> stations) {
         if (preferences.currentStationIsFavorite.get()) return;
 
-        Station newCurrentStation = Station.nullStation();
+        Station newCurrentStation = Station.nullObject();
         Integer currentId = preferences.currentStationId.get();
         for (Station station : stations) {
-            if (station.getId() == currentId) {
+            if (station.id == currentId) {
                 newCurrentStation = station;
                 break;
             }
         }
-        if (newCurrentStation.isNullStation() && !stations.isEmpty()) {
+        if (newCurrentStation.isNullObject && !stations.isEmpty()) {
             newCurrentStation = stations.get(0);
         }
         setCurrentStation(newCurrentStation);

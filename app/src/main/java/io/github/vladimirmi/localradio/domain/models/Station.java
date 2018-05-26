@@ -1,7 +1,7 @@
 package io.github.vladimirmi.localradio.domain.models;
 
 import io.github.vladimirmi.localradio.data.db.StationEntity;
-import io.github.vladimirmi.localradio.data.entity.StationRes;
+import io.github.vladimirmi.localradio.data.models.StationRes;
 import io.github.vladimirmi.localradio.data.net.Api;
 
 /**

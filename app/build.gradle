@@ -84,7 +84,7 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:$ROOM_VERSION"
     implementation "android.arch.persistence.room:rxjava2:$ROOM_VERSION"
 
-    //Ne"
+    //Net
     implementation "com.squareup.retrofit2:retrofit:2.3.0"
     implementation "com.squareup.retrofit2:converter-moshi:2.3.0"
     implementation "com.squareup.okhttp3:okhttp:3.9.1"

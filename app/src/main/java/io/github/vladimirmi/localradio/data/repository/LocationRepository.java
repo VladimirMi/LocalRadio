@@ -7,11 +7,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Country;
-import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.data.models.Country;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CountrySource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
@@ -61,7 +61,7 @@ public class LocationRepository {
 
     public void saveCountryCodeCity(List<Station> stations) {
         if (!stations.isEmpty()) {
-            saveCountryCodeCity(stations.get(0).getCountryCode(), "");
+            saveCountryCodeCity(stations.get(0).countryCode, "");
         }
     }
 

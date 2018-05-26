@@ -5,12 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
-import io.github.vladimirmi.localradio.data.entity.StationsResult;
+import io.github.vladimirmi.localradio.data.models.StationRes;
+import io.github.vladimirmi.localradio.data.models.StationsResult;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RxRetryTransformer;
@@ -19,7 +20,8 @@ import io.github.vladimirmi.localradio.data.repository.StationsRepository;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -83,9 +85,9 @@ public class SearchService extends IntentService {
             search = searchStationsManual(skipCache);
         }
         return search.doOnSuccess(stations -> {
-                    stationsRepository.setSearchResult(stations);
-                    favoriteInteractor.updateStationsWithFavorites();
-                })
+            stationsRepository.setSearchResult(stations);
+//                    favoriteInteractor.updateStationsWithFavorites();
+        })
                 .toCompletable();
     }
 
@@ -124,6 +126,7 @@ public class SearchService extends IntentService {
                 .doOnError(e -> cacheSource.cleanCache(countryCode, city, "1"))
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
+                .map(this::mapResponse)
                 .subscribeOn(Schedulers.io());
     }
 
@@ -135,6 +138,7 @@ public class SearchService extends IntentService {
                 .doOnError(e -> cacheSource.cleanCache(coordinates.first.toString(), coordinates.second.toString()))
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
+                .map(this::mapResponse)
                 .subscribeOn(Schedulers.io());
     }
 
@@ -147,7 +151,16 @@ public class SearchService extends IntentService {
                             .compose(new RxRetryTransformer<>());
                 })
                 .map(StationsResult::getStations)
+                .map(this::mapResponse)
                 .doOnSuccess(locationRepository::saveCountryCodeCity)
                 .subscribeOn(Schedulers.io());
+    }
+
+    private List<Station> mapResponse(List<StationRes> stationRes) {
+        List<Station> stations = new ArrayList<>(stationRes.size());
+        for (StationRes res : stationRes) {
+            stations.add(new Station(res));
+        }
+        return stations;
     }
 }

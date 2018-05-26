@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.domain;
+package io.github.vladimirmi.localradio.domain.interactors;
 
 import javax.inject.Inject;
 
@@ -35,10 +35,7 @@ public class MainInteractor {
         } else {
             initStations = Completable.complete();
         }
-        return Completable.mergeArrayDelayError(
-                initStations,
-                favoriteInteractor.initFavorites()
-        ).subscribeOn(Schedulers.io());
+        return initStations.subscribeOn(Schedulers.io());
     }
 
     public int getPagePosition() {

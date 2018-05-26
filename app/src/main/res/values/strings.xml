@@ -38,12 +38,12 @@
     <string name="error_renderer">Not supported audio stream</string>
     <string name="error_unexpected">Unexpected error</string>
 
-    <string name="search_result_empty">The search results are empty</string>
     <plurals name="search_result">
         <item quantity="one">%d station found</item>
         <item quantity="other">%d stations found</item>
     </plurals>
-    <string name="favorites_empty">The favorites list is empty</string>
+    <string name="placeholder_search_result">The search results are empty</string>
+    <string name="placeholder_favorites">The favorites list is empty</string>
 
     <string name="description">
         Local Radio is an open source app for searching and listening to radio broadcasts over the internet.
