@@ -13,6 +13,7 @@ import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -72,6 +73,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
                     public void onNext(Boolean isFavorite) {
+                        Timber.e("onNext: " + isFavorite);
                         view.setFavorite(isFavorite);
                     }
                 }));

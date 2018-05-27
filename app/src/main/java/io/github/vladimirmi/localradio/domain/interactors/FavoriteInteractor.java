@@ -48,21 +48,21 @@ public class FavoriteInteractor {
     }
 
     public Completable switchCurrentFavorite() {
-        Completable swithFavorite;
+        Completable switchFavorite;
         Station current = stationsRepository.getCurrentStation();
         if (favoriteRepository.getFavoriteStations().contains(current)) {
 //          changeCurrentStationOnNextFavorite();
-            swithFavorite = favoriteRepository.removeFavorite(current);
+            switchFavorite = favoriteRepository.removeFavorite(current);
         } else {
-            swithFavorite = favoriteRepository.addFavorite(current);
+            switchFavorite = favoriteRepository.addFavorite(current);
         }
 
-        return swithFavorite.subscribeOn(Schedulers.io());
+        return switchFavorite.subscribeOn(Schedulers.io());
     }
 
     public Observable<Boolean> isCurrentStationFavorite() {
-        return favoriteRepository.getFavoriteStationsObs()
-                .map(stations -> stations.contains(stationsRepository.getCurrentStation()));
+        return stationsRepository.getCurrentStationObs()
+                .map(station -> favoriteRepository.getFavoriteStations().contains(station));
     }
 
     public void previousStation() {
