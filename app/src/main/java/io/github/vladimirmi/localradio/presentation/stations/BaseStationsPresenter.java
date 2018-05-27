@@ -4,7 +4,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import java.util.List;
 
-import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
@@ -15,15 +15,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 /**
  * Created by Vladimir Mikhalev 26.05.2018.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class BaseStationsPresenter extends BasePresenter<StationsView> {
 
     protected final StationsInteractor stationsInteractor;
-    protected final PlayerControlInteractor controlInteractor;
+    protected final PlayerControlsInteractor controlsInteractor;
 
     protected BaseStationsPresenter(StationsInteractor stationsInteractor,
-                                    PlayerControlInteractor controlInteractor) {
+                                    PlayerControlsInteractor controlsInteractor) {
         this.stationsInteractor = stationsInteractor;
-        this.controlInteractor = controlInteractor;
+        this.controlsInteractor = controlsInteractor;
     }
 
     @Override
@@ -47,7 +48,7 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
                     }
                 }));
 
-        disposables.add(controlInteractor.getPlaybackStateObs()
+        disposables.add(controlsInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
                     @Override

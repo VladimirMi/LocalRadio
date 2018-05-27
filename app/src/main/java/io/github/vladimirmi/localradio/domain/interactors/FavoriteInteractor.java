@@ -20,12 +20,12 @@ public class FavoriteInteractor {
 
     private final StationsRepositoryImpl stationsRepository;
     private final FavoriteRepository favoriteRepository;
-    private final PlayerControlInteractor controlInteractor;
+    private final PlayerControlsInteractor controlInteractor;
 
     @Inject
     public FavoriteInteractor(StationsRepositoryImpl stationsRepository,
                               FavoriteRepository favoriteRepository,
-                              PlayerControlInteractor controlInteractor) {
+                              PlayerControlsInteractor controlInteractor) {
         this.stationsRepository = stationsRepository;
         this.favoriteRepository = favoriteRepository;
         this.controlInteractor = controlInteractor;
@@ -111,7 +111,7 @@ public class FavoriteInteractor {
 //    }
 //
 //    private void changeCurrentStationOnNextFavorite() {
-//        if (!getMainInteractor().isFavoritePage() || controlInteractor.isPlaying()) {
+//        if (!getMainInteractor().isFavoritePage() || controlsInteractor.isPlaying()) {
 //            return;
 //        }
 //        if (favoriteRepository.getFavoriteStations().size() == 1) {

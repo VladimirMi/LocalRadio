@@ -3,7 +3,7 @@ package io.github.vladimirmi.localradio.presentation.main;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
-import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
@@ -15,12 +15,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class MainPresenter extends BasePresenter<MainView> {
 
-    private final PlayerControlInteractor controlInteractor;
+    private final PlayerControlsInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final MainInteractor mainInteractor;
 
     @Inject
-    MainPresenter(PlayerControlInteractor controlInteractor,
+    MainPresenter(PlayerControlsInteractor controlInteractor,
                   StationsInteractor stationsInteractor,
                   MainInteractor mainInteractor) {
         this.controlInteractor = controlInteractor;

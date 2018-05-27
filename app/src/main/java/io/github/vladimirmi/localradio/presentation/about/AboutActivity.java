@@ -18,12 +18,12 @@ import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.BuildConfig;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import toothpick.Toothpick;
 
 public class AboutActivity extends AppCompatActivity {
 
-    @Inject PlayerControlInteractor controlInteractor;
+    @Inject PlayerControlsInteractor controlInteractor;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.versionTv) TextView versionTv;

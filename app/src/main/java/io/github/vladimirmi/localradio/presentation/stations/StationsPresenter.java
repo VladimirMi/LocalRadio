@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
@@ -25,7 +25,7 @@ public class StationsPresenter extends BaseStationsPresenter {
 
     @Inject
     StationsPresenter(StationsInteractor stationsInteractor,
-                      PlayerControlInteractor controlInteractor,
+                      PlayerControlsInteractor controlInteractor,
                       SearchInteractor searchInteractor,
                       FavoriteInteractor favoriteInteractor) {
         super(stationsInteractor, controlInteractor);

@@ -5,7 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.stations.BaseStationsPresenter;
@@ -21,7 +21,7 @@ public class FavoritePresenter extends BaseStationsPresenter {
     @Inject
     FavoritePresenter(StationsInteractor stationsInteractor,
                       FavoriteInteractor favoriteInteractor,
-                      PlayerControlInteractor controlInteractor) {
+                      PlayerControlsInteractor controlInteractor) {
         super(stationsInteractor, controlInteractor);
         this.favoriteInteractor = favoriteInteractor;
     }

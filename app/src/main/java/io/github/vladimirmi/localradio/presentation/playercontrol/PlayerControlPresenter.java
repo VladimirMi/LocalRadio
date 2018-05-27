@@ -7,13 +7,12 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
-import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 08.04.2018.
@@ -21,7 +20,7 @@ import timber.log.Timber;
 
 public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
-    private final PlayerControlInteractor controlInteractor;
+    private final PlayerControlsInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final FavoriteInteractor favoriteInteractor;
     private final MainInteractor mainInteractor;
@@ -29,7 +28,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public PlayerControlPresenter(PlayerControlInteractor controlInteractor,
+    public PlayerControlPresenter(PlayerControlsInteractor controlInteractor,
                                   StationsInteractor stationsInteractor,
                                   FavoriteInteractor favoriteInteractor,
                                   MainInteractor mainInteractor) {
@@ -73,7 +72,6 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
                     public void onNext(Boolean isFavorite) {
-                        Timber.e("onNext: " + isFavorite);
                         view.setFavorite(isFavorite);
                     }
                 }));
