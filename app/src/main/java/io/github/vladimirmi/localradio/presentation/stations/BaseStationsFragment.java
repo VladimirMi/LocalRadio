@@ -8,6 +8,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
@@ -25,8 +26,8 @@ public abstract class BaseStationsFragment<P extends BasePresenter> extends Base
     @BindView(R.id.placeholder) TextView placeholder;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
-    private StationsAdapter stationsAdapter;
-    private LinearLayoutManager layoutManager;
+    protected StationsAdapter stationsAdapter;
+    protected LinearLayoutManager layoutManager;
 
     @Override
     protected int getLayout() {
@@ -53,6 +54,11 @@ public abstract class BaseStationsFragment<P extends BasePresenter> extends Base
     public void setStations(List<Station> stations) {
         stationsAdapter.setData(stations);
         scrollToSelectedStation();
+    }
+
+    @Override
+    public void setFavorites(Set<Integer> ids) {
+        stationsAdapter.setFavorites(ids);
     }
 
     @Override

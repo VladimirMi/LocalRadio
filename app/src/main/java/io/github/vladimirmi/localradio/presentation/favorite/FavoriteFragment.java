@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.favorite;
 
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
@@ -21,6 +22,12 @@ public class FavoriteFragment extends BaseStationsFragment<FavoritePresenter> {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_common, menu);
+    }
+
+    @Override
+    protected void setupView(View view) {
+        super.setupView(view);
+        stationsAdapter.setFavorite(true);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -32,6 +34,17 @@ public class FavoriteInteractor {
 
     public Observable<List<Station>> getFavoriteStations() {
         return favoriteRepository.getFavoriteStationsObs();
+    }
+
+    public Observable<Set<Integer>> getFavoriteIds() {
+        return getFavoriteStations()
+                .map(stations -> {
+                    Set<Integer> ids = new HashSet<>(stations.size());
+                    for (Station station : stations) {
+                        ids.add(station.id);
+                    }
+                    return ids;
+                });
     }
 
     public Completable switchCurrentFavorite() {

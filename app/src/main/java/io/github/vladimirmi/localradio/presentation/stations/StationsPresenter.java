@@ -1,9 +1,11 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
@@ -19,13 +21,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public class StationsPresenter extends BaseStationsPresenter {
 
     private final SearchInteractor searchInteractor;
+    private final FavoriteInteractor favoriteInteractor;
 
     @Inject
     StationsPresenter(StationsInteractor stationsInteractor,
                       PlayerControlInteractor controlInteractor,
-                      SearchInteractor searchInteractor) {
+                      SearchInteractor searchInteractor,
+                      FavoriteInteractor favoriteInteractor) {
         super(stationsInteractor, controlInteractor);
         this.searchInteractor = searchInteractor;
+        this.favoriteInteractor = favoriteInteractor;
     }
 
     @Override
@@ -39,6 +44,15 @@ public class StationsPresenter extends BaseStationsPresenter {
                     public void onNext(Boolean isSearching) {
                         if (isSearching) view.hidePlaceholder();
                         view.setSearching(isSearching);
+                    }
+                }));
+
+        disposables.add(favoriteInteractor.getFavoriteIds()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<Set<Integer>>(view) {
+                    @Override
+                    public void onNext(Set<Integer> ids) {
+                        view.setFavorites(ids);
                     }
                 }));
     }
