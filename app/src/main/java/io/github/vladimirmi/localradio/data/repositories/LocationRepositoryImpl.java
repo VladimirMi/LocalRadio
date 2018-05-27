@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.repository;
+package io.github.vladimirmi.localradio.data.repositories;
 
 import android.support.annotation.Nullable;
 import android.util.Pair;
@@ -19,16 +19,16 @@ import io.reactivex.Single;
  * Created by Vladimir Mikhalev 03.04.2018.
  */
 
-public class LocationRepository {
+public class LocationRepositoryImpl {
 
     private final CountrySource countrySource;
     private final Preferences preferences;
     private final LocationSource locationSource;
 
     @Inject
-    public LocationRepository(CountrySource countrySource,
-                              Preferences preferences,
-                              LocationSource locationSource) {
+    public LocationRepositoryImpl(CountrySource countrySource,
+                                  Preferences preferences,
+                                  LocationSource locationSource) {
         this.countrySource = countrySource;
         this.preferences = preferences;
         this.locationSource = locationSource;

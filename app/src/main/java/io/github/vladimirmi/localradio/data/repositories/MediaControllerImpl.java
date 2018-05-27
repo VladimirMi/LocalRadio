@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.repository;
+package io.github.vladimirmi.localradio.data.repositories;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,7 +19,7 @@ import timber.log.Timber;
  * Created by Vladimir Mikhalev 09.04.2018.
  */
 
-public class MediaController {
+public class MediaControllerImpl {
 
     private MediaBrowserCompat mediaBrowser;
     private MediaControllerCompat mediaController;
@@ -29,7 +29,7 @@ public class MediaController {
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public MediaController(Context context) {
+    public MediaControllerImpl(Context context) {
         MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
 
             @Override
@@ -41,7 +41,7 @@ public class MediaController {
                     controllerCallback.onMetadataChanged(mediaController.getMetadata());
 
                 } catch (RemoteException e) {
-                    Timber.e(e, e.getMessage());
+                    Timber.e(e);
                 }
             }
 

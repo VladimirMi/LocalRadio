@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.repository;
+package io.github.vladimirmi.localradio.data.repositories;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
@@ -12,6 +12,7 @@ import io.github.vladimirmi.localradio.data.db.StationEntity;
 import io.github.vladimirmi.localradio.data.db.StationsDao;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
@@ -20,7 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 /**
  * Created by Vladimir Mikhalev 13.04.2018.
  */
-public class FavoriteRepository {
+public class FavoriteRepositoryImpl implements FavoriteRepository {
 
     private final StationsDao dao;
     private final Preferences preferences;
@@ -29,31 +30,35 @@ public class FavoriteRepository {
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public FavoriteRepository(AppDatabase database,
-                              Preferences preferences) {
+    public FavoriteRepositoryImpl(AppDatabase database,
+                                  Preferences preferences) {
         this.dao = database.stationsDao();
         this.preferences = preferences;
 
         initFavorites().subscribe();
     }
 
+    @Override
     public Observable<List<Station>> getFavoriteStationsObs() {
         return favoriteStations;
     }
 
+    @Override
     public List<Station> getFavoriteStations() {
         return favoriteStations.getValue();
     }
 
+    @Override
     public Completable addFavorite(Station station) {
         return Completable.fromAction(() -> dao.insertStation(new StationEntity(station)));
     }
 
+    @Override
     public Completable removeFavorite(Station station) {
         return Completable.fromAction(() -> dao.deleteStation(station.id));
     }
 
-    public Station findCurrentFavoriteStation() {
+    private Station findCurrentFavoriteStation() {
 //        int currentId = preferences.currentStationId.get();
 //        // return first if current station is null object
 //        if (currentId == 0 && !favoriteStations.isEmpty()) return favoriteStations.get(0);

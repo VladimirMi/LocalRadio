@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.models.Country;
-import io.github.vladimirmi.localradio.data.repository.LocationRepository;
+import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
@@ -24,14 +24,14 @@ public class LocationInteractor {
 
     private static final String UNLISTED_CITY = "{unlisted}";
 
-    private final LocationRepository locationRepository;
+    private final LocationRepositoryImpl locationRepository;
 
     // TODO: 5/2/18 Create resource manager
     private String unlistedCity = Scopes.appContext().getString(R.string.unlisted_city);
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public LocationInteractor(LocationRepository locationRepository) {
+    public LocationInteractor(LocationRepositoryImpl locationRepository) {
         this.locationRepository = locationRepository;
     }
 

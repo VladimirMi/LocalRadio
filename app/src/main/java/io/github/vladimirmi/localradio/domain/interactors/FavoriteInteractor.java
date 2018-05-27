@@ -6,9 +6,9 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
-import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -18,12 +18,12 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class FavoriteInteractor {
 
-    private final StationsRepository stationsRepository;
+    private final StationsRepositoryImpl stationsRepository;
     private final FavoriteRepository favoriteRepository;
     private final PlayerControlInteractor controlInteractor;
 
     @Inject
-    public FavoriteInteractor(StationsRepository stationsRepository,
+    public FavoriteInteractor(StationsRepositoryImpl stationsRepository,
                               FavoriteRepository favoriteRepository,
                               PlayerControlInteractor controlInteractor) {
         this.stationsRepository = stationsRepository;
@@ -84,12 +84,12 @@ public class FavoriteInteractor {
     }
 
 
-    private void setCurrentStationIfFavorite() {
-        Station currentFavoriteStation = favoriteRepository.findCurrentFavoriteStation();
-        if (currentFavoriteStation != null) {
-            stationsRepository.setCurrentStation(currentFavoriteStation);
-        }
-    }
+//    private void setCurrentStationIfFavorite() {
+//        Station currentFavoriteStation = favoriteRepository.findCurrentFavoriteStation();
+//        if (currentFavoriteStation != null) {
+//            stationsRepository.setCurrentStation(currentFavoriteStation);
+//        }
+//    }
 
 //    private boolean updateStationsIfFavorite(List<Station> stations) {
 //        boolean updated = false;

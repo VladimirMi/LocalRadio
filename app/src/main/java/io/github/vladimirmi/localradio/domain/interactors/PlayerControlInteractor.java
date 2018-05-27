@@ -4,7 +4,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.repository.MediaController;
+import io.github.vladimirmi.localradio.data.repositories.MediaControllerImpl;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.reactivex.Observable;
 
@@ -14,10 +14,10 @@ import io.reactivex.Observable;
 
 public class PlayerControlInteractor {
 
-    private final MediaController controller;
+    private final MediaControllerImpl controller;
 
     @Inject
-    public PlayerControlInteractor(MediaController controller) {
+    public PlayerControlInteractor(MediaControllerImpl controller) {
         this.controller = controller;
     }
 

@@ -15,8 +15,8 @@ import io.github.vladimirmi.localradio.data.models.StationsResult;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RxRetryTransformer;
-import io.github.vladimirmi.localradio.data.repository.LocationRepository;
-import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
+import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.di.Scopes;
@@ -39,8 +39,8 @@ public class SearchService extends IntentService {
 
     @Inject RestService restService;
     @Inject CacheSource cacheSource;
-    @Inject StationsRepository stationsRepository;
-    @Inject LocationRepository locationRepository;
+    @Inject StationsRepositoryImpl stationsRepository;
+    @Inject LocationRepositoryImpl locationRepository;
     @Inject FavoriteInteractor favoriteInteractor;
     @Inject NetworkChecker networkChecker;
 

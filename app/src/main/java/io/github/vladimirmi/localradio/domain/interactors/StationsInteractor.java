@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.reactivex.Observable;
 
@@ -15,12 +15,12 @@ import io.reactivex.Observable;
 
 public class StationsInteractor {
 
-    private final StationsRepository stationsRepository;
+    private final StationsRepositoryImpl stationsRepository;
     private List<Station> filteredStations;
     private String filter = "";
 
     @Inject
-    public StationsInteractor(StationsRepository stationsRepository) {
+    public StationsInteractor(StationsRepositoryImpl stationsRepository) {
         this.stationsRepository = stationsRepository;
     }
 

@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.repository;
+package io.github.vladimirmi.localradio.data.repositories;
 
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
@@ -15,7 +15,7 @@ import io.reactivex.Observable;
  * Created by Vladimir Mikhalev 06.04.2018.
  */
 
-public class StationsRepository {
+public class StationsRepositoryImpl {
 
     private final Preferences preferences;
 
@@ -24,7 +24,7 @@ public class StationsRepository {
     private BehaviorRelay<Boolean> isSearching = BehaviorRelay.createDefault(false);
 
     @Inject
-    public StationsRepository(Preferences preferences) {
+    public StationsRepositoryImpl(Preferences preferences) {
         this.preferences = preferences;
     }
 

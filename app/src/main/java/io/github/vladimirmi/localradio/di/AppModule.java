@@ -9,10 +9,10 @@ import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
-import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
-import io.github.vladimirmi.localradio.data.repository.LocationRepository;
-import io.github.vladimirmi.localradio.data.repository.MediaController;
-import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.github.vladimirmi.localradio.data.repositories.FavoriteRepositoryImpl;
+import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
+import io.github.vladimirmi.localradio.data.repositories.MediaControllerImpl;
+import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
@@ -20,6 +20,7 @@ import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.PlayerControlInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;
 import io.github.vladimirmi.localradio.presentation.favorite.FavoritePresenter;
 import io.github.vladimirmi.localradio.presentation.main.MainPresenter;
 import io.github.vladimirmi.localradio.presentation.playercontrol.PlayerControlPresenter;
@@ -55,10 +56,10 @@ public class AppModule extends Module {
 
         bind(Preferences.class).singletonInScope();
 
-        bind(LocationRepository.class).singletonInScope();
-        bind(StationsRepository.class).singletonInScope();
-        bind(FavoriteRepository.class).singletonInScope();
-        bind(MediaController.class).singletonInScope();
+        bind(LocationRepositoryImpl.class).singletonInScope();
+        bind(StationsRepositoryImpl.class).singletonInScope();
+        bind(FavoriteRepository.class).to(FavoriteRepositoryImpl.class).singletonInScope();
+        bind(MediaControllerImpl.class).singletonInScope();
 
         bind(FavoriteInteractor.class).singletonInScope();
         bind(PlayerControlInteractor.class).singletonInScope();
