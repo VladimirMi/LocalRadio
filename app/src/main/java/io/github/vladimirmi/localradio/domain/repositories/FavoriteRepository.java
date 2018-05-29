@@ -18,4 +18,8 @@ public interface FavoriteRepository {
     Completable addFavorite(Station station);
 
     Completable removeFavorite(Station station);
+
+    void setCurrentStationIsFavorite(boolean isFavorite);
+
+    int getCurrentFavoriteStationId();
 }

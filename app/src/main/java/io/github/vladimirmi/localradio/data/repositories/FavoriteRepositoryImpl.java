@@ -58,16 +58,14 @@ public class FavoriteRepositoryImpl implements FavoriteRepository {
         return Completable.fromAction(() -> dao.deleteStation(station.id));
     }
 
-    private Station findCurrentFavoriteStation() {
-//        int currentId = preferences.currentStationId.get();
-//        // return first if current station is null object
-//        if (currentId == 0 && !favoriteStations.isEmpty()) return favoriteStations.get(0);
-//        for (Station station : favoriteStations) {
-//            if (station.id == currentId) {
-//                return station;
-//            }
-//        }
-        return null;
+    @Override
+    public void setCurrentStationIsFavorite(boolean isFavorite) {
+        preferences.currentStationIsFavorite.put(isFavorite);
+    }
+
+    @Override
+    public int getCurrentFavoriteStationId() {
+        return preferences.currentStationIsFavorite.get() ? preferences.currentStationId.get() : -1;
     }
 
     private Flowable<List<Station>> initFavorites() {
@@ -78,7 +76,9 @@ public class FavoriteRepositoryImpl implements FavoriteRepository {
                         stations.add(new Station(stationEntity));
                     }
                     return stations;
-                }).subscribeOn(Schedulers.io())
-                .doOnNext(stations -> favoriteStations.accept(stations));
+                })
+                .doOnNext(stations1 -> favoriteStations.accept(stations1))
+                .subscribeOn(Schedulers.io());
     }
+
 }

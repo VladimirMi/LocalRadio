@@ -29,7 +29,7 @@ public class StationsRepositoryImpl {
 
     public void resetStations() {
         stations.accept(Collections.emptyList());
-        if (currentStation.hasValue()) {
+        if (currentStation.hasValue() && !preferences.currentStationIsFavorite.get()) {
             setCurrentStation(Station.nullObject());
         }
     }

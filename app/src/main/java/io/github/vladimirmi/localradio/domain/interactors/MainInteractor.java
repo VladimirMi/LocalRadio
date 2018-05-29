@@ -12,16 +12,13 @@ import io.reactivex.schedulers.Schedulers;
 public class MainInteractor {
 
     private final Preferences preferences;
-    private final FavoriteInteractor favoriteInteractor;
     private final SearchInteractor searchInteractor;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
     public MainInteractor(Preferences preferences,
-                          FavoriteInteractor favoriteInteractor,
                           SearchInteractor searchInteractor) {
         this.preferences = preferences;
-        this.favoriteInteractor = favoriteInteractor;
         this.searchInteractor = searchInteractor;
     }
 
