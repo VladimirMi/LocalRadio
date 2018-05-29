@@ -13,6 +13,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.models.Country;
 import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
 import timber.log.Timber;
@@ -24,7 +25,7 @@ public class LocationInteractor {
 
     private static final String UNLISTED_CITY = "{unlisted}";
 
-    private final LocationRepositoryImpl locationRepository;
+    private final LocationRepository locationRepository;
 
     // TODO: 5/2/18 Create resource manager
     private String unlistedCity = Scopes.appContext().getString(R.string.unlisted_city);

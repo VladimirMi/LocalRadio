@@ -12,6 +12,7 @@ import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
 import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.utils.LoadingList;
 import io.github.vladimirmi.localradio.utils.MessageException;
@@ -27,7 +28,7 @@ public class SearchInteractor {
 
     private final StationsRepositoryImpl stationsRepository;
     private final NetworkChecker networkChecker;
-    private final LocationRepositoryImpl locationRepository;
+    private final LocationRepository locationRepository;
     private final SearchRepository searchRepository;
 
     @Inject
@@ -112,7 +113,11 @@ public class SearchInteractor {
 
     private Single<List<Station>> searchStationsByIp() {
         return searchRepository.searchStationsByIp()
-                .doOnSuccess(locationRepository::saveCountryCodeCity);
+                .doOnSuccess(stations -> {
+                    if (!stations.isEmpty()) {
+                        locationRepository.saveCountryCodeCity(stations.get(0).countryCode, "");
+                    }
+                });
     }
 
 

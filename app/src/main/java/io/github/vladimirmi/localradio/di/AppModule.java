@@ -22,6 +22,7 @@ import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteract
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;
+import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.PlayerController;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.presentation.favorite.FavoritePresenter;
@@ -59,7 +60,7 @@ public class AppModule extends Module {
 
         bind(Preferences.class).singletonInScope();
 
-        bind(LocationRepositoryImpl.class).singletonInScope();
+        bind(LocationRepository.class).to(LocationRepositoryImpl.class).singletonInScope();
         bind(StationsRepositoryImpl.class).singletonInScope();
         bind(SearchRepository.class).to(SearchRepositoryImpl.class).singletonInScope();
         bind(FavoriteRepository.class).to(FavoriteRepositoryImpl.class).singletonInScope();
