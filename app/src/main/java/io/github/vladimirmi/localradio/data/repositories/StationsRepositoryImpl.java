@@ -9,13 +9,14 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
 import io.reactivex.Observable;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
  */
 
-public class StationsRepositoryImpl {
+public class StationsRepositoryImpl implements StationsRepository {
 
     private final Preferences preferences;
 
@@ -27,6 +28,7 @@ public class StationsRepositoryImpl {
         this.preferences = preferences;
     }
 
+    @Override
     public void resetStations() {
         stations.accept(Collections.emptyList());
         if (currentStation.hasValue() && !preferences.currentStationIsFavorite.get()) {
@@ -34,32 +36,39 @@ public class StationsRepositoryImpl {
         }
     }
 
+    @Override
     public void setSearchResult(List<Station> stations) {
         updateCurrentStationFromPreferences(stations);
         this.stations.accept(stations);
     }
 
+    @Override
     public void setStations(List<Station> stations) {
         this.stations.accept(stations);
     }
 
+    @Override
     public List<Station> getStations() {
         return stations.hasValue() ? stations.getValue() : Collections.emptyList();
     }
 
+    @Override
     public Observable<List<Station>> getStationsObs() {
         return stations;
     }
 
+    @Override
     public void setCurrentStation(Station station) {
         preferences.currentStationId.put(station.id);
         currentStation.accept(station);
     }
 
+    @Override
     public Station getCurrentStation() {
         return currentStation.getValue();
     }
 
+    @Override
     public Observable<Station> getCurrentStationObs() {
         return currentStation;
     }

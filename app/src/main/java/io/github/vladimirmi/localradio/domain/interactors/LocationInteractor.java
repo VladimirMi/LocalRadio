@@ -11,7 +11,6 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.models.Country;
-import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.utils.MessageException;
@@ -32,7 +31,7 @@ public class LocationInteractor {
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public LocationInteractor(LocationRepositoryImpl locationRepository) {
+    public LocationInteractor(LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
     }
 

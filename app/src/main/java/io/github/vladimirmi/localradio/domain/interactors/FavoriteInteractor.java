@@ -8,10 +8,10 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;
 import io.github.vladimirmi.localradio.domain.repositories.PlayerController;
+import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -21,14 +21,14 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class FavoriteInteractor {
 
-    private final StationsRepositoryImpl stationsRepository;
+    private final StationsRepository stationsRepository;
     private final FavoriteRepository favoriteRepository;
     private final PlayerController controller;
     private final MainInteractor mainInteractor;
 
     @SuppressLint("CheckResult")
     @Inject
-    public FavoriteInteractor(StationsRepositoryImpl stationsRepository,
+    public FavoriteInteractor(StationsRepository stationsRepository,
                               FavoriteRepository favoriteRepository,
                               PlayerController controller,
                               MainInteractor mainInteractor) {

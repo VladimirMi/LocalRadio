@@ -11,6 +11,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class MainInteractor {
 
+    // TODO: 5/30/18 create main repository
     private final Preferences preferences;
     private final SearchInteractor searchInteractor;
 

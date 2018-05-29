@@ -8,12 +8,11 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
-import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
-import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
+import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
 import io.github.vladimirmi.localradio.utils.LoadingList;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
@@ -26,15 +25,15 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SearchInteractor {
 
-    private final StationsRepositoryImpl stationsRepository;
+    private final StationsRepository stationsRepository;
     private final NetworkChecker networkChecker;
     private final LocationRepository locationRepository;
     private final SearchRepository searchRepository;
 
     @Inject
-    public SearchInteractor(StationsRepositoryImpl stationsRepository,
+    public SearchInteractor(StationsRepository stationsRepository,
                             NetworkChecker networkChecker,
-                            LocationRepositoryImpl locationRepository,
+                            LocationRepository locationRepository,
                             SearchRepository searchRepository) {
         this.stationsRepository = stationsRepository;
         this.networkChecker = networkChecker;
