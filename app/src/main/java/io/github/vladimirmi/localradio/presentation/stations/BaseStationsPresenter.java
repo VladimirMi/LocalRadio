@@ -8,6 +8,7 @@ import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteract
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.utils.LoadingList;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -28,14 +29,16 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
     }
 
     @Override
-    protected void onAttach(StationsView view, boolean isFirstAttach) {
+    protected void onAttach(StationsView view) {
         disposables.add(getStations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
                     public void onNext(List<Station> stations) {
                         view.setStations(stations);
-                        decideShowPlaceholder(stations);
+                        boolean isSearching = stations instanceof LoadingList;
+                        view.setSearching(isSearching);
+                        decideShowPlaceholder(stations, isSearching);
                     }
                 }));
 
@@ -64,8 +67,8 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
         stationsInteractor.setCurrentStation(station);
     }
 
-    private void decideShowPlaceholder(List<Station> stations) {
-        if (stations.size() == 0) {
+    private void decideShowPlaceholder(List<Station> stations, boolean isSearching) {
+        if (stations.size() == 0 && !isSearching) {
             view.showPlaceholder();
         } else {
             view.hidePlaceholder();

@@ -29,9 +29,7 @@ public class MainInteractor {
         Completable initStations;
         if (searchInteractor.isSearchDone()) {
             initStations = searchInteractor.checkCanSearch()
-                    .andThen(searchInteractor.searchStations())
-                    .andThen(searchInteractor.getSearchResults())
-                    .firstOrError().toCompletable();
+                    .andThen(searchInteractor.searchStations());
         } else {
             initStations = Completable.complete();
         }

@@ -29,7 +29,7 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     @Override
-    protected void onFirstAttach(MainView view) {
+    protected void onAttach(MainView view) {
         controlInteractor.connect();
         initPage(mainInteractor.getPagePosition());
 
@@ -39,10 +39,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                     if (!mainInteractor.isHaveStations()) selectPage(MainActivity.PAGE_SEARCH);
                 })
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
-    }
 
-    @Override
-    protected void onAttach(MainView view, boolean isFirstAttach) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .map(station -> station.isNullObject)
                 .distinctUntilChanged()

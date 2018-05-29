@@ -39,7 +39,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     @Override
-    protected void onAttach(PlayerControlView view, boolean isFirstAttach) {
+    protected void onAttach(PlayerControlView view) {
         disposables.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {

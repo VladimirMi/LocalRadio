@@ -11,7 +11,10 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.utils.LoadingList;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
@@ -23,16 +26,19 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     private final LocationInteractor locationInteractor;
     private final SearchInteractor searchInteractor;
+    private final StationsInteractor stationsInteractor;
 
     @Inject
     SearchPresenter(LocationInteractor locationInteractor,
-                    SearchInteractor searchInteractor) {
+                    SearchInteractor searchInteractor,
+                    StationsInteractor stationsInteractor) {
         this.locationInteractor = locationInteractor;
         this.searchInteractor = searchInteractor;
+        this.stationsInteractor = stationsInteractor;
     }
 
     @Override
-    protected void onAttach(SearchView view, boolean isFirstAttach) {
+    protected void onAttach(SearchView view) {
         view.setCountrySuggestions(locationInteractor.getCountriesName());
         String countryName = locationInteractor.getCountryName();
         view.setCitySuggestions(locationInteractor.findCities(countryName));
@@ -44,22 +50,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.enableAutodetect(locationInteractor.isServicesAvailable());
 
 
-        disposables.add(searchInteractor.getSearchResults()
+        disposables.add(stationsInteractor.getStationsObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
-                    public void onNext(Integer integer) {
-                        handleSearchResults(integer);
-                    }
-                }));
-
-        disposables.add(searchInteractor.isSearching()
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
-                    @Override
-                    public void onNext(Boolean isSearching) {
-                        handleIsSearching(isSearching);
+                    public void onNext(List<Station> stations) {
+                        handleSearchResults(stations);
                     }
                 }));
     }
@@ -141,10 +137,14 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         setSearchDone(false);
     }
 
-    private void handleSearchResults(Integer integer) {
-        view.setSearchResult(integer);
+    private void handleSearchResults(List<Station> stations) {
+        view.setSearchResult(stations.size());
         selectCountry(locationInteractor.getCountryName());
         selectCity(locationInteractor.getCity());
+        boolean isSearching = stations instanceof LoadingList;
+        view.setSearching(isSearching);
+        view.enableSearch(!isSearching);
+        view.enableAutodetect(!isSearching && locationInteractor.isServicesAvailable());
     }
 
     private void handleIsSearching(boolean isSearching) {
@@ -152,9 +152,9 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         if (!isSearching) {
             view.enableSearch(true);
             view.enableAutodetect(locationInteractor.isServicesAvailable());
-            if (!searchInteractor.isSearchDone()) {
-                handleFailedSearch();
-            }
+//            if (!searchInteractor.isSearchDone()) {
+//                handleFailedSearch();
+//            }
         } else {
             view.enableSearch(false);
             view.enableAutodetect(false);

@@ -21,24 +21,13 @@ public class StationsRepositoryImpl {
 
     private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
     private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
-    private BehaviorRelay<Boolean> isSearching = BehaviorRelay.createDefault(false);
 
     @Inject
     public StationsRepositoryImpl(Preferences preferences) {
         this.preferences = preferences;
     }
 
-    public boolean isSearchDone() {
-        return preferences.isSearchDone.get();
-    }
-
-    public void setSearchDone(boolean done) {
-        preferences.isSearchDone.put(done);
-        setSearching(false);
-    }
-
-    public void resetSearch() {
-        setSearchDone(false);
+    public void resetStations() {
         stations.accept(Collections.emptyList());
         if (currentStation.hasValue()) {
             setCurrentStation(Station.nullObject());
@@ -46,17 +35,8 @@ public class StationsRepositoryImpl {
     }
 
     public void setSearchResult(List<Station> stations) {
-        setSearchDone(true);
         updateCurrentStationFromPreferences(stations);
         this.stations.accept(stations);
-    }
-
-    public void setSearching(boolean isSearching) {
-        this.isSearching.accept(isSearching);
-    }
-
-    public Observable<Boolean> isSearching() {
-        return isSearching;
     }
 
     public void setStations(List<Station> stations) {
@@ -72,7 +52,6 @@ public class StationsRepositoryImpl {
     }
 
     public void setCurrentStation(Station station) {
-//        preferences.currentStationIsFavorite.put(station.isFavorite());
         preferences.currentStationId.put(station.id);
         currentStation.accept(station);
     }

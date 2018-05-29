@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
-import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.utils.RxUtils;
@@ -20,32 +19,19 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class StationsPresenter extends BaseStationsPresenter {
 
-    private final SearchInteractor searchInteractor;
     private final FavoriteInteractor favoriteInteractor;
 
     @Inject
     StationsPresenter(StationsInteractor stationsInteractor,
                       PlayerControlsInteractor controlInteractor,
-                      SearchInteractor searchInteractor,
                       FavoriteInteractor favoriteInteractor) {
         super(stationsInteractor, controlInteractor);
-        this.searchInteractor = searchInteractor;
         this.favoriteInteractor = favoriteInteractor;
     }
 
     @Override
-    protected void onAttach(StationsView view, boolean isFirstAttach) {
-        super.onAttach(view, isFirstAttach);
-
-        disposables.add(searchInteractor.isSearching()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
-                    @Override
-                    public void onNext(Boolean isSearching) {
-                        if (isSearching) view.hidePlaceholder();
-                        view.setSearching(isSearching);
-                    }
-                }));
+    protected void onAttach(StationsView view) {
+        super.onAttach(view);
 
         disposables.add(favoriteInteractor.getFavoriteIds()
                 .observeOn(AndroidSchedulers.mainThread())
