@@ -19,7 +19,7 @@ public class StationsRepositoryImpl {
 
     private final Preferences preferences;
 
-    private final BehaviorRelay<List<Station>> stations = BehaviorRelay.create();
+    private final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
     private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
 
     @Inject

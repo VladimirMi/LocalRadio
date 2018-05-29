@@ -156,6 +156,10 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         setVisible(clearCountryBt, !done);
         setVisible(clearCityBt, !done);
         searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
+
+        isRefreshEnabled = done;
+        //noinspection ConstantConditions
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -185,17 +189,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         autodetectCb.setEnabled(enabled);
     }
 
-    @Override
-    public void enableSearch(boolean enabled) {
-        searchBt.setEnabled(enabled);
-    }
-
-    @Override
-    public void enableRefresh(boolean enabled) {
-        isRefreshEnabled = enabled;
-        //noinspection ConstantConditions
-        getActivity().invalidateOptionsMenu();
-    }
 
     private void enableTextView(TextView view, boolean enable) {
         view.setEnabled(enable);

@@ -46,6 +46,7 @@ public class SearchInteractor {
     }
 
     public void resetSearch() {
+        searchRepository.setSearchDone(false);
         stationsRepository.resetStations();
     }
 
