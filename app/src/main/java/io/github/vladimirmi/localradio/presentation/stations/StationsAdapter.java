@@ -1,12 +1,16 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
+import android.graphics.PorterDuff;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,6 +22,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.utils.FixedOutlineProvider;
 import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
@@ -37,9 +42,14 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
     private boolean playing;
     private boolean isFavorite;
 
+    private final ViewOutlineProvider defaultOutline;
+    private final ViewOutlineProvider fixedOutline;
+
     @SuppressWarnings("WeakerAccess")
     public StationsAdapter(onStationListener listener) {
         this.listener = listener;
+        defaultOutline = Build.VERSION.SDK_INT >= 21 ? ViewOutlineProvider.BACKGROUND : null;
+        fixedOutline = Build.VERSION.SDK_INT >= 21 ? new FixedOutlineProvider() : null;
     }
 
     public void setData(List<Station> list) {
@@ -78,6 +88,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
     @Override
     public StationVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_station, parent, false);
+        ViewCompat.setElevation(view, parent.getContext().getResources().getDimension(R.dimen.item_card_elevation));
         return new StationVH(view);
     }
 
@@ -100,9 +111,17 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
     public void onBindViewHolder(@NonNull StationVH holder, int position) {
         Station station = stations.get(position);
         holder.bind(station);
+        holder.setBackground(position, getItemCount());
         holder.setFavorite(isFavorite || favoriteIds.contains(station.id));
         holder.select(station.id == selectedStation.id, playing);
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
+
+        if (Build.VERSION.SDK_INT < 21) return;
+        if (getItemCount() == 1 || position == 0) {
+            holder.itemView.setOutlineProvider(defaultOutline);
+        } else {
+            holder.itemView.setOutlineProvider(fixedOutline);
+        }
     }
 
     @Override
@@ -142,6 +161,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         @BindView(R.id.bandTv) TextView bandTv;
         @BindView(R.id.favoriteIv) ImageView favoriteIv;
         @BindView(R.id.genresTv) TextView genresTv;
+        @BindView(R.id.dilimeter) View dilimeter;
 
         StationVH(View itemView) {
             super(itemView);
@@ -166,9 +186,25 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
                 color = ContextCompat.getColor(itemView.getContext(),
                         playing ? R.color.playing : R.color.selected);
             } else {
-                color = ContextCompat.getColor(itemView.getContext(), android.R.color.transparent);
+                color = ContextCompat.getColor(itemView.getContext(), R.color.grey_50);
             }
-            itemView.setBackgroundColor(color);
+            itemView.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_IN);
+        }
+
+        void setBackground(int position, int itemCount) {
+            int res;
+            if (itemCount == 1) {
+                res = R.drawable.item_single;
+                dilimeter.setVisibility(View.GONE);
+            } else if (position == 0) {
+                res = R.drawable.item_top;
+            } else if (position == itemCount - 1) {
+                res = R.drawable.item_bottom;
+                dilimeter.setVisibility(View.GONE);
+            } else {
+                res = R.drawable.item_middle;
+            }
+            itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), res));
         }
     }
 

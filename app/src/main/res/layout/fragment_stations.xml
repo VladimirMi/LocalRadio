@@ -5,13 +5,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/grey_200"
     >
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/stationList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="@dimen/player_controls_height"
+        android:clipToPadding="false"
+        android:paddingBottom="96dp"
+        android:paddingTop="8dp"
         android:scrollbars="vertical"
         tools:listitem="@layout/item_station"
         />
@@ -20,7 +23,6 @@
         android:id="@+id/placeholder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey_50"
         android:gravity="center"
         android:paddingBottom="@dimen/player_controls_height"
         android:text="@string/placeholder_search_result"

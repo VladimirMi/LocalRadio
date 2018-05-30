@@ -5,6 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="73dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp"
+    android:foreground="?android:attr/selectableItemBackground"
     >
 
     <ImageView
@@ -12,6 +15,7 @@
         android:layout_width="@dimen/icon_size"
         android:layout_height="@dimen/icon_size"
         android:contentDescription="@string/desc_station_icon"
+        android:layout_margin="2dp"
         android:src="@color/blue_500"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,9 +76,10 @@
         />
 
     <View
+        android:id="@+id/dilimeter"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/grey_400"
+        android:background="@color/grey_300"
         app:layout_constraintBottom_toBottomOf="parent"
         />
 </android.support.constraint.ConstraintLayout>
