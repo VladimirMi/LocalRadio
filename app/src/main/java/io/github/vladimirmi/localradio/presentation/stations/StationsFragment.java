@@ -3,6 +3,7 @@ package io.github.vladimirmi.localradio.presentation.stations;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
 import android.widget.ImageView;
 
 import io.github.vladimirmi.localradio.R;
@@ -41,6 +42,11 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
             searchView.setIconified(false);
             searchView.clearFocus();
         }
+    }
+
+    @Override
+    protected void setupView(View view) {
+        super.setupView(view);
     }
 
     @Override

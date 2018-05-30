@@ -45,7 +45,7 @@ public class StationsPresenter extends BaseStationsPresenter {
 
     @Override
     protected Observable<List<Station>> getStations() {
-        return stationsInteractor.getStationsObs();
+        return stationsInteractor.getFilteredStationsObs();
     }
 
     public void filterStations(String filter) {

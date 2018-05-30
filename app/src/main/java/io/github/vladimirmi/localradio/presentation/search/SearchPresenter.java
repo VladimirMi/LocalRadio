@@ -46,6 +46,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setCity(locationInteractor.getCity());
 
         disposables.add(stationsInteractor.getStationsObs()
+                .distinctUntilChanged(List::size)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override

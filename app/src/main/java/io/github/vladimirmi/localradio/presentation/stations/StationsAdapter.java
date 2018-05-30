@@ -33,6 +33,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
 
     private static final String PAYLOAD_FAVORITE_CHANGE = "PAYLOAD_FAVORITE_CHANGE";
     private static final String PAYLOAD_SELECTED_CHANGE = "PAYLOAD_SELECTED_CHANGE";
+    private static final String PAYLOAD_BACKGROUND_CHANGE = "PAYLOAD_BACKGROUND_CHANGE";
 
     private final onStationListener listener;
     private List<Station> stations = Collections.emptyList();
@@ -77,6 +78,9 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         stations = list;
         selectedPosition = stations.indexOf(selectedStation);
         diffResult.dispatchUpdatesTo(this);
+
+        if (!stations.isEmpty()) notifyItemChanged(0, PAYLOAD_BACKGROUND_CHANGE);
+        if (stations.size() > 1) notifyItemChanged(stations.size() - 1, PAYLOAD_BACKGROUND_CHANGE);
     }
 
     public void setFavorites(Set<Integer> ids) {
@@ -102,6 +106,10 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         } else if (payloads.contains(PAYLOAD_FAVORITE_CHANGE)) {
             holder.setFavorite(favoriteIds.contains(station.id));
 
+        } else if (payloads.contains(PAYLOAD_BACKGROUND_CHANGE)) {
+            holder.setBackground(position, getItemCount());
+            holder.select(station.id == selectedStation.id, playing);
+
         } else {
             super.onBindViewHolder(holder, position, payloads);
         }
@@ -117,7 +125,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
 
         if (Build.VERSION.SDK_INT < 21) return;
-        if (getItemCount() == 1 || position == 0) {
+        if (getItemCount() == 1 || position == 0 || position == getItemCount() - 1) {
             holder.itemView.setOutlineProvider(defaultOutline);
         } else {
             holder.itemView.setOutlineProvider(fixedOutline);
@@ -198,11 +206,13 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
                 dilimeter.setVisibility(View.GONE);
             } else if (position == 0) {
                 res = R.drawable.item_top;
+                dilimeter.setVisibility(View.VISIBLE);
             } else if (position == itemCount - 1) {
                 res = R.drawable.item_bottom;
                 dilimeter.setVisibility(View.GONE);
             } else {
                 res = R.drawable.item_middle;
+                dilimeter.setVisibility(View.VISIBLE);
             }
             itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), res));
         }

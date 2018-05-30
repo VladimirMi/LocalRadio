@@ -89,7 +89,6 @@ public abstract class BaseStationsFragment<P extends BasePresenter> extends Base
 
     //endregion
 
-
     private void scrollToSelectedStation() {
         int stationPosition = stationsAdapter.getSelectedPosition();
         if (stationPosition < 0) return;
