@@ -6,6 +6,8 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.util.List;
+
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
@@ -54,6 +56,12 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
         ImageView v = searchView.findViewById(android.support.v7.appcompat.R.id.search_button);
         v.setImageResource(R.drawable.ic_filter);
         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void setStations(List<Station> stations) {
+        super.setStations(stations);
+        stationList.scheduleLayoutAnimation();
     }
 
     @Override

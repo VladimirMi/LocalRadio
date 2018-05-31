@@ -17,6 +17,7 @@
         android:paddingTop="8dp"
         android:scrollbars="vertical"
         tools:listitem="@layout/item_station"
+        android:layoutAnimation="@anim/layout_fall_down"
         />
 
     <TextView
