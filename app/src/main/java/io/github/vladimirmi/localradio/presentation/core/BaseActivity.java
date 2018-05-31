@@ -41,22 +41,24 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         //noinspection unchecked
         presenter.attachView(this);
     }
 
     @Override
-    public void onPause() {
+    protected void onStop() {
         presenter.detachView();
-        super.onPause();
+        super.onStop();
     }
+
 
     @Override
     protected void onDestroy() {
         if (isFinishing()) {
-            presenter.destroyView();
+            presenter.destroy();
+            presenter = null;
         }
         super.onDestroy();
     }

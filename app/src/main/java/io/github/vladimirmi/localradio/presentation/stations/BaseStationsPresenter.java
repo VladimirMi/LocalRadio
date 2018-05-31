@@ -29,7 +29,7 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
 
     @Override
     protected void onAttach(StationsView view) {
-        disposables.add(getStations()
+        viewSubs.add(getStations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
@@ -38,7 +38,7 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
                     }
                 }));
 
-        disposables.add(stationsInteractor.getCurrentStationObs()
+        viewSubs.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
@@ -47,7 +47,7 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
                     }
                 }));
 
-        disposables.add(controlsInteractor.getPlaybackStateObs()
+        viewSubs.add(controlsInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
                     @Override

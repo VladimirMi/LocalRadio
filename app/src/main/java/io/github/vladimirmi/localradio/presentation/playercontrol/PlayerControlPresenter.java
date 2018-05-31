@@ -40,7 +40,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     @Override
     protected void onAttach(PlayerControlView view) {
-        disposables.add(stationsInteractor.getCurrentStationObs()
+        viewSubs.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
@@ -49,7 +49,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                     }
                 }));
 
-        disposables.add(controlInteractor.getPlaybackStateObs()
+        viewSubs.add(controlInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
                     @Override
@@ -58,7 +58,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                     }
                 }));
 
-        disposables.add(controlInteractor.getPlaybackMetadataObs()
+        viewSubs.add(controlInteractor.getPlaybackMetadataObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Metadata>(view) {
                     @Override
@@ -67,7 +67,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                     }
                 }));
 
-        disposables.add(favoriteInteractor.isCurrentStationFavorite()
+        viewSubs.add(favoriteInteractor.isCurrentStationFavorite()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
@@ -123,7 +123,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void switchFavorite() {
-        disposables.add(favoriteInteractor.switchCurrentFavorite()
+        viewSubs.add(favoriteInteractor.switchCurrentFavorite()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 }

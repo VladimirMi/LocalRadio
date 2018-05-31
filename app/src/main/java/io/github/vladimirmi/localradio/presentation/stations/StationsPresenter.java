@@ -37,7 +37,7 @@ public class StationsPresenter extends BaseStationsPresenter {
     protected void onAttach(StationsView view) {
         super.onAttach(view);
 
-        disposables.add(favoriteInteractor.getFavoriteIds()
+        viewSubs.add(favoriteInteractor.getFavoriteIds()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Set<Integer>>(view) {
                     @Override
@@ -46,7 +46,7 @@ public class StationsPresenter extends BaseStationsPresenter {
                     }
                 }));
 
-        disposables.add(searchInteractor.getSearchResultObs()
+        viewSubs.add(searchInteractor.getSearchResultObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {
                     @Override
