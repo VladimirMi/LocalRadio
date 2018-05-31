@@ -53,6 +53,17 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                         handleSearchState(state);
                     }
                 }));
+
+        disposables.add(stationsInteractor.getStationsObs()
+                .filter(stations -> searchInteractor.getSearchState().isSearchDone())
+                .map(List::size)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
+                    @Override
+                    public void onNext(Integer size) {
+                        handleSearchResult(size);
+                    }
+                }));
     }
 
     public void selectCountry(String countryName) {
@@ -119,6 +130,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(getView()));
     }
 
+    private void handleSearchResult(int size) {
+        view.setSearchResult(size);
+        selectCountry(locationInteractor.getCountryName());
+        selectCity(locationInteractor.getCity());
+    }
+
 
     private void handleSearchState(SearchState state) {
         switch (state) {
@@ -129,15 +146,10 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 loadingState();
                 break;
             case AUTO_DONE:
+                searchDoneAutoState();
+                break;
             case MANUAL_DONE:
-                view.setSearchResult(stationsInteractor.getStations().size());
-                selectCountry(locationInteractor.getCountryName());
-                selectCity(locationInteractor.getCity());
-                if (state == SearchState.AUTO_DONE) {
-                    searchDoneAutoState();
-                } else {
-                    searchDoneManualState();
-                }
+                searchDoneManualState();
                 break;
         }
     }
