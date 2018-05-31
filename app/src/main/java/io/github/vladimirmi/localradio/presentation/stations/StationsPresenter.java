@@ -9,7 +9,7 @@ import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
-import io.github.vladimirmi.localradio.domain.models.SearchState;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Observable;
@@ -46,13 +46,12 @@ public class StationsPresenter extends BaseStationsPresenter {
                     }
                 }));
 
-        disposables.add(searchInteractor.getSearchStateObs()
+        disposables.add(searchInteractor.getSearchResultObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<SearchState>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {
                     @Override
-                    public void onNext(SearchState state) {
-                        view.setSearching(state == SearchState.LOADING);
-                        if (state == SearchState.LOADING) view.hidePlaceholder();
+                    public void onNext(SearchResult result) {
+                        handleSearchResult(result);
                     }
                 }));
     }
@@ -62,14 +61,23 @@ public class StationsPresenter extends BaseStationsPresenter {
         return stationsInteractor.getFilteredStationsObs();
     }
 
+    private void handleSearchResult(SearchResult result) {
+        if (result.state == SearchResult.State.LOADING) {
+            view.setSearching(true);
+            view.hidePlaceholder();
+        } else {
+            view.setSearching(false);
+            if (result.result == 0) {
+                view.showPlaceholder();
+            } else {
+                view.hidePlaceholder();
+            }
+        }
+    }
+
     @Override
     protected void handleStations(List<Station> stations) {
         view.setStations(stations);
-        if (stations.isEmpty() && searchInteractor.getSearchState() != SearchState.LOADING) {
-            view.showPlaceholder();
-        } else {
-            view.hidePlaceholder();
-        }
     }
 
     public void filterStations(String filter) {

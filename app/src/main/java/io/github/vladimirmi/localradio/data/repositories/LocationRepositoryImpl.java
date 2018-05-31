@@ -25,6 +25,7 @@ public class LocationRepositoryImpl implements LocationRepository {
     private final Preferences preferences;
     private final LocationSource locationSource;
 
+    @SuppressWarnings("WeakerAccess")
     @Inject
     public LocationRepositoryImpl(CountrySource countrySource,
                                   Preferences preferences,
@@ -66,13 +67,6 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public void saveCountryCodeCity(Pair<String, String> countryCity) {
-        String countryCode = countryCity.first;
-        String city = hasCountryCity(countryCity) ? countryCity.second : "";
-        saveCountryCodeCity(countryCode, city);
-    }
-
-    @Override
     public boolean isServicesAvailable() {
         return locationSource.isServicesAvailable();
     }
@@ -91,18 +85,5 @@ public class LocationRepositoryImpl implements LocationRepository {
     @Nullable
     public Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates) {
         return locationSource.getCountryCodeCity(coordinates);
-    }
-
-    private boolean hasCountryCity(Pair<String, String> countryCity) {
-        for (Country country : getCountries()) {
-            if (country.getIsoCode().equals(countryCity.first)) {
-                for (String city : country.getCities()) {
-                    if (city.equals(countryCity.second)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 }

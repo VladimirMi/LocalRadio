@@ -12,11 +12,10 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
-import io.github.vladimirmi.localradio.domain.models.SearchState;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -40,28 +39,13 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     @Override
     protected void onAttach(SearchView view) {
         view.setCountrySuggestions(locationInteractor.getCountriesName());
-        String countryName = locationInteractor.getCountryName();
-        view.setCitySuggestions(locationInteractor.findCities(countryName));
-        view.setCountryName(countryName);
-        view.setCity(locationInteractor.getCity());
 
-        disposables.add(searchInteractor.getSearchStateObs()
+        disposables.add(searchInteractor.getSearchResultObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<SearchState>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {
                     @Override
-                    public void onNext(SearchState state) {
-                        handleSearchState(state);
-                    }
-                }));
-
-        disposables.add(stationsInteractor.getStationsObs()
-                .filter(stations -> searchInteractor.getSearchState().isSearchDone())
-                .map(List::size)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
-                    @Override
-                    public void onNext(Integer size) {
-                        handleSearchResult(size);
+                    public void onNext(SearchResult result) {
+                        handleSearchResult(result);
                     }
                 }));
     }
@@ -130,15 +114,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(getView()));
     }
 
-    private void handleSearchResult(int size) {
-        view.setSearchResult(size);
-        selectCountry(locationInteractor.getCountryName());
-        selectCity(locationInteractor.getCity());
-    }
-
-
-    private void handleSearchState(SearchState state) {
-        switch (state) {
+    private void handleSearchResult(SearchResult searchResult) {
+        switch (searchResult.state) {
             case NOT_DONE:
                 newSearchState();
                 break;
@@ -146,10 +123,16 @@ public class SearchPresenter extends BasePresenter<SearchView> {
                 loadingState();
                 break;
             case AUTO_DONE:
-                searchDoneAutoState();
-                break;
             case MANUAL_DONE:
-                searchDoneManualState();
+                view.setSearchResult(searchResult.message);
+                selectCountry(locationInteractor.getCountryName());
+                view.setCity(locationInteractor.getCity());
+
+                if (searchResult.state == SearchResult.State.AUTO_DONE) {
+                    searchDoneAutoState();
+                } else {
+                    searchDoneManualState();
+                }
                 break;
         }
     }
@@ -170,7 +153,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     private void loadingState() {
-        Timber.e("loadingState: ");
         view.resetSearchResult();
         view.setSearching(true);
         view.enableAutodetect(false);

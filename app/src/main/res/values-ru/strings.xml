@@ -41,4 +41,8 @@
     <string name="desc_clear_country_field">очистить полк страны</string>
     <string name="desc_clear_city_field">очистить поле города</string>
     <string name="desc_station_icon">Иконка станции</string>
+    <string name="search_result_manual_one">%d станция найдена</string>
+    <string name="search_result_manual_other">%d станций найдено</string>
+    <string name="search_result_auto_one">%d станция найдена в радиусе 80 километров</string>
+    <string name="search_result_auto_other">%d станций найдено в радиусе 80 километров</string>
 </resources>

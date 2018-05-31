@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
-import io.github.vladimirmi.localradio.domain.models.SearchState;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
@@ -42,16 +42,16 @@ public class SearchInteractor {
         this.searchRepository = searchRepository;
     }
 
-    public Observable<SearchState> getSearchStateObs() {
-        return searchRepository.searchState();
+    public Observable<SearchResult> getSearchResultObs() {
+        return searchRepository.searchResult();
     }
 
-    public SearchState getSearchState() {
-        return searchRepository.searchState().blockingFirst();
+    public SearchResult getSearchState() {
+        return searchRepository.searchResult().blockingFirst();
     }
 
     public void resetSearch() {
-        searchRepository.setSearchState(SearchState.NOT_DONE);
+        searchRepository.setSearchResult(SearchResult.notDone());
         stationsRepository.resetStations();
     }
 
@@ -67,7 +67,7 @@ public class SearchInteractor {
 
     private Completable search(boolean skipCache) {
         searchRepository.setSkipCache(skipCache);
-        searchRepository.setSearchState(SearchState.LOADING);
+        searchRepository.setSearchResult(SearchResult.loading());
         Single<List<Station>> search;
 
         if (locationRepository.isAutodetect()) {
@@ -84,19 +84,20 @@ public class SearchInteractor {
     private Single<List<Station>> searchStationsAuto() {
         return locationRepository.getCoordinates()
                 .flatMap(coordinates -> {
-                    Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(coordinates);
+                    Pair<String, String> countryCodeCity =
+                            locationRepository.getCountryCodeCity(coordinates);
 
                     if (countryCodeCity == null) {
                         return searchStationsByIp();
                     }
-                    locationRepository.saveCountryCodeCity(countryCodeCity);
+                    locationRepository.saveCountryCodeCity(countryCodeCity.first,
+                            countryCodeCity.second);
 
                     if (countryCodeCity.first.equals("US")) {
                         return searchRepository.searchStationsByCoordinates(coordinates);
                     } else {
-                        return searchRepository.searchStationsManual(
-                                locationRepository.getCountryCode(),
-                                locationRepository.getCity());
+                        return searchRepository.searchStationsManual(countryCodeCity.first,
+                                countryCodeCity.second);
                     }
                 }).onErrorResumeNext(throwable -> {
                     if (throwable instanceof LocationSource.LocationTimeoutException) {

@@ -26,8 +26,6 @@ public interface LocationRepository {
 
     void saveCountryCodeCity(String countryCode, String city);
 
-    void saveCountryCodeCity(Pair<String, String> countryCity);
-
     boolean isServicesAvailable();
 
     Completable checkCanGetLocation();
