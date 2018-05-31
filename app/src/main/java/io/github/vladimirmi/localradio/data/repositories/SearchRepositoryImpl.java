@@ -2,6 +2,8 @@ package io.github.vladimirmi.localradio.data.repositories;
 
 import android.util.Pair;
 
+import com.jakewharton.rxrelay2.BehaviorRelay;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +16,10 @@ import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RxRetryTransformer;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
+import io.github.vladimirmi.localradio.domain.models.SearchState;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -30,6 +34,8 @@ public class SearchRepositoryImpl implements SearchRepository {
     private final Preferences preferences;
     private boolean skipCache;
 
+    private final BehaviorRelay<SearchState> searchState = BehaviorRelay.create();
+
     @SuppressWarnings("WeakerAccess")
     @Inject
     public SearchRepositoryImpl(RestService restService,
@@ -40,16 +46,25 @@ public class SearchRepositoryImpl implements SearchRepository {
         this.cacheSource = cacheSource;
         this.networkChecker = networkChecker;
         this.preferences = preferences;
+
+        if (!preferences.isSearchDone.get()) {
+            searchState.accept(SearchState.NOT_DONE);
+        } else if (preferences.autodetect.get()) {
+            searchState.accept(SearchState.AUTO_DONE);
+        } else {
+            searchState.accept(SearchState.MANUAL_DONE);
+        }
     }
 
     @Override
-    public boolean isSearchDone() {
-        return preferences.isSearchDone.get();
+    public Observable<SearchState> searchState() {
+        return searchState;
     }
 
     @Override
-    public void setSearchDone(boolean done) {
-        preferences.isSearchDone.put(done);
+    public void setSearchState(SearchState state) {
+        searchState.accept(state);
+        preferences.isSearchDone.put(state.isSearchDone());
     }
 
     @Override
@@ -66,6 +81,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
+                .doOnSuccess(stations -> setSearchState(SearchState.MANUAL_DONE))
+                .doOnError(throwable -> setSearchState(SearchState.NOT_DONE))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -78,6 +95,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
+                .doOnSuccess(stations -> setSearchState(SearchState.AUTO_DONE))
+                .doOnError(throwable -> setSearchState(SearchState.NOT_DONE))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -92,6 +111,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 })
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
+                .doOnSuccess(stations -> setSearchState(SearchState.AUTO_DONE))
+                .doOnError(throwable -> setSearchState(SearchState.NOT_DONE))
                 .subscribeOn(Schedulers.io());
     }
 

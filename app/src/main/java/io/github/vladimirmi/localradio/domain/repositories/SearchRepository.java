@@ -4,7 +4,9 @@ import android.util.Pair;
 
 import java.util.List;
 
+import io.github.vladimirmi.localradio.domain.models.SearchState;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -12,9 +14,9 @@ import io.reactivex.Single;
  */
 public interface SearchRepository {
 
-    boolean isSearchDone();
+    Observable<SearchState> searchState();
 
-    void setSearchDone(boolean done);
+    void setSearchState(SearchState state);
 
     void setSkipCache(boolean skipCache);
 

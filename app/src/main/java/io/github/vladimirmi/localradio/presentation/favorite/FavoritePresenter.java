@@ -30,4 +30,14 @@ public class FavoritePresenter extends BaseStationsPresenter {
     protected Observable<List<Station>> getStations() {
         return favoriteInteractor.getFavoriteStations();
     }
+
+    @Override
+    protected void handleStations(List<Station> stations) {
+        view.setStations(stations);
+        if (stations.isEmpty()) {
+            view.showPlaceholder();
+        } else {
+            view.hidePlaceholder();
+        }
+    }
 }

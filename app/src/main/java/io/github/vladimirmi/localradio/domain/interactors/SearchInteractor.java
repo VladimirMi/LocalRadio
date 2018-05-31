@@ -9,13 +9,14 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
+import io.github.vladimirmi.localradio.domain.models.SearchState;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
-import io.github.vladimirmi.localradio.utils.LoadingList;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -41,12 +42,16 @@ public class SearchInteractor {
         this.searchRepository = searchRepository;
     }
 
-    public boolean isSearchDone() {
-        return searchRepository.isSearchDone();
+    public Observable<SearchState> getSearchStateObs() {
+        return searchRepository.searchState();
+    }
+
+    public SearchState getSearchState() {
+        return searchRepository.searchState().blockingFirst();
     }
 
     public void resetSearch() {
-        searchRepository.setSearchDone(false);
+        searchRepository.setSearchState(SearchState.NOT_DONE);
         stationsRepository.resetStations();
     }
 
@@ -62,8 +67,7 @@ public class SearchInteractor {
 
     private Completable search(boolean skipCache) {
         searchRepository.setSkipCache(skipCache);
-        searchRepository.setSearchDone(false);
-        stationsRepository.setStations(new LoadingList());
+        searchRepository.setSearchState(SearchState.LOADING);
         Single<List<Station>> search;
 
         if (locationRepository.isAutodetect()) {
@@ -73,11 +77,7 @@ public class SearchInteractor {
             search = searchStationsManual();
         }
         return search
-                .doOnSuccess(stations -> {
-                    searchRepository.setSearchDone(true);
-                    stationsRepository.setSearchResult(stations);
-                })
-                .doOnError(throwable -> searchRepository.setSearchDone(false))
+                .doOnSuccess(stationsRepository::setSearchResult)
                 .toCompletable();
     }
 
@@ -94,7 +94,9 @@ public class SearchInteractor {
                     if (countryCodeCity.first.equals("US")) {
                         return searchRepository.searchStationsByCoordinates(coordinates);
                     } else {
-                        return searchRepository.searchStationsManual(countryCodeCity.first, countryCodeCity.second);
+                        return searchRepository.searchStationsManual(
+                                locationRepository.getCountryCode(),
+                                locationRepository.getCity());
                     }
                 }).onErrorResumeNext(throwable -> {
                     if (throwable instanceof LocationSource.LocationTimeoutException) {
@@ -118,7 +120,6 @@ public class SearchInteractor {
                     }
                 });
     }
-
 
     public Completable checkCanSearch() {
         if (!networkChecker.isAvailableNet()) {

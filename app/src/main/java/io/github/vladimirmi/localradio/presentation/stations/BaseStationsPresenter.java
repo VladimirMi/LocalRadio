@@ -8,7 +8,6 @@ import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteract
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
-import io.github.vladimirmi.localradio.utils.LoadingList;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -35,10 +34,7 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
                 .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
                     @Override
                     public void onNext(List<Station> stations) {
-                        view.setStations(stations);
-                        boolean isSearching = stations instanceof LoadingList;
-                        view.setSearching(isSearching);
-                        decideShowPlaceholder(stations, isSearching);
+                        handleStations(stations);
                     }
                 }));
 
@@ -63,15 +59,9 @@ public abstract class BaseStationsPresenter extends BasePresenter<StationsView> 
 
     protected abstract Observable<List<Station>> getStations();
 
+    protected abstract void handleStations(List<Station> stations);
+
     public void selectStation(Station station) {
         stationsInteractor.setCurrentStation(station);
-    }
-
-    private void decideShowPlaceholder(List<Station> stations, boolean isSearching) {
-        if (stations.size() == 0 && !isSearching) {
-            view.showPlaceholder();
-        } else {
-            view.hidePlaceholder();
-        }
     }
 }

@@ -43,14 +43,14 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
     private boolean playing;
     private boolean isFavorite;
 
-    private final ViewOutlineProvider defaultOutline;
-    private final ViewOutlineProvider fixedOutline;
+    private static final ViewOutlineProvider defaultOutline =
+            Build.VERSION.SDK_INT >= 21 ? ViewOutlineProvider.BACKGROUND : null;
+    private static final ViewOutlineProvider fixedOutline =
+            Build.VERSION.SDK_INT >= 21 ? new FixedOutlineProvider() : null;
 
     @SuppressWarnings("WeakerAccess")
     public StationsAdapter(onStationListener listener) {
         this.listener = listener;
-        defaultOutline = Build.VERSION.SDK_INT >= 21 ? ViewOutlineProvider.BACKGROUND : null;
-        fixedOutline = Build.VERSION.SDK_INT >= 21 ? new FixedOutlineProvider() : null;
     }
 
     public void setData(List<Station> list) {
@@ -123,13 +123,6 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         holder.setFavorite(isFavorite || favoriteIds.contains(station.id));
         holder.select(station.id == selectedStation.id, playing);
         holder.itemView.setOnClickListener(view -> listener.onStationClick(station));
-
-        if (Build.VERSION.SDK_INT < 21) return;
-        if (getItemCount() == 1 || position == 0 || position == getItemCount() - 1) {
-            holder.itemView.setOutlineProvider(defaultOutline);
-        } else {
-            holder.itemView.setOutlineProvider(fixedOutline);
-        }
     }
 
     @Override
@@ -215,6 +208,13 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
                 dilimeter.setVisibility(View.VISIBLE);
             }
             itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), res));
+
+            if (Build.VERSION.SDK_INT < 21) return;
+            if (itemCount == 1 || position == 0 || position == itemCount - 1) {
+                itemView.setOutlineProvider(defaultOutline);
+            } else {
+                itemView.setOutlineProvider(fixedOutline);
+            }
         }
     }
 
