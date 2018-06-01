@@ -81,8 +81,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         selectedPosition = stations.indexOf(selectedStation);
         diffResult.dispatchUpdatesTo(this);
 
-        if (!stations.isEmpty()) notifyItemChanged(0, PAYLOAD_BACKGROUND_CHANGE);
-        if (stations.size() > 1) notifyItemChanged(stations.size() - 1, PAYLOAD_BACKGROUND_CHANGE);
+        notifyItemRangeChanged(0, stations.size(), PAYLOAD_BACKGROUND_CHANGE);
     }
 
     public void setFavorites(Set<Integer> ids) {

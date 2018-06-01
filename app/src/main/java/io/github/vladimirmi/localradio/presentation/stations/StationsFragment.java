@@ -58,10 +58,15 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
         super.onPrepareOptionsMenu(menu);
     }
 
+    private boolean isFirst = true;
+
     @Override
     public void setStations(List<Station> stations) {
         super.setStations(stations);
-        stationList.scheduleLayoutAnimation();
+        if (isFirst) {
+            stationList.scheduleLayoutAnimation();
+            isFirst = false;
+        }
     }
 
     @Override
