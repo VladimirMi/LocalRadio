@@ -27,6 +27,9 @@ import io.github.vladimirmi.playerbutton.PlayerButton;
 
 public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> implements PlayerControlView {
 
+    private static final int NAV_BTN_VELOCITY = 200; // dp/sec
+    private static final int FAV_VELOCITY = 4; // dp/sec
+
     @BindView(R.id.root) ConstraintLayout root;
     @BindView(R.id.iconIv) ImageView iconIv;
     @BindView(R.id.previousBt) Button previousBt;
@@ -61,14 +64,17 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
         metadataTv.setSelected(true);
         playPauseBt.setOnClickListener(v -> presenter.playPause());
         previousBt.setOnClickListener(v -> {
-            AnimUtils.getBounceAnimation(previousBt, -600).start();
+            AnimUtils.getBounceAnimation(previousBt, -NAV_BTN_VELOCITY).start();
             presenter.skipToPrevious();
         });
         nextBt.setOnClickListener(v -> {
-            AnimUtils.getBounceAnimation(nextBt, 600).start();
+            AnimUtils.getBounceAnimation(nextBt, NAV_BTN_VELOCITY).start();
             presenter.skipToNext();
         });
-        favoriteBt.setOnClickListener(v -> presenter.switchFavorite());
+        favoriteBt.setOnClickListener(v -> {
+            favAnimate();
+            presenter.switchFavorite();
+        });
 
         playPauseBt.setManualMode(true);
         loadingPb.getIndeterminateDrawable().mutate().setColorFilter(getResources()
@@ -119,6 +125,11 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     public void showStopped() {
         playPauseBt.setPlaying(false);
         loadingPb.setVisibility(View.GONE);
+    }
+
+    private void favAnimate() {
+        AnimUtils.getScaleXAnimation(favoriteBt, FAV_VELOCITY).start();
+        AnimUtils.getScaleYAnimation(favoriteBt, FAV_VELOCITY).start();
     }
 
     private void animateStationInfoLayout() {

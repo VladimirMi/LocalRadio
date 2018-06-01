@@ -5,12 +5,14 @@ import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -178,7 +180,12 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         }
 
         void setFavorite(boolean isFavorite) {
-            favoriteIv.setVisibility(isFavorite ? View.VISIBLE : View.GONE);
+            if ((favoriteIv.getVisibility() == View.VISIBLE) == isFavorite) return;
+            if (isFavorite) {
+                showFavorite();
+            } else {
+                hideFavorite();
+            }
         }
 
         void select(boolean select, boolean playing) {
@@ -215,6 +222,26 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
             } else {
                 itemView.setOutlineProvider(fixedOutline);
             }
+        }
+
+        private void hideFavorite() {
+            favoriteIv.animate()
+                    .scaleX(0f)
+                    .scaleY(0f)
+                    .setInterpolator(new FastOutSlowInInterpolator())
+                    .setDuration(200)
+                    .start();
+            favoriteIv.postDelayed(() -> favoriteIv.setVisibility(View.GONE), 200);
+        }
+
+        private void showFavorite() {
+            favoriteIv.setVisibility(View.VISIBLE);
+            favoriteIv.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setInterpolator(new AnticipateOvershootInterpolator(3f))
+                    .setDuration(200)
+                    .start();
         }
     }
 
