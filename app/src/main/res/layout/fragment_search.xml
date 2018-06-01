@@ -49,7 +49,7 @@
                 android:layout_height="match_parent"
                 >
 
-                <io.github.vladimirmi.localradio.utils.EditTextLabelView
+                <io.github.vladimirmi.localradio.custom.EditTextLabelView
                     android:id="@+id/countryLabelTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     />
 
-                <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+                <io.github.vladimirmi.localradio.custom.CustomAutoCompleteView
                     android:id="@+id/countryEt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -87,7 +87,7 @@
                     android:contentDescription="@string/desc_clear_country_field"
                     />
 
-                <io.github.vladimirmi.localradio.utils.EditTextLabelView
+                <io.github.vladimirmi.localradio.custom.EditTextLabelView
                     android:id="@+id/cityLabelTv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                     app:layout_constraintTop_toBottomOf="@id/countryEt"
                     />
 
-                <io.github.vladimirmi.localradio.utils.CustomAutoCompleteView
+                <io.github.vladimirmi.localradio.custom.CustomAutoCompleteView
                     android:id="@+id/cityEt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

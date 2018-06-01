@@ -13,11 +13,12 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
-import io.github.vladimirmi.localradio.utils.NonSwipeableViewPager;
-import io.github.vladimirmi.localradio.utils.UiUtils;
+import io.github.vladimirmi.localradio.utils.AnimUtils;
+import io.github.vladimirmi.localradio.utils.ImageUtils;
 import io.github.vladimirmi.playerbutton.PlayerButton;
 
 /**
@@ -44,7 +45,6 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @BindView(R.id.emailTv) TextView emailTv;
     @BindView(R.id.phoneTv) TextView phoneTv;
 
-
     @Override
     protected int getLayout() {
         return R.layout.fragment_player_controls;
@@ -57,10 +57,17 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     protected void setupView(View view) {
+
         metadataTv.setSelected(true);
         playPauseBt.setOnClickListener(v -> presenter.playPause());
-        previousBt.setOnClickListener(v -> presenter.skipToPrevious());
-        nextBt.setOnClickListener(v -> presenter.skipToNext());
+        previousBt.setOnClickListener(v -> {
+            AnimUtils.getBounceAnimation(previousBt, -600).start();
+            presenter.skipToPrevious();
+        });
+        nextBt.setOnClickListener(v -> {
+            AnimUtils.getBounceAnimation(nextBt, 600).start();
+            presenter.skipToNext();
+        });
         favoriteBt.setOnClickListener(v -> presenter.switchFavorite());
 
         playPauseBt.setManualMode(true);
@@ -72,7 +79,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     public void setStation(Station station) {
         animateStationInfoLayout();
 
-        UiUtils.loadImageInto(iconIv, station);
+        ImageUtils.loadImageInto(iconIv, station);
 
         setTextOrHideIfEmpty(titleTv, station.name);
         setTextOrHideIfEmpty(bandTv, station.bandString);

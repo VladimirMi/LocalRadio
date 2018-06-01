@@ -21,10 +21,10 @@ import android.view.ViewGroup;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.about.AboutActivity;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
-import io.github.vladimirmi.localradio.utils.NonSwipeableViewPager;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 

@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.utils;
+package io.github.vladimirmi.localradio.custom;
 
 import android.content.Context;
 import android.os.Build;

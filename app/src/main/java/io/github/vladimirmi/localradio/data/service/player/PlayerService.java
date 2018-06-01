@@ -27,6 +27,7 @@ import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.utils.ImageUtils;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.github.vladimirmi.localradio.utils.UiUtils;
@@ -78,7 +79,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                     appInitialized = true;
                     handleCurrentStation(station);
                 })
-                .switchMap(station -> UiUtils.loadBitmapForStation(this, station))
+                .switchMap(station -> ImageUtils.loadBitmapForStation(this, station))
                 .doOnNext(this::handleStationIcon)
                 .subscribe()
         );
@@ -169,7 +170,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.name)
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                        UiUtils.textAsBitmap(this, station.name))
+                        ImageUtils.textAsBitmap(this, station.name))
                 .build();
         session.setMetadata(mediaMetadata);
         updateRemoteViews();

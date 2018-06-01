@@ -18,10 +18,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.custom.CustomArrayAdapter;
+import io.github.vladimirmi.localradio.custom.CustomAutoCompleteView;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
-import io.github.vladimirmi.localradio.utils.CustomArrayAdapter;
-import io.github.vladimirmi.localradio.utils.CustomAutoCompleteView;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.

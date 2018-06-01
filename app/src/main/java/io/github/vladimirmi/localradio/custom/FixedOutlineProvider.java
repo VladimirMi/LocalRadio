@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.utils;
+package io.github.vladimirmi.localradio.custom;
 
 import android.graphics.Outline;
 import android.os.Build;

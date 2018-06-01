@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.utils;
+package io.github.vladimirmi.localradio.custom;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

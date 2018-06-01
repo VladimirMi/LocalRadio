@@ -21,9 +21,9 @@ import java.util.Set;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.custom.FixedOutlineProvider;
 import io.github.vladimirmi.localradio.domain.models.Station;
-import io.github.vladimirmi.localradio.utils.FixedOutlineProvider;
-import io.github.vladimirmi.localradio.utils.UiUtils;
+import io.github.vladimirmi.localradio.utils.ImageUtils;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -174,7 +174,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
             genresTv.setText(station.genre);
             bandTv.setText(station.bandString);
 
-            UiUtils.loadImageInto(imageIv, station);
+            ImageUtils.loadImageInto(imageIv, station);
         }
 
         void setFavorite(boolean isFavorite) {
