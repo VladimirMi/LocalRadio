@@ -84,6 +84,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         });
 
         searchBt.setOnClickListener(v -> {
+            countryEt.performValidation();
+            cityEt.performValidation();
             String countryName = countryEt.getText().toString();
             String city = cityEt.getText().toString();
             presenter.search(countryName, city);
