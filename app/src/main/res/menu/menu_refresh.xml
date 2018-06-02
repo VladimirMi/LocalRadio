@@ -11,11 +11,13 @@
     <item
         android:id="@+id/action_about"
         android:title="@string/about"
+        android:icon="@drawable/ic_info"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_exit"
         android:title="@string/exit"
+        android:icon="@drawable/ic_exit"
         app:showAsAction="never"/>
 
 </menu>
