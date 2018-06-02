@@ -93,6 +93,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         session.setPlaybackState(playbackState);
         session.setMetadata(mediaMetadata);
+        session.setSessionActivity(PlayerActions.sessionActivity(this));
         setSessionToken(session.getSessionToken());
     }
 
