@@ -77,6 +77,19 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Single<List<Station>> searchStationsManual(String countryCode, String city) {
+        return searchManual(countryCode, city)
+                .doOnSuccess(stations -> setSearchResult(SearchResult.doneManual(stations.size(),
+                        getResultMessage(stations, R.plurals.search_result))));
+    }
+
+    @Override
+    public Single<List<Station>> searchStationsAutoManual(String countryCode, String city) {
+        return searchManual(countryCode, city)
+                .doOnSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
+                        getResultMessage(stations, R.plurals.search_result))));
+    }
+
+    private Single<List<Station>> searchManual(String countryCode, String city) {
         resolveCache(countryCode, city);
 
         return restService.getStationsByLocation(countryCode, city, 1)
@@ -84,23 +97,23 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
-                .doOnSuccess(stations -> setSearchResult(SearchResult.doneManual(stations.size(),
-                        resourceManager.getQuantityString(R.plurals.search_result_manual, stations.size()))))
                 .doOnError(throwable -> setSearchResult(SearchResult.notDone()))
                 .subscribeOn(Schedulers.io());
     }
+
 
     @Override
     public Single<List<Station>> searchStationsByCoordinates(Pair<Float, Float> coordinates) {
         resolveCache(coordinates.first.toString(), coordinates.second.toString());
 
         return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
-                .doOnError(e -> cacheSource.cleanCache(coordinates.first.toString(), coordinates.second.toString()))
+                .doOnError(e -> cacheSource.cleanCache(coordinates.first.toString(),
+                        coordinates.second.toString()))
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
                 .doOnSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
-                        resourceManager.getQuantityString(R.plurals.search_result_auto, stations.size()))))
+                        getResultMessage(stations, R.plurals.search_result_radius))))
                 .doOnError(throwable -> setSearchResult(SearchResult.notDone()))
                 .subscribeOn(Schedulers.io());
     }
@@ -117,7 +130,7 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
                 .doOnSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
-                        resourceManager.getQuantityString(R.plurals.search_result_manual, stations.size()))))
+                        getResultMessage(stations, R.plurals.search_result))))
                 .doOnError(throwable -> setSearchResult(SearchResult.notDone()))
                 .subscribeOn(Schedulers.io());
     }
@@ -137,4 +150,7 @@ public class SearchRepositoryImpl implements SearchRepository {
         return stations;
     }
 
+    private String getResultMessage(List<Station> stations, int pluralsId) {
+        return resourceManager.getFormatQuantityString(pluralsId, stations.size(), stations.size());
+    }
 }

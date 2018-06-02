@@ -25,7 +25,7 @@ public class ResourceManager {
         return appContext.getString(resId, formatArgs);
     }
 
-    public String getQuantityString(int resId, int quantity) {
-        return appContext.getResources().getQuantityString(resId, quantity, quantity);
+    public String getFormatQuantityString(int resId, int quantity, Object... formatArgs) {
+        return appContext.getResources().getQuantityString(resId, quantity, formatArgs);
     }
 }

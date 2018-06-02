@@ -96,7 +96,7 @@ public class SearchInteractor {
                     if (countryCodeCity.first.equals("US")) {
                         return searchRepository.searchStationsByCoordinates(coordinates);
                     } else {
-                        return searchRepository.searchStationsManual(countryCodeCity.first,
+                        return searchRepository.searchStationsAutoManual(countryCodeCity.first,
                                 countryCodeCity.second);
                     }
                 }).onErrorResumeNext(throwable -> {

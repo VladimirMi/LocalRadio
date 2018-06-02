@@ -22,6 +22,8 @@ public interface SearchRepository {
 
     Single<List<Station>> searchStationsManual(String countryCode, String city);
 
+    Single<List<Station>> searchStationsAutoManual(String countryCode, String city);
+
     Single<List<Station>> searchStationsByCoordinates(Pair<Float, Float> coordinates);
 
     Single<List<Station>> searchStationsByIp();
