@@ -15,7 +15,6 @@ import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 24.04.2018.
@@ -68,7 +67,6 @@ public class LocationInteractor {
     }
 
     public void saveCountryNameCity(String countryName, String cityName) {
-        Timber.e("saveCountryNameCity: %s, %s", countryName, cityName);
         String countryCode = "";
         if (!countryName.isEmpty()) {
             for (Country country : locationRepository.getCountries()) {

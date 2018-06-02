@@ -74,6 +74,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         notification = new MediaNotification(this, session);
 
         compDisp.add(stationsInteractor.getCurrentStationObs()
+                .distinctUntilChanged()
                 .observeOn(Schedulers.io())
                 .doOnNext(station -> {
                     appInitialized = true;

@@ -126,4 +126,8 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         viewSubs.add(favoriteInteractor.switchCurrentFavorite()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
+
+    public void stationIconClick() {
+        stationsInteractor.setCurrentStation(stationsInteractor.getCurrentStation());
+    }
 }

@@ -75,6 +75,7 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
             favAnimate();
             presenter.switchFavorite();
         });
+        iconIv.setOnClickListener(v -> presenter.stationIconClick());
 
         playPauseBt.setManualMode(true);
         loadingPb.getIndeterminateDrawable().mutate().setColorFilter(getResources()
