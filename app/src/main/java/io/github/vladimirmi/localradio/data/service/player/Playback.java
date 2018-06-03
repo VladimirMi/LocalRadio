@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.data.service.player;
 
-import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothHeadset;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -66,13 +66,10 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     }
 
     public void resume() {
-        playAgainOnFocus = true;
         player.setPlayWhenReady(true);
     }
 
     public void pause() {
-        playAgainOnFocus = false;
-        playAgainOnHeadset = false;
         player.setPlayWhenReady(false);
     }
 
@@ -147,27 +144,18 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+
             if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(action)) {
-                service.onPauseCommand(STOP_DELAY_HEADSET);
                 playAgainOnHeadset = player != null && player.getPlayWhenReady();
+                service.onPauseCommand(STOP_DELAY_HEADSET);
 
             } else if (playAgainOnHeadset && Intent.ACTION_HEADSET_PLUG.equals(action)
                     && intent.getIntExtra("state", 0) == 1) {
                 service.onPlayCommand();
 
-            } else if (playAgainOnHeadset && BluetoothDevice.ACTION_ACL_CONNECTED.equals(action)) {
-                int count = 0;
-                while (!audioManager.isBluetoothA2dpOn() && count < 10) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    count++;
-                }
-                if (audioManager.isBluetoothA2dpOn()) {
-                    service.onPlayCommand();
-                }
+            } else if (playAgainOnHeadset && BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED.equals(action)
+                    && intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, 0) == BluetoothHeadset.STATE_CONNECTED) {
+                service.onPlayCommand();
             }
         }
     };
@@ -178,7 +166,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         if (!audioNoisyReceiverRegistered) {
             IntentFilter filter = new IntentFilter(ACTION_AUDIO_BECOMING_NOISY);
             filter.addAction(Intent.ACTION_HEADSET_PLUG);
-            filter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+            filter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
             service.registerReceiver(audioNoisyReceiver, filter);
             audioNoisyReceiverRegistered = true;
         }

@@ -116,10 +116,6 @@ public class LocationInteractor {
         return locationRepository.isServicesAvailable();
     }
 
-    public Completable checkCanGetLocation() {
-        return locationRepository.checkCanGetLocation();
-    }
-
     private List<Country> findCountries(String countryName) {
         if (countryName.isEmpty()) {
             return locationRepository.getCountries();

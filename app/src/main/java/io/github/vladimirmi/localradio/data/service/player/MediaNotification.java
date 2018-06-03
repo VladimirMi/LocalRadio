@@ -15,7 +15,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import io.github.vladimirmi.localradio.R;
-import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Vladimir Mikhalev 22.04.2018.
@@ -34,8 +33,6 @@ public class MediaNotification {
     private final PendingIntent stopIntent;
     private final PendingIntent nextIntent;
     private final PendingIntent previousIntent;
-
-    private Disposable notificationUpdate;
 
     @SuppressWarnings("WeakerAccess")
     public MediaNotification(PlayerService service, MediaSessionCompat session) {
