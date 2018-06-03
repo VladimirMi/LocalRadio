@@ -59,7 +59,7 @@ public class LocationSource {
     public LocationSource(Context context) {
         this.context = context;
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.US);
     }
 
     public boolean isServicesAvailable() {
