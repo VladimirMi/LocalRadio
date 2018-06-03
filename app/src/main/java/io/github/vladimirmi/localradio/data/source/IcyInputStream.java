@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
 import io.github.vladimirmi.localradio.data.service.player.PlayerCallback;
@@ -25,7 +26,7 @@ public class IcyInputStream extends FilterInputStream {
     public IcyInputStream(InputStream in, int window, PlayerCallback playerCallback) {
         super(in);
         this.window = window;
-        bytesBeforeMetadata = window;
+        this.bytesBeforeMetadata = window;
         this.playerCallback = playerCallback;
     }
 
@@ -59,8 +60,11 @@ public class IcyInputStream extends FilterInputStream {
                 break;
             }
         }
-        // TODO: 4/28/18 try to determine charset
-        String meta = new String(buffer, 0, actualSize);
+        Charset charset = CharsetDetector.detectCharset(buffer, 0, actualSize);
+
+        String meta = new String(buffer, 0, actualSize,
+                charset == null ? Charset.defaultCharset() : charset);
+
         playerCallback.onMetadata(Metadata.create(meta));
     }
 

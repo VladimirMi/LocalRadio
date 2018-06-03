@@ -1,7 +1,6 @@
 package io.github.vladimirmi.localradio.data.source;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
@@ -23,7 +22,6 @@ import timber.log.Timber;
 
 public final class IcyDataSource implements DataSource {
 
-    private static final String TAG = "IcyDataSource";
     private static final int connectTimeoutMillis = 5000;
     private static final int readTimeoutMillis = 5000;
 
@@ -126,7 +124,7 @@ public final class IcyDataSource implements DataSource {
             try {
                 connection.disconnect();
             } catch (Exception e) {
-                Log.e(TAG, "Unexpected error while disconnecting", e);
+                Timber.w(e, "Unexpected error while disconnecting");
             }
             connection = null;
         }
