@@ -11,6 +11,7 @@ import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -49,6 +50,7 @@ public class StationsRepositoryImpl implements StationsRepository {
 
     @Override
     public List<Station> getStations() {
+        Timber.e("getStations: " + stations.getValue());
         return stations.hasValue() ? stations.getValue() : Collections.emptyList();
     }
 
@@ -84,6 +86,7 @@ public class StationsRepositoryImpl implements StationsRepository {
                 break;
             }
         }
+        Timber.e("updateCurrentStationFromPreferences: " + newCurrentStation);
         if (newCurrentStation.isNullObject && !stations.isEmpty()) {
             newCurrentStation = stations.get(0);
         }

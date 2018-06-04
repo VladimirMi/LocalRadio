@@ -18,7 +18,6 @@ import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -57,12 +56,12 @@ public class SearchInteractor {
 
     public Completable searchStations() {
         resetSearch();
-        return search(false).subscribeOn(Schedulers.io());
+        return search(false);
     }
 
     public Completable refreshStations() {
         resetSearch();
-        return search(true).subscribeOn(Schedulers.io());
+        return search(true);
     }
 
     private Completable search(boolean skipCache) {
