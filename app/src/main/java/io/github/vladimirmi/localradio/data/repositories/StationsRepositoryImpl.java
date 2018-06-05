@@ -39,8 +39,8 @@ public class StationsRepositoryImpl implements StationsRepository {
 
     @Override
     public void setSearchResult(List<Station> stations) {
-        updateCurrentStationFromPreferences(stations);
         this.stations.accept(stations);
+        updateCurrentStationFromPreferences(stations);
     }
 
     @Override
@@ -50,7 +50,6 @@ public class StationsRepositoryImpl implements StationsRepository {
 
     @Override
     public List<Station> getStations() {
-        Timber.e("getStations: " + stations.getValue());
         return stations.hasValue() ? stations.getValue() : Collections.emptyList();
     }
 
@@ -86,7 +85,7 @@ public class StationsRepositoryImpl implements StationsRepository {
                 break;
             }
         }
-        Timber.e("updateCurrentStationFromPreferences: " + newCurrentStation);
+        Timber.e("updateCurrentStationFromPreferences: %s, %s", stations.size(), newCurrentStation);
         if (newCurrentStation.isNullObject && !stations.isEmpty()) {
             newCurrentStation = stations.get(0);
         }

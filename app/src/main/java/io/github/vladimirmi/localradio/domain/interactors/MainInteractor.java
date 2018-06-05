@@ -13,7 +13,7 @@ public class MainInteractor {
     // TODO: 5/30/18 create main repository
     private final Preferences preferences;
     private final SearchInteractor searchInteractor;
-    private volatile boolean initializing;
+    private volatile boolean initialized;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -24,9 +24,14 @@ public class MainInteractor {
     }
 
     public Completable initApp() {
-        return searchInteractor.getSearchState().isSearchDone() && !initializing ?
-                searchInteractor.searchStations() : Completable.complete()
-                .doOnSubscribe(disposable -> initializing = true);
+        Completable init;
+        if (searchInteractor.getSearchState().isSearchDone() && !initialized) {
+            init = searchInteractor.searchStations()
+                    .doOnError(throwable -> initialized = false);
+        } else {
+            init = Completable.complete();
+        }
+        return init.doOnSubscribe(disposable -> initialized = true);
     }
 
     public int getPagePosition() {

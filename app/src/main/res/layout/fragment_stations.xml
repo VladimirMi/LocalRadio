@@ -8,18 +8,6 @@
     android:background="@color/grey_200"
     >
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/stationList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipToPadding="false"
-        android:paddingBottom="96dp"
-        android:paddingTop="8dp"
-        android:scrollbars="vertical"
-        tools:listitem="@layout/item_station"
-        android:layoutAnimation="@anim/layout_fall_down"
-        />
-
     <TextView
         android:id="@+id/placeholder"
         android:layout_width="match_parent"
@@ -30,6 +18,18 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorPrimary"
         android:visibility="gone"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/stationList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="96dp"
+        android:paddingTop="8dp"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/item_station"
+        android:layoutAnimation="@anim/layout_fall_down"
         />
 
     <ProgressBar

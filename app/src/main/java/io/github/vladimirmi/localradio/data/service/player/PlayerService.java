@@ -36,7 +36,6 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 import toothpick.Toothpick;
 
 /**
@@ -70,7 +69,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     @Override
     public void onCreate() {
         super.onCreate();
-        Timber.e("onCreate: ");
         Toothpick.inject(this, Scopes.getAppScope());
 
         initSession();
@@ -121,7 +119,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
             handleIntent(intent);
         }
 
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     private void stopForeground() {
@@ -132,7 +130,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     @Override
     public void onDestroy() {
         subs.dispose();
-        waitSearch.dispose();
+        if (waitSearch != null) waitSearch.dispose();
         serviceStarted = false;
         session.setActive(false);
         onStopCommand();

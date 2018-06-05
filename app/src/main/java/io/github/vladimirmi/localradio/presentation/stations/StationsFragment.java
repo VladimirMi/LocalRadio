@@ -63,7 +63,7 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     @Override
     public void setStations(List<Station> stations) {
         super.setStations(stations);
-        if (isFirst) {
+        if (isFirst && stations.size() > 0) {
             stationList.scheduleLayoutAnimation();
             isFirst = false;
         }
