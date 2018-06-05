@@ -78,14 +78,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public Single<List<Station>> searchStationsManual(String countryCode, String city) {
         return searchManual(countryCode, city)
-                .doOnSuccess(stations -> setSearchResult(SearchResult.doneManual(stations.size(),
+                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneManual(stations.size(),
                         getResultMessage(stations, R.plurals.search_result))));
     }
 
     @Override
     public Single<List<Station>> searchStationsAutoManual(String countryCode, String city) {
         return searchManual(countryCode, city)
-                .doOnSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
+                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
                         getResultMessage(stations, R.plurals.search_result))));
     }
 
@@ -97,7 +97,6 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
-                .doOnError(throwable -> setSearchResult(SearchResult.notDone()))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -112,9 +111,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
-                .doOnSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
+                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
                         getResultMessage(stations, R.plurals.search_result_radius))))
-                .doOnError(throwable -> setSearchResult(SearchResult.notDone()))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -129,9 +127,8 @@ public class SearchRepositoryImpl implements SearchRepository {
                 })
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
-                .doOnSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
+                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
                         getResultMessage(stations, R.plurals.search_result))))
-                .doOnError(throwable -> setSearchResult(SearchResult.notDone()))
                 .subscribeOn(Schedulers.io());
     }
 

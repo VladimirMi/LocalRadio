@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.reactivex.Completable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 28.04.2018.
@@ -14,6 +13,7 @@ public class MainInteractor {
     // TODO: 5/30/18 create main repository
     private final Preferences preferences;
     private final SearchInteractor searchInteractor;
+    private volatile boolean initializing;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -24,15 +24,9 @@ public class MainInteractor {
     }
 
     public Completable initApp() {
-        Completable initStations;
-        if (searchInteractor.getSearchState().isSearchDone()) {
-            Timber.e("initApp: ");
-            initStations = searchInteractor.checkCanSearch()
-                    .andThen(searchInteractor.searchStations());
-        } else {
-            initStations = Completable.complete();
-        }
-        return initStations;
+        return searchInteractor.getSearchState().isSearchDone() && !initializing ?
+                searchInteractor.searchStations() : Completable.complete()
+                .doOnSubscribe(disposable -> initializing = true);
     }
 
     public int getPagePosition() {

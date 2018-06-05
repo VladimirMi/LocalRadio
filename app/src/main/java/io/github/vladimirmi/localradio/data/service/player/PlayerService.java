@@ -25,13 +25,15 @@ import io.github.vladimirmi.localradio.data.reciever.PlayerWidget;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.utils.ImageUtils;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.github.vladimirmi.localradio.utils.UiUtils;
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -43,6 +45,7 @@ import toothpick.Toothpick;
 
 public class PlayerService extends MediaBrowserServiceCompat implements SessionCallback.Interface {
 
+    @Inject SearchInteractor searchInteractor;
     @Inject StationsInteractor stationsInteractor;
     @Inject FavoriteInteractor favoriteInteractor;
     @Inject MainInteractor mainInteractor;
@@ -59,12 +62,10 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private boolean serviceStarted = false;
     private int currentStationId;
     private int playingStationId;
-    private Disposable currentStationSub;
-    private Disposable initSub;
+    private CompositeDisposable subs = new CompositeDisposable();
     private final Timer stopTimer = new Timer();
     private TimerTask stopTask;
 
-    private volatile boolean appInitialized;
 
     @Override
     public void onCreate() {
@@ -76,19 +77,16 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         playback = new Playback(this, playerCallback);
         notification = new MediaNotification(this, session);
 
-        currentStationSub = stationsInteractor.getCurrentStationObs()
+        subs.add(mainInteractor.initApp()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
+
+        subs.add(stationsInteractor.getCurrentStationObs()
                 .distinctUntilChanged()
                 .observeOn(Schedulers.io())
-                .doOnNext(station -> {
-                    Timber.e("onCreate: " + station);
-                    appInitialized = true;
-                    handleCurrentStation(station);
-                })
+                .doOnNext(this::handleCurrentStation)
                 .switchMap(station -> ImageUtils.loadBitmapForStation(this, station))
                 .doOnNext(this::handleStationIcon)
-                .subscribe();
-        
-        
+                .subscribe());
     }
 
     private void initSession() {
@@ -102,43 +100,28 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         setSessionToken(session.getSessionToken());
     }
 
+    private Disposable waitSearch;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent == null) return START_NOT_STICKY;
-        Timber.e("onStartCommand: " + intent);
         notification.startForeground();
         serviceStarted = true;
         session.setActive(true);
 
         if (isPaused()) scheduleStopTask(Playback.STOP_DELAY);
 
-        if (!appInitialized && initSub == null) {
-//            initApp(intent);
-        } else if (mainInteractor.isHaveStations()) {
-            handleIntent(intent);
+        if (!mainInteractor.isFavoritePage() && waitSearch == null) {
+            waitSearch = searchInteractor.getSearchResultObs()
+                    .map(SearchResult::isSearchDone)
+                    .filter(aBoolean -> aBoolean)
+                    .firstOrError().toCompletable()
+                    .subscribe(() -> handleIntent(intent));
         } else {
-            stopForeground();
+            handleIntent(intent);
         }
-        return super.onStartCommand(intent, flags, startId);
-    }
 
-    private void initApp(Intent intent) {
-        Timber.e("initApp: ");
-        initSub = mainInteractor.initApp()
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(e -> stopForeground())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(this) {
-                    @Override
-                    public void onComplete() {
-                        Timber.e("onComplete: init");
-                        appInitialized = true;
-                        if (mainInteractor.isHaveStations()) {
-                            handleIntent(intent);
-                        } else {
-                            stopForeground();
-                        }
-                    }
-                });
+        return super.onStartCommand(intent, flags, startId);
     }
 
     private void stopForeground() {
@@ -148,10 +131,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onDestroy() {
-        currentStationSub.dispose();
-        currentStationSub = null;
-        initSub.dispose();
-        initSub = null;
+        subs.dispose();
+        waitSearch.dispose();
         serviceStarted = false;
         session.setActive(false);
         onStopCommand();
@@ -319,10 +300,13 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     private void handleIntent(Intent intent) {
+
         if (intent != null && PlayerWidget.ACTION_WIDGET_UPDATE.equals(intent.getAction())) {
             updateRemoteViews();
-        } else {
+        } else if (mainInteractor.isHaveStations()) {
             MediaButtonReceiver.handleIntent(session, intent);
+        } else {
+            stopForeground();
         }
     }
 }

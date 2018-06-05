@@ -65,8 +65,6 @@ public class SearchInteractor {
     }
 
     private Completable search(boolean skipCache) {
-        searchRepository.setSkipCache(skipCache);
-        searchRepository.setSearchResult(SearchResult.loading());
         Single<List<Station>> search;
 
         if (locationRepository.isAutodetect()) {
@@ -75,8 +73,14 @@ public class SearchInteractor {
         } else {
             search = searchStationsManual();
         }
-        return search
+        return checkCanSearch()
+                .doOnComplete(() -> {
+                    searchRepository.setSkipCache(skipCache);
+                    searchRepository.setSearchResult(SearchResult.loading());
+                })
+                .andThen(search)
                 .doOnSuccess(stationsRepository::setSearchResult)
+                .doOnError(throwable -> searchRepository.setSearchResult(SearchResult.notDone()))
                 .toCompletable();
     }
 
@@ -121,7 +125,7 @@ public class SearchInteractor {
                 });
     }
 
-    public Completable checkCanSearch() {
+    private Completable checkCanSearch() {
         if (!networkChecker.isAvailableNet()) {
             return Completable.error(new MessageException(R.string.error_network));
         } else {

@@ -70,8 +70,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
             searchInteractor.resetSearch();
             newSearchState();
         } else {
-            dataSubs.add(searchInteractor.checkCanSearch()
-                    .andThen(view.resolvePermissions(Manifest.permission.ACCESS_FINE_LOCATION))
+            dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                     .doOnNext(enabled -> {
                         // TODO: 4/27/18 add action that opens settings to the snackbar
                         if (!enabled) {
@@ -88,8 +87,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
 
     public void refreshSearch() {
-        dataSubs.add(searchInteractor.checkCanSearch()
-                .andThen(searchInteractor.refreshStations())
+        dataSubs.add(searchInteractor.refreshStations()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));
     }
 
@@ -110,7 +108,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         locationInteractor.saveCountryNameCity(countryName, city);
 
         dataSubs.add(locationInteractor.checkCanSearch()
-                .andThen(searchInteractor.checkCanSearch())
                 .andThen(searchInteractor.searchStations())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));
     }

@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
 import io.reactivex.Observable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 07.04.2018.
@@ -62,10 +61,8 @@ public class StationsInteractor {
 
     public void nextStation() {
         List<Station> source = getFilteredStations();
-        Timber.e("nextStation: " + source.size());
         int indexOfCurrent = source.indexOf(getCurrentStation());
         if (indexOfCurrent == -1) return;
-        Timber.e("nextStation: " + indexOfCurrent);
 
         int indexOfNext = (indexOfCurrent + 1) % source.size();
         setCurrentStation(source.get(indexOfNext));
