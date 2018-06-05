@@ -65,7 +65,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void enableAutodetect(boolean autodetect) {
-        setAutodetect(autodetect);
         if (!autodetect) {
             searchInteractor.resetSearch();
             newSearchState();
@@ -73,10 +72,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
             dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_FINE_LOCATION)
                     .doOnNext(enabled -> {
                         // TODO: 4/27/18 add action that opens settings to the snackbar
-                        if (!enabled) {
-                            view.showMessage(R.string.need_permission);
-                            setAutodetect(false);
-                        }
+                        setAutodetect(enabled);
+                        if (!enabled) view.showMessage(R.string.need_permission);
                     })
                     .filter(enabled -> enabled)
                     .flatMapCompletable(enabled -> searchInteractor.searchStations())
@@ -160,7 +157,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.enableAutodetect(locationInteractor.isServicesAvailable());
         view.setSearchDone(true);
         view.showSearchBtn(false);
-        setAutodetect(true);
+        view.setAutodetect(true);
     }
 
     private void searchDoneManualState() {

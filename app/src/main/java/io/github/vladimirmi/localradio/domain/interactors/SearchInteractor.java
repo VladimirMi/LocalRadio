@@ -55,16 +55,16 @@ public class SearchInteractor {
     }
 
     public Completable searchStations() {
-        resetSearch();
         return search(false);
     }
 
     public Completable refreshStations() {
-        resetSearch();
         return search(true);
     }
 
     private Completable search(boolean skipCache) {
+        stationsRepository.resetStations();
+
         Single<List<Station>> search;
 
         if (locationRepository.isAutodetect()) {
