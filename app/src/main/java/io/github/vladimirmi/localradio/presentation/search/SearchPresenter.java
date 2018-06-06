@@ -50,12 +50,14 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void selectCountry(String countryName) {
+        if (!hasView()) return;
         List<String> cities = locationInteractor.findCities(countryName);
         view.setCitySuggestions(cities);
         view.setCountryName(countryName);
     }
 
     public void selectCity(String city) {
+        if (!hasView()) return;
         String countryName = locationInteractor.findCountryName(city);
         if (!countryName.isEmpty()) {
             view.setCountryName(countryName);
@@ -100,7 +102,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     private void performSearch(String countryName, String city) {
         if (countryName.isEmpty()) {
             countryName = locationInteractor.findCountryName(city);
-            view.setCountryName(countryName);
+            selectCountry(countryName);
         }
         locationInteractor.saveCountryNameCity(countryName, city);
 

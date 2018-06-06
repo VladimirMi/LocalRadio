@@ -91,8 +91,14 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private Single<List<Station>> searchManual(String countryCode, String city) {
         resolveCache(countryCode, city);
+        Single<StationsResult> search;
+        if (city.isEmpty()) {
+            search = restService.getStationsByLocation(countryCode, 1);
+        } else {
+            search = restService.getStationsByLocation(countryCode, city, 1);
+        }
 
-        return restService.getStationsByLocation(countryCode, city, 1)
+        return search
                 .doOnError(e -> cacheSource.cleanCache(countryCode, city))
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)

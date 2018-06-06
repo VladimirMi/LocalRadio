@@ -71,6 +71,7 @@ public class CacheSource implements Interceptor {
 
     public void cleanCache(String... queries) {
         String query = buildQuery(queries);
+        // TODO: 6/6/18 query part of the file name equals query
         File[] files = cacheDir.listFiles((dir, name) -> name.contains(query));
         for (File file : files) {
             deleteFile(file);

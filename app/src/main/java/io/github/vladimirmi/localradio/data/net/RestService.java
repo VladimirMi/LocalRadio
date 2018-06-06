@@ -22,4 +22,8 @@ public interface RestService {
     Single<StationsResult> getStationsByLocation(@Query("country") String countryCode,
                                                  @Query("city") String city,
                                                  @Query("exact") int exact);
+
+    @GET("darstations.php")
+    Single<StationsResult> getStationsByLocation(@Query("country") String countryCode,
+                                                 @Query("exact") int exact);
 }

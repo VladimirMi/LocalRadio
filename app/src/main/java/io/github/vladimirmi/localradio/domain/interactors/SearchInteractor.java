@@ -63,6 +63,7 @@ public class SearchInteractor {
     }
 
     private Completable search(boolean skipCache) {
+        searchRepository.setSkipCache(skipCache);
         stationsRepository.resetStations();
 
         Single<List<Station>> search;
@@ -74,10 +75,7 @@ public class SearchInteractor {
             search = searchStationsManual();
         }
         return checkCanSearch()
-                .doOnComplete(() -> {
-                    searchRepository.setSkipCache(skipCache);
-                    searchRepository.setSearchResult(SearchResult.loading());
-                })
+                .doOnComplete(() -> searchRepository.setSearchResult(SearchResult.loading()))
                 .andThen(search)
                 .doOnSuccess(stationsRepository::setSearchResult)
                 .doOnError(throwable -> searchRepository.setSearchResult(SearchResult.notDone()))
