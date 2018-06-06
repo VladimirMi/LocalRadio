@@ -58,22 +58,23 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         //noinspection unchecked
         presenter.attachView(this);
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
         presenter.detachView();
-        super.onPause();
+        super.onStop();
     }
 
     @Override
     public void onDestroy() {
         if (getActivity() != null && getActivity().isFinishing()) {
-            presenter.destroyView();
+            presenter.destroy();
+            presenter = null;
         }
         super.onDestroy();
     }

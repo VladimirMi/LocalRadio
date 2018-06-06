@@ -56,7 +56,7 @@
     </android.support.design.widget.AppBarLayout>
 
 
-    <io.github.vladimirmi.localradio.utils.NonSwipeableViewPager
+    <io.github.vladimirmi.localradio.custom.NonSwipeableViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

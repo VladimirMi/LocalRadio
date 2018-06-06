@@ -1,8 +1,9 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
 import java.util.List;
+import java.util.Set;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**
@@ -12,6 +13,8 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
 public interface StationsView extends BaseView {
 
     void setStations(List<Station> stations);
+
+    void setFavorites(Set<Integer> ids);
 
     void selectStation(Station station);
 

@@ -8,36 +8,39 @@ import io.reactivex.disposables.CompositeDisposable;
  * Created by Vladimir Mikhalev 02.03.2018.
  */
 
+@SuppressWarnings("WeakerAccess")
 public abstract class BasePresenter<V extends BaseView> {
 
     protected V view;
-    protected final CompositeDisposable disposables = new CompositeDisposable();
+    protected final CompositeDisposable viewSubs = new CompositeDisposable();
+    protected final CompositeDisposable dataSubs = new CompositeDisposable();
     private boolean isFirstAttach = true;
 
     public final void attachView(V view) {
         this.view = view;
-        onAttach(view, isFirstAttach);
+        onAttach(view);
         if (isFirstAttach) {
-            onFirstAttach(view);
+            onFirstAttach(view, dataSubs);
             isFirstAttach = false;
         }
     }
 
     public final void detachView() {
         onDetach();
-        disposables.clear();
+        viewSubs.clear();
         view = null;
     }
 
-    public final void destroyView() {
+    public final void destroy() {
         onDestroy();
         isFirstAttach = true;
+        dataSubs.clear();
     }
 
-    protected void onFirstAttach(V view) {
+    protected void onFirstAttach(V view, CompositeDisposable disposables) {
     }
 
-    protected void onAttach(V view, boolean isFirstAttach) {
+    protected void onAttach(V view) {
     }
 
     protected void onDetach() {

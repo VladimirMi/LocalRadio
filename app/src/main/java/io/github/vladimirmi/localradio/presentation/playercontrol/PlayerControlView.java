@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.playercontrol;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**

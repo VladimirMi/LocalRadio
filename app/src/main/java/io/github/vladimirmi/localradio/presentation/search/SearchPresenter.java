@@ -1,19 +1,19 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.domain.LocationInteractor;
-import io.github.vladimirmi.localradio.domain.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -32,148 +32,140 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     @Override
-    protected void onAttach(SearchView view, boolean isFirstAttach) {
+    protected void onFirstAttach(SearchView view, CompositeDisposable disposables) {
         view.setCountrySuggestions(locationInteractor.getCountriesName());
-        String countryName = locationInteractor.getCountryName();
-        view.setCitySuggestions(locationInteractor.findCities(countryName));
-        view.setCountryName(countryName);
-        view.setCity(locationInteractor.getCity());
         view.setAutodetect(locationInteractor.isAutodetect());
-        view.showSearchBtn(!locationInteractor.isAutodetect());
-        setSearchDone(searchInteractor.isSearchDone());
-        view.enableAutodetect(locationInteractor.isServicesAvailable());
+    }
 
-
-        disposables.add(searchInteractor.getSearchResults()
+    @Override
+    protected void onAttach(SearchView view) {
+        viewSubs.add(searchInteractor.getSearchResultObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Integer>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {
                     @Override
-                    public void onNext(Integer integer) {
-                        handleSearchResults(integer);
-                    }
-                }));
-
-        disposables.add(searchInteractor.isSearching()
-                .distinctUntilChanged()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
-                    @Override
-                    public void onNext(Boolean isSearching) {
-                        handleIsSearching(isSearching);
+                    public void onNext(SearchResult result) {
+                        handleSearchResult(result);
                     }
                 }));
     }
 
     public void selectCountry(String countryName) {
+        if (!hasView()) return;
         List<String> cities = locationInteractor.findCities(countryName);
         view.setCitySuggestions(cities);
         view.setCountryName(countryName);
     }
 
     public void selectCity(String city) {
+        if (!hasView()) return;
         String countryName = locationInteractor.findCountryName(city);
-        if (countryName != null) {
+        if (!countryName.isEmpty()) {
             view.setCountryName(countryName);
         }
+        // TODO: 5/17/18 set country suggestions
         view.setCity(city);
     }
 
-    @SuppressLint("CheckResult")
     public void enableAutodetect(boolean autodetect) {
-        searchInteractor.checkCanSearch()
-                .andThen(locationInteractor.checkCanGetLocation())
-                .andThen(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION))
-                .delay(300, TimeUnit.MILLISECONDS)
-                .doOnNext(enabled -> {
-                    // TODO: 4/27/18 add action that opens settings to the snackbar
-                    if (!enabled) view.showMessage(R.string.need_permission);
-                })
-                .map(enabled -> enabled && autodetect)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(enabled -> {
-                    setAutodetect(enabled);
-                    if (enabled) setSearchDone(true);
-                })
-                .filter(enabled -> enabled)
-                .flatMapCompletable(enabled -> searchInteractor.searchStations())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+        if (!autodetect) {
+            searchInteractor.resetSearch();
+            newSearchState();
+        } else {
+            dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+                    .doOnNext(enabled -> {
+                        // TODO: 4/27/18 add action that opens settings to the snackbar
+                        setAutodetect(enabled);
+                        if (!enabled) view.showMessage(R.string.need_permission);
+                    })
+                    .filter(enabled -> enabled)
+                    .flatMapCompletable(enabled -> searchInteractor.searchStations())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));
+        }
     }
 
 
-    @SuppressLint("CheckResult")
     public void refreshSearch() {
-        searchInteractor.checkCanSearch()
-                .doOnComplete(() -> {
-                    setSearchDone(true);
-                    view.resetSearchResult();
-                })
-                .andThen(searchInteractor.refreshStations())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+        dataSubs.add(searchInteractor.refreshStations()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));
     }
 
     public void search(String countryName, String city) {
-        if (!searchInteractor.isSearchDone()) {
+        if (!searchInteractor.getSearchState().isSearchDone()) {
             performSearch(countryName, city);
         } else {
-            newSearch();
+            searchInteractor.resetSearch();
+            newSearchState();
         }
     }
 
-    @SuppressLint("CheckResult")
     private void performSearch(String countryName, String city) {
+        if (countryName.isEmpty()) {
+            countryName = locationInteractor.findCountryName(city);
+            selectCountry(countryName);
+        }
         locationInteractor.saveCountryNameCity(countryName, city);
 
-        locationInteractor.checkCanSearch()
-                .andThen(searchInteractor.checkCanSearch())
-                .doOnComplete(() -> setSearchDone(true))
+        dataSubs.add(locationInteractor.checkCanSearch()
                 .andThen(searchInteractor.searchStations())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view));
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));
     }
 
-    private void newSearch() {
-        searchInteractor.resetSearch();
-        view.resetSearchResult();
-        setSearchDone(false);
-    }
+    private void handleSearchResult(SearchResult searchResult) {
+        switch (searchResult.state) {
+            case NOT_DONE:
+                newSearchState();
+                break;
+            case LOADING:
+                loadingState();
+                break;
+            case AUTO_DONE:
+            case MANUAL_DONE:
+                view.setSearchResult(searchResult.message);
+                selectCountry(locationInteractor.getCountryName());
+                view.setCity(locationInteractor.getCity());
 
-    private void handleSearchResults(Integer integer) {
-        view.setSearchResult(integer);
-        view.setCountryName(locationInteractor.getCountryName());
-        String city = locationInteractor.getCity();
-        view.setCity(city);
-    }
-
-    private void handleIsSearching(boolean isSearching) {
-        view.setSearching(isSearching);
-        if (!isSearching) {
-            view.enableSearch(true);
-            view.enableAutodetect(locationInteractor.isServicesAvailable());
-            if (!searchInteractor.isSearchDone()) {
-                handleFailedSearch();
-            }
-        } else {
-            view.enableSearch(false);
-            view.enableAutodetect(false);
-        }
-    }
-
-    private void handleFailedSearch() {
-        if (locationInteractor.isAutodetect()) {
-            setAutodetect(false);
-        } else {
-            newSearch();
+                if (searchResult.state == SearchResult.State.AUTO_DONE) {
+                    searchDoneAutoState();
+                } else {
+                    searchDoneManualState();
+                }
+                break;
         }
     }
 
     private void setAutodetect(boolean enabled) {
         locationInteractor.saveAutodetect(enabled);
         view.setAutodetect(enabled);
-        view.showSearchBtn(!enabled);
-        if (!enabled) newSearch();
     }
 
-    private void setSearchDone(boolean isSearchDone) {
-        view.setSearchDone(isSearchDone);
-        view.enableRefresh(isSearchDone);
+    private void newSearchState() {
+        view.resetSearchResult();
+        view.setSearchDone(false);
+        view.showSearchBtn(true);
+        setAutodetect(false);
+    }
+
+    private void loadingState() {
+        view.resetSearchResult();
+        view.setSearching(true);
+        view.enableAutodetect(false);
+        view.setSearchDone(true);
+        view.showSearchBtn(false);
+    }
+
+    private void searchDoneAutoState() {
+        view.setSearching(false);
+        view.enableAutodetect(locationInteractor.isServicesAvailable());
+        view.setSearchDone(true);
+        view.showSearchBtn(false);
+        view.setAutodetect(true);
+    }
+
+    private void searchDoneManualState() {
+        view.setSearching(false);
+        view.enableAutodetect(locationInteractor.isServicesAvailable());
+        view.setSearchDone(true);
+        view.showSearchBtn(true);
     }
 }

@@ -2,13 +2,13 @@ package io.github.vladimirmi.localradio.presentation.main;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
-import io.github.vladimirmi.localradio.domain.MainInteractor;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -16,12 +16,12 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class MainPresenter extends BasePresenter<MainView> {
 
-    private final PlayerControlInteractor controlInteractor;
+    private final PlayerControlsInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final MainInteractor mainInteractor;
 
     @Inject
-    MainPresenter(PlayerControlInteractor controlInteractor,
+    MainPresenter(PlayerControlsInteractor controlInteractor,
                   StationsInteractor stationsInteractor,
                   MainInteractor mainInteractor) {
         this.controlInteractor = controlInteractor;
@@ -30,22 +30,20 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     @Override
-    protected void onFirstAttach(MainView view) {
+    protected void onFirstAttach(MainView view, CompositeDisposable disposables) {
         controlInteractor.connect();
-        initPage(mainInteractor.getPagePosition());
 
+        initPage(mainInteractor.getPagePosition());
         disposables.add(mainInteractor.initApp()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnComplete(() -> {
-                    if (!mainInteractor.isHaveStations()) selectPage(MainActivity.PAGE_SEARCH);
-                })
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
     @Override
-    protected void onAttach(MainView view, boolean isFirstAttach) {
-        disposables.add(stationsInteractor.getCurrentStationObs()
-                .map(Station::isNullStation)
+    protected void onAttach(MainView view) {
+
+        viewSubs.add(stationsInteractor.getCurrentStationObs()
+                .map(station -> station.isNullObject)
                 .distinctUntilChanged()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
@@ -84,13 +82,13 @@ public class MainPresenter extends BasePresenter<MainView> {
         switch (position) {
             case MainActivity.PAGE_FAVORITE:
                 view.showFavorite();
-                if (!stationsInteractor.getCurrentStation().isNullStation()) {
+                if (!stationsInteractor.getCurrentStation().isNullObject) {
                     view.showControls(true);
                 }
                 break;
             case MainActivity.PAGE_STATIONS:
                 view.showStations();
-                if (!stationsInteractor.getCurrentStation().isNullStation()) {
+                if (!stationsInteractor.getCurrentStation().isNullObject) {
                     view.showControls(true);
                 }
                 break;

@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.lang.reflect.Field;
 
 import javax.inject.Inject;
 
@@ -18,12 +21,13 @@ import butterknife.ButterKnife;
 import io.github.vladimirmi.localradio.BuildConfig;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
+import timber.log.Timber;
 import toothpick.Toothpick;
 
 public class AboutActivity extends AppCompatActivity {
 
-    @Inject PlayerControlInteractor controlInteractor;
+    @Inject PlayerControlsInteractor controlInteractor;
 
     @BindView(R.id.toolbar) Toolbar toolbar;
     @BindView(R.id.versionTv) TextView versionTv;
@@ -32,6 +36,7 @@ public class AboutActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO: 6/2/18 make with fragment
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
         Toothpick.inject(this, Scopes.getAppScope());
@@ -46,6 +51,16 @@ public class AboutActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         new MenuInflater(this).inflate(R.menu.menu_exit, menu);
+        // TODO: 6/2/18 make with popup
+        if (menu instanceof MenuBuilder) {
+            try {
+                Field f = menu.getClass().getDeclaredField("mOptionalIconsVisible");
+                f.setAccessible(true);
+                f.setBoolean(menu, true);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+        }
         return super.onCreateOptionsMenu(menu);
     }
 

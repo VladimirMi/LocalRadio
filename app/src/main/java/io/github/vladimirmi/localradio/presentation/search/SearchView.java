@@ -24,15 +24,11 @@ public interface SearchView extends BaseView {
 
     void showSearchBtn(boolean visible);
 
-    void setSearchResult(int foundStations);
+    void setSearchResult(String result);
 
     void resetSearchResult();
 
     void setSearching(boolean enabled);
 
     void enableAutodetect(boolean enabled);
-
-    void enableSearch(boolean enabled);
-
-    void enableRefresh(boolean enabled);
 }

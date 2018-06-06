@@ -45,14 +45,13 @@ import timber.log.Timber;
 @Singleton
 public class LocationSource {
 
-    private static final long LOCATION_MAX_WAIT_TIME = 10000; //10 sec
+    private static final long LOCATION_MAX_WAIT_TIME = 5000; //5 sec
     private final FusedLocationProviderClient fusedLocationProviderClient;
     private final Geocoder geocoder;
     private final Context context;
     private final LocationRequest locationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_LOW_POWER)
             .setInterval(1000)
-            .setFastestInterval(500)
             .setNumUpdates(1);
 
     @SuppressWarnings("WeakerAccess")
@@ -60,7 +59,7 @@ public class LocationSource {
     public LocationSource(Context context) {
         this.context = context;
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        geocoder = new Geocoder(context, Locale.getDefault());
+        geocoder = new Geocoder(context, Locale.US);
     }
 
     public boolean isServicesAvailable() {
@@ -115,7 +114,16 @@ public class LocationSource {
     @SuppressLint("MissingPermission")
     private Single<Location> getLocation() {
 
-        return Single.create((SingleOnSubscribe<Location>) emitter -> {
+        Single<Location> lastLocation = Single.create(emitter -> fusedLocationProviderClient
+                .getLastLocation().addOnSuccessListener(location -> {
+                    if (location != null) {
+                        if (!emitter.isDisposed()) emitter.onSuccess(location);
+                    } else {
+                        emitter.tryOnError(new NoSuchElementException());
+                    }
+                }));
+
+        Single<Location> updateLocation = Single.create((SingleOnSubscribe<Location>) emitter -> {
             LocationCallback locationCallback = new LocationCallback() {
 
                 @Override
@@ -138,6 +146,8 @@ public class LocationSource {
                     .removeLocationUpdates(locationCallback)));
 
         }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new LocationTimeoutException()));
+
+        return lastLocation.onErrorResumeNext(updateLocation);
     }
 
 

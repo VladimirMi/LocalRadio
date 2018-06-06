@@ -4,12 +4,12 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.service.player.Metadata;
-import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.MainInteractor;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -20,7 +20,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
-    private final PlayerControlInteractor controlInteractor;
+    private final PlayerControlsInteractor controlInteractor;
     private final StationsInteractor stationsInteractor;
     private final FavoriteInteractor favoriteInteractor;
     private final MainInteractor mainInteractor;
@@ -28,7 +28,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public PlayerControlPresenter(PlayerControlInteractor controlInteractor,
+    public PlayerControlPresenter(PlayerControlsInteractor controlInteractor,
                                   StationsInteractor stationsInteractor,
                                   FavoriteInteractor favoriteInteractor,
                                   MainInteractor mainInteractor) {
@@ -39,11 +39,9 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     @Override
-    protected void onAttach(PlayerControlView view, boolean isFirstAttach) {
-        disposables.add(stationsInteractor.getCurrentStationObs()
+    protected void onAttach(PlayerControlView view) {
+        viewSubs.add(stationsInteractor.getCurrentStationObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(station -> view.setFavorite(station.isFavorite()))
-                .distinctUntilChanged(Station::getId)
                 .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
                     @Override
                     public void onNext(Station station) {
@@ -51,7 +49,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                     }
                 }));
 
-        disposables.add(controlInteractor.getPlaybackStateObs()
+        viewSubs.add(controlInteractor.getPlaybackStateObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
                     @Override
@@ -60,12 +58,21 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
                     }
                 }));
 
-        disposables.add(controlInteractor.getPlaybackMetadataObs()
+        viewSubs.add(controlInteractor.getPlaybackMetadataObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<Metadata>(view) {
                     @Override
                     public void onNext(Metadata metadata) {
                         handleMetadata(metadata);
+                    }
+                }));
+
+        viewSubs.add(favoriteInteractor.isCurrentStationFavorite()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
+                    @Override
+                    public void onNext(Boolean isFavorite) {
+                        view.setFavorite(isFavorite);
                     }
                 }));
     }
@@ -91,7 +98,7 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
         if (metadata.isSupported && !metadata.isEmpty) {
             view.setMetadata(metadata.toString());
         } else if (stationsInteractor.getCurrentStation() != null) {
-            view.setMetadata(stationsInteractor.getCurrentStation().getName());
+            view.setMetadata(stationsInteractor.getCurrentStation().name);
         }
     }
 
@@ -116,7 +123,11 @@ public class PlayerControlPresenter extends BasePresenter<PlayerControlView> {
     }
 
     public void switchFavorite() {
-        disposables.add(favoriteInteractor.switchCurrentFavorite()
+        viewSubs.add(favoriteInteractor.switchCurrentFavorite()
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+    }
+
+    public void stationIconClick() {
+        stationsInteractor.setCurrentStation(stationsInteractor.getCurrentStation());
     }
 }

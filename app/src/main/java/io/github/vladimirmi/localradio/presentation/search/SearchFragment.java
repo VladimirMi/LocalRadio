@@ -18,10 +18,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.custom.CustomArrayAdapter;
+import io.github.vladimirmi.localradio.custom.CustomAutoCompleteView;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
-import io.github.vladimirmi.localradio.utils.CustomArrayAdapter;
-import io.github.vladimirmi.localradio.utils.CustomAutoCompleteView;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -67,7 +67,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
-        autodetectCb.requestFocus();
         autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
         countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
         cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
@@ -84,8 +83,13 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             return true;
         });
 
-        searchBt.setOnClickListener(v -> presenter.search(countryEt.getText().toString(),
-                cityEt.getText().toString()));
+        searchBt.setOnClickListener(v -> {
+            countryEt.performValidation();
+            cityEt.performValidation();
+            String countryName = countryEt.getText().toString();
+            String city = cityEt.getText().toString();
+            presenter.search(countryName, city);
+        });
 
         loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
                 .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
@@ -154,6 +158,10 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         setVisible(clearCountryBt, !done);
         setVisible(clearCityBt, !done);
         searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
+
+        isRefreshEnabled = done;
+        //noinspection ConstantConditions
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -163,9 +171,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
 
     @Override
-    public void setSearchResult(int foundStations) {
-        String text = getResources().getQuantityString(R.plurals.search_result, foundStations, foundStations);
-        searchResultTv.setText(text);
+    public void setSearchResult(String result) {
+        searchResultTv.setText(result);
     }
 
     @Override
@@ -183,17 +190,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         autodetectCb.setEnabled(enabled);
     }
 
-    @Override
-    public void enableSearch(boolean enabled) {
-        searchBt.setEnabled(enabled);
-    }
-
-    @Override
-    public void enableRefresh(boolean enabled) {
-        isRefreshEnabled = enabled;
-        //noinspection ConstantConditions
-        getActivity().invalidateOptionsMenu();
-    }
 
     private void enableTextView(TextView view, boolean enable) {
         view.setEnabled(enable);

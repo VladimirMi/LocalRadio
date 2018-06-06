@@ -1,81 +1,83 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
-import android.support.v4.media.session.PlaybackStateCompat;
-
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.entity.Station;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.SearchInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
-import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.utils.RxUtils;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
  */
 
-public class StationsPresenter extends BasePresenter<StationsView> {
+public class StationsPresenter extends BaseStationsPresenter {
 
-    private final StationsInteractor stationsInteractor;
-    private final PlayerControlInteractor controlInteractor;
+    private final FavoriteInteractor favoriteInteractor;
     private final SearchInteractor searchInteractor;
 
     @Inject
     StationsPresenter(StationsInteractor stationsInteractor,
-                      PlayerControlInteractor controlInteractor,
-                      SearchInteractor searchInteractor) {
-        this.stationsInteractor = stationsInteractor;
-        this.controlInteractor = controlInteractor;
+                      PlayerControlsInteractor controlInteractor,
+                      FavoriteInteractor favoriteInteractor, SearchInteractor searchInteractor) {
+        super(stationsInteractor, controlInteractor);
+        this.favoriteInteractor = favoriteInteractor;
         this.searchInteractor = searchInteractor;
     }
 
     @Override
-    protected void onAttach(StationsView view, boolean isFirstAttach) {
-        disposables.add(stationsInteractor.getStationsObs()
+    protected void onAttach(StationsView view) {
+        super.onAttach(view);
+
+        viewSubs.add(favoriteInteractor.getFavoriteIds()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<List<Station>>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<Set<Integer>>(view) {
                     @Override
-                    public void onNext(List<Station> stations) {
-                        view.setStations(stations);
-                        decideShowPlaceholder(stations);
+                    public void onNext(Set<Integer> ids) {
+                        view.setFavorites(ids);
                     }
                 }));
 
-        disposables.add(stationsInteractor.getCurrentStationObs()
+        viewSubs.add(searchInteractor.getSearchResultObs()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Station>(view) {
+                .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {
                     @Override
-                    public void onNext(Station station) {
-                        view.selectStation(station);
-                    }
-                }));
-
-        disposables.add(controlInteractor.getPlaybackStateObs()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<PlaybackStateCompat>(view) {
-                    @Override
-                    public void onNext(PlaybackStateCompat state) {
-                        view.setSelectedPlaying(state.getState() == PlaybackStateCompat.STATE_PLAYING);
-                    }
-                }));
-
-        disposables.add(searchInteractor.isSearching()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
-                    @Override
-                    public void onNext(Boolean isSearching) {
-                        if (isSearching) view.hidePlaceholder();
-                        view.setSearching(isSearching);
+                    public void onNext(SearchResult result) {
+                        handleSearchResult(result);
                     }
                 }));
     }
 
-    public void selectStation(Station station) {
-        stationsInteractor.setCurrentStation(station);
+    @Override
+    protected Observable<List<Station>> getStations() {
+        return stationsInteractor.getFilteredStationsObs();
+    }
+
+    private void handleSearchResult(SearchResult result) {
+        if (result.state == SearchResult.State.LOADING) {
+            view.setSearching(true);
+            view.hidePlaceholder();
+        } else {
+            view.setSearching(false);
+            if (result.result == 0) {
+                view.showPlaceholder();
+            } else {
+                view.hidePlaceholder();
+            }
+        }
+    }
+
+    @Override
+    protected void handleStations(List<Station> stations) {
+        view.setStations(stations);
     }
 
     public void filterStations(String filter) {
@@ -84,13 +86,5 @@ public class StationsPresenter extends BasePresenter<StationsView> {
 
     public String getFilter() {
         return stationsInteractor.getFilter();
-    }
-
-    private void decideShowPlaceholder(List<Station> stations) {
-        if (stations.size() == 0) {
-            view.showPlaceholder();
-        } else {
-            view.hidePlaceholder();
-        }
     }
 }

@@ -1,32 +1,31 @@
 package io.github.vladimirmi.localradio.di;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.squareup.moshi.Moshi;
 
-import io.github.vladimirmi.localradio.data.db.StationDbHelper;
+import io.github.vladimirmi.localradio.data.db.AppDatabase;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
-import io.github.vladimirmi.localradio.data.repository.FavoriteRepository;
-import io.github.vladimirmi.localradio.data.repository.LocationRepository;
-import io.github.vladimirmi.localradio.data.repository.MediaController;
-import io.github.vladimirmi.localradio.data.repository.StationsRepository;
+import io.github.vladimirmi.localradio.data.repositories.FavoriteRepositoryImpl;
+import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
+import io.github.vladimirmi.localradio.data.repositories.PlayerControllerImpl;
+import io.github.vladimirmi.localradio.data.repositories.SearchRepositoryImpl;
+import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
 import io.github.vladimirmi.localradio.data.source.CacheSource;
-import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.LocationInteractor;
-import io.github.vladimirmi.localradio.domain.MainInteractor;
-import io.github.vladimirmi.localradio.domain.PlayerControlInteractor;
-import io.github.vladimirmi.localradio.domain.SearchInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
-import io.github.vladimirmi.localradio.presentation.favorite.FavoritePresenter;
-import io.github.vladimirmi.localradio.presentation.main.MainPresenter;
-import io.github.vladimirmi.localradio.presentation.playercontrol.PlayerControlPresenter;
-import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
-import io.github.vladimirmi.localradio.presentation.stations.StationsPresenter;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;
+import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
+import io.github.vladimirmi.localradio.domain.repositories.PlayerController;
+import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
+import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
 import okhttp3.OkHttpClient;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 import toothpick.config.Module;
@@ -53,27 +52,21 @@ public class AppModule extends Module {
         bind(RestService.class).toInstance(RestServiceProvider.getService(client, factory));
         bind(NetworkChecker.class).singletonInScope();
 
-        bind(SQLiteDatabase.class).toInstance(new StationDbHelper(context).getWritableDatabase());
-        bind(ContentResolver.class).toInstance(context.getContentResolver());
+        bind(AppDatabase.class).toInstance(AppDatabase.getInstance(context));
 
         bind(Preferences.class).singletonInScope();
 
-        bind(LocationRepository.class).singletonInScope();
-        bind(StationsRepository.class).singletonInScope();
-        bind(FavoriteRepository.class).singletonInScope();
-        bind(MediaController.class).singletonInScope();
+        bind(LocationRepository.class).to(LocationRepositoryImpl.class).singletonInScope();
+        bind(StationsRepository.class).to(StationsRepositoryImpl.class).singletonInScope();
+        bind(SearchRepository.class).to(SearchRepositoryImpl.class).singletonInScope();
+        bind(FavoriteRepository.class).to(FavoriteRepositoryImpl.class).singletonInScope();
+        bind(PlayerController.class).to(PlayerControllerImpl.class).singletonInScope();
 
         bind(FavoriteInteractor.class).singletonInScope();
-        bind(PlayerControlInteractor.class).singletonInScope();
+        bind(PlayerControlsInteractor.class).singletonInScope();
         bind(SearchInteractor.class).singletonInScope();
         bind(LocationInteractor.class).singletonInScope();
         bind(StationsInteractor.class).singletonInScope();
         bind(MainInteractor.class).singletonInScope();
-
-        bind(FavoritePresenter.class).singletonInScope();
-        bind(PlayerControlPresenter.class).singletonInScope();
-        bind(SearchPresenter.class).singletonInScope();
-        bind(StationsPresenter.class).singletonInScope();
-        bind(MainPresenter.class).singletonInScope();
     }
 }

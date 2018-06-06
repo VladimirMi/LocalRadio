@@ -21,17 +21,20 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Station;
 import io.github.vladimirmi.localradio.data.reciever.PlayerWidget;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.FavoriteInteractor;
-import io.github.vladimirmi.localradio.domain.MainInteractor;
-import io.github.vladimirmi.localradio.domain.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
+import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.utils.ImageUtils;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.github.vladimirmi.localradio.utils.UiUtils;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import toothpick.Toothpick;
 
@@ -41,6 +44,7 @@ import toothpick.Toothpick;
 
 public class PlayerService extends MediaBrowserServiceCompat implements SessionCallback.Interface {
 
+    @Inject SearchInteractor searchInteractor;
     @Inject StationsInteractor stationsInteractor;
     @Inject FavoriteInteractor favoriteInteractor;
     @Inject MainInteractor mainInteractor;
@@ -57,11 +61,10 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private boolean serviceStarted = false;
     private int currentStationId;
     private int playingStationId;
-    private final CompositeDisposable compDisp = new CompositeDisposable();
+    private CompositeDisposable subs = new CompositeDisposable();
     private final Timer stopTimer = new Timer();
     private TimerTask stopTask;
 
-    private volatile boolean appInitialized;
 
     @Override
     public void onCreate() {
@@ -72,17 +75,16 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
         playback = new Playback(this, playerCallback);
         notification = new MediaNotification(this, session);
 
-        compDisp.add(stationsInteractor.getCurrentStationObs()
+        subs.add(mainInteractor.initApp()
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(this)));
+
+        subs.add(stationsInteractor.getCurrentStationObs()
+                .distinctUntilChanged()
                 .observeOn(Schedulers.io())
-                .distinctUntilChanged(Station::getId)
-                .doOnNext(station -> {
-                    appInitialized = true;
-                    handleCurrentStation(station);
-                })
-                .switchMap(station -> UiUtils.loadBitmapForStation(this, station))
+                .doOnNext(this::handleCurrentStation)
+                .switchMap(station -> ImageUtils.loadBitmapForStation(this, station))
                 .doOnNext(this::handleStationIcon)
-                .subscribe()
-        );
+                .subscribe());
     }
 
     private void initSession() {
@@ -92,42 +94,32 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                 MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         session.setPlaybackState(playbackState);
         session.setMetadata(mediaMetadata);
+        session.setSessionActivity(PlayerActions.sessionActivity(this));
         setSessionToken(session.getSessionToken());
     }
 
+    private Disposable waitSearch;
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null) return START_NOT_STICKY;
         notification.startForeground();
         serviceStarted = true;
         session.setActive(true);
 
         if (isPaused()) scheduleStopTask(Playback.STOP_DELAY);
 
-        if (!appInitialized) {
-            initApp(intent);
-        } else if (mainInteractor.isHaveStations()) {
-            handleIntent(intent);
+        if (!mainInteractor.isFavoritePage() && waitSearch == null) {
+            waitSearch = searchInteractor.getSearchResultObs()
+                    .map(SearchResult::isSearchDone)
+                    .filter(aBoolean -> aBoolean)
+                    .firstOrError().toCompletable()
+                    .subscribe(() -> handleIntent(intent));
         } else {
-            stopForeground();
+            handleIntent(intent);
         }
-        return super.onStartCommand(intent, flags, startId);
-    }
 
-    private void initApp(Intent intent) {
-        compDisp.add(mainInteractor.initApp()
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnError(e -> stopForeground())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(this) {
-                    @Override
-                    public void onComplete() {
-                        appInitialized = true;
-                        if (mainInteractor.isHaveStations()) {
-                            handleIntent(intent);
-                        } else {
-                            stopForeground();
-                        }
-                    }
-                }));
+        return START_NOT_STICKY;
     }
 
     private void stopForeground() {
@@ -137,7 +129,8 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onDestroy() {
-        compDisp.dispose();
+        subs.dispose();
+        if (waitSearch != null) waitSearch.dispose();
         serviceStarted = false;
         session.setActive(false);
         onStopCommand();
@@ -163,14 +156,14 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     private void handleCurrentStation(Station station) {
-        currentStationId = station.getId();
+        currentStationId = station.id;
         if (isPlayed() && currentStationId != playingStationId) playCurrent();
 
         clearMetadata();
         mediaMetadata = new MediaMetadataCompat.Builder(mediaMetadata)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.getName())
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, station.name)
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART,
-                        UiUtils.textAsBitmap(this, station.getName()))
+                        ImageUtils.textAsBitmap(this, station.name))
                 .build();
         session.setMetadata(mediaMetadata);
         updateRemoteViews();
@@ -197,9 +190,9 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private void playCurrent() {
         Station station = stationsInteractor.getCurrentStation();
-        if (station.isNullStation()) return;
-        playingStationId = station.getId();
-        playback.play(Uri.parse(station.getUrl()));
+        if (station.isNullObject) return;
+        playingStationId = station.id;
+        playback.play(Uri.parse(station.url));
     }
 
     //region =============== Session callbacks ==============
@@ -229,7 +222,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToPreviousCommand() {
-        if (stationsInteractor.getCurrentStation().isFavorite()) {
+        if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.previousStation();
         } else {
             stationsInteractor.previousStation();
@@ -238,7 +231,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onSkipToNextCommand() {
-        if (stationsInteractor.getCurrentStation().isFavorite()) {
+        if (mainInteractor.isFavoritePage()) {
             favoriteInteractor.nextStation();
         } else {
             stationsInteractor.nextStation();
@@ -305,10 +298,13 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     }
 
     private void handleIntent(Intent intent) {
+
         if (intent != null && PlayerWidget.ACTION_WIDGET_UPDATE.equals(intent.getAction())) {
             updateRemoteViews();
-        } else {
+        } else if (mainInteractor.isHaveStations()) {
             MediaButtonReceiver.handleIntent(session, intent);
+        } else {
+            stopForeground();
         }
     }
 }

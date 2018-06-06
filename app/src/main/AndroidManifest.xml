@@ -3,7 +3,7 @@
           package="io.github.vladimirmi.localradio">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
@@ -40,20 +40,12 @@
                 <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
-        <service
-            android:name=".data.service.search.SearchService"
-            android:exported="false"/>
 
         <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
             </intent-filter>
         </receiver>
-
-        <provider
-            android:name=".data.db.StationContentProvider"
-            android:authorities="${applicationId}"
-            android:exported="false"/>
 
         <receiver android:name=".data.reciever.PlayerWidget">
             <intent-filter>

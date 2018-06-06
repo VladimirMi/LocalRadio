@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Country;
+import io.github.vladimirmi.localradio.data.models.Country;
 import io.github.vladimirmi.localradio.di.Scopes;
 
 /**

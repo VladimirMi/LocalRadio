@@ -13,11 +13,12 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.entity.Station;
+import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
-import io.github.vladimirmi.localradio.utils.NonSwipeableViewPager;
-import io.github.vladimirmi.localradio.utils.UiUtils;
+import io.github.vladimirmi.localradio.utils.AnimUtils;
+import io.github.vladimirmi.localradio.utils.ImageUtils;
 import io.github.vladimirmi.playerbutton.PlayerButton;
 
 /**
@@ -25,6 +26,9 @@ import io.github.vladimirmi.playerbutton.PlayerButton;
  */
 
 public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> implements PlayerControlView {
+
+    private static final int NAV_BTN_VELOCITY = 200; // dp/sec
+    private static final int FAV_VELOCITY = 4; // dp/sec
 
     @BindView(R.id.root) ConstraintLayout root;
     @BindView(R.id.iconIv) ImageView iconIv;
@@ -44,7 +48,6 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     @BindView(R.id.emailTv) TextView emailTv;
     @BindView(R.id.phoneTv) TextView phoneTv;
 
-
     @Override
     protected int getLayout() {
         return R.layout.fragment_player_controls;
@@ -57,11 +60,22 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @Override
     protected void setupView(View view) {
+
         metadataTv.setSelected(true);
         playPauseBt.setOnClickListener(v -> presenter.playPause());
-        previousBt.setOnClickListener(v -> presenter.skipToPrevious());
-        nextBt.setOnClickListener(v -> presenter.skipToNext());
-        favoriteBt.setOnClickListener(v -> presenter.switchFavorite());
+        previousBt.setOnClickListener(v -> {
+            AnimUtils.getBounceAnimation(previousBt, -NAV_BTN_VELOCITY).start();
+            presenter.skipToPrevious();
+        });
+        nextBt.setOnClickListener(v -> {
+            AnimUtils.getBounceAnimation(nextBt, NAV_BTN_VELOCITY).start();
+            presenter.skipToNext();
+        });
+        favoriteBt.setOnClickListener(v -> {
+            favAnimate();
+            presenter.switchFavorite();
+        });
+        iconIv.setOnClickListener(v -> presenter.stationIconClick());
 
         playPauseBt.setManualMode(true);
         loadingPb.getIndeterminateDrawable().mutate().setColorFilter(getResources()
@@ -72,17 +86,17 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     public void setStation(Station station) {
         animateStationInfoLayout();
 
-        UiUtils.loadImageInto(iconIv, station);
+        ImageUtils.loadImageInto(iconIv, station);
 
-        setTextOrHideIfEmpty(titleTv, station.getName());
-        setTextOrHideIfEmpty(bandTv, station.getBandString());
-        setTextOrHideIfEmpty(sloganTv, station.getSlogan());
-        setTextOrHideIfEmpty(descriptionTv, station.getDescription());
-        setTextOrHideIfEmpty(genreTv, station.getGenre());
-        setTextOrHideIfEmpty(websiteTv, station.getWebsiteUrl());
-        setTextOrHideIfEmpty(emailTv, station.getEmail());
-        setTextOrHideIfEmpty(phoneTv, station.getPhone());
-        setTextOrHideIfEmpty(locationTv, station.getLocationString());
+        setTextOrHideIfEmpty(titleTv, station.name);
+        setTextOrHideIfEmpty(bandTv, station.bandString);
+        setTextOrHideIfEmpty(sloganTv, station.slogan);
+        setTextOrHideIfEmpty(descriptionTv, station.description);
+        setTextOrHideIfEmpty(genreTv, station.genre);
+        setTextOrHideIfEmpty(websiteTv, station.websiteUrl);
+        setTextOrHideIfEmpty(emailTv, station.email);
+        setTextOrHideIfEmpty(phoneTv, station.phone);
+        setTextOrHideIfEmpty(locationTv, station.locationString);
 
     }
 
@@ -112,6 +126,11 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
     public void showStopped() {
         playPauseBt.setPlaying(false);
         loadingPb.setVisibility(View.GONE);
+    }
+
+    private void favAnimate() {
+        AnimUtils.getScaleXAnimation(favoriteBt, FAV_VELOCITY).start();
+        AnimUtils.getScaleYAnimation(favoriteBt, FAV_VELOCITY).start();
     }
 
     private void animateStationInfoLayout() {

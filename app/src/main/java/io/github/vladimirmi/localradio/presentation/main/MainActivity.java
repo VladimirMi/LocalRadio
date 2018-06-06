@@ -13,18 +13,23 @@ import android.support.transition.TransitionManager;
 import android.support.transition.Visibility;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.reflect.Field;
+
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.about.AboutActivity;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
-import io.github.vladimirmi.localradio.utils.NonSwipeableViewPager;
+import timber.log.Timber;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 
@@ -59,6 +64,21 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
             }
         }
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // TODO: 6/2/18 make with popup
+        if (menu instanceof MenuBuilder) {
+            try {
+                Field f = menu.getClass().getDeclaredField("mOptionalIconsVisible");
+                f.setAccessible(true);
+                f.setBoolean(menu, true);
+            } catch (Exception e) {
+                Timber.e(e);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override

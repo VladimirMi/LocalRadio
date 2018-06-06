@@ -27,8 +27,8 @@
     <string name="error_connection">Ошибка соединения</string>
     <string name="error_renderer">Не поддерживаемый аудиопоток</string>
     <string name="error_unexpected">Непредвиденная ошибка</string>
-    <string name="search_result_empty">Результаты поиска пусты</string>
-    <string name="favorites_empty">Список избранного пуст</string>
+    <string name="placeholder_search_result">Результаты поиска пусты</string>
+    <string name="placeholder_favorites">Список избранного пуст</string>
     <string name="project_page">Страница проекта</string>
     <string name="developer">Разработчик</string>
     <string name="version">Версия</string>
@@ -41,4 +41,8 @@
     <string name="desc_clear_country_field">очистить полк страны</string>
     <string name="desc_clear_city_field">очистить поле города</string>
     <string name="desc_station_icon">Иконка станции</string>
+    <string name="search_result_one">%d станция найдена</string>
+    <string name="search_result_other">%d станций найдено</string>
+    <string name="search_result_radius_one">%d станция найдена в радиусе 80 километров</string>
+    <string name="search_result_radius_other">%d станций найдено в радиусе 80 километров</string>
 </resources>

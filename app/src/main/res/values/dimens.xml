@@ -1,5 +1,6 @@
 <resources>
-
     <dimen name="player_controls_height">88dp</dimen>
-    <dimen name="icon_size">72dp</dimen>
+    <dimen name="icon_size">68dp</dimen>
+    <dimen name="item_card_radius">6dp</dimen>
+    <dimen name="item_card_elevation">2dp</dimen>
 </resources>
