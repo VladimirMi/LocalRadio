@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.squareup.moshi.Moshi;
 
-import io.github.vladimirmi.localradio.data.db.AppDatabase;
+import io.github.vladimirmi.localradio.data.db.favorite.AppDatabase;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;

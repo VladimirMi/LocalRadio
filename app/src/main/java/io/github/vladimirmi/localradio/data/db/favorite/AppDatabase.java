@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.data.db;
+package io.github.vladimirmi.localradio.data.db.favorite;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
