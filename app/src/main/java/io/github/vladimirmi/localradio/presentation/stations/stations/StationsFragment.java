@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.stations;
+package io.github.vladimirmi.localradio.presentation.stations.stations;
 
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -11,6 +11,7 @@ import java.util.List;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsFragment;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.

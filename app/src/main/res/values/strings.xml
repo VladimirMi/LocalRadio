@@ -66,5 +66,6 @@
         <item quantity="one">@string/search_result_radius_one</item>
         <item quantity="other">@string/search_result_radius_other</item>
     </plurals>
+    <string name="title_activity_maps">Map</string>
 
 </resources>

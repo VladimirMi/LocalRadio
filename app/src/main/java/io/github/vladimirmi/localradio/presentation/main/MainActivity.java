@@ -7,11 +7,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.TabLayout;
 import android.support.transition.Slide;
 import android.support.transition.TransitionManager;
 import android.support.transition.Visibility;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
@@ -29,17 +27,13 @@ import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.about.AboutActivity;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
+import io.github.vladimirmi.localradio.presentation.search.SearchFragment;
+import io.github.vladimirmi.localradio.presentation.stations.StationsPagerFragment;
 import timber.log.Timber;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 
-    public static final int PAGE_FAVORITE = 0;
-    public static final int PAGE_STATIONS = 1;
-    public static final int PAGE_SEARCH = 2;
-
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.tabs) TabLayout tabs;
-    @BindView(R.id.viewPager) ViewPager viewPager;
     @BindView(R.id.playerControlsFr) View playerControlsFr;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
@@ -64,6 +58,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
             }
         }
         super.onCreate(savedInstanceState);
+        showStations();
     }
 
     @Override
@@ -98,34 +93,21 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     protected void setupView() {
         setSupportActionBar(toolbar);
 
-        SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        viewPager.setOffscreenPageLimit(2);
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
-        tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                presenter.selectPage(tab.getPosition());
-            }
-        });
-
         bottomSheetBehavior = BottomSheetBehavior.from(playerControlsFr);
     }
 
     @Override
-    public void showFavorite() {
-        viewPager.setCurrentItem(PAGE_FAVORITE);
-    }
-
-    @Override
     public void showStations() {
-        viewPager.setCurrentItem(PAGE_STATIONS);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.contentContainer, new StationsPagerFragment())
+                .commit();
     }
 
     @Override
     public void showSearch() {
-        viewPager.setCurrentItem(PAGE_SEARCH);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.contentContainer, new SearchFragment())
+                .commit();
     }
 
     private void showAbout() {

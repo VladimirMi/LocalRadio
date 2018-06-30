@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.stations;
+package io.github.vladimirmi.localradio.presentation.stations.base;
 
 import java.util.List;
 import java.util.Set;

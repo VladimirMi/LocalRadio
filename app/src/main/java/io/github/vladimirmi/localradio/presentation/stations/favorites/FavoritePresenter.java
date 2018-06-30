@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.favorite;
+package io.github.vladimirmi.localradio.presentation.stations.favorites;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.Station;
-import io.github.vladimirmi.localradio.presentation.stations.BaseStationsPresenter;
+import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsPresenter;
 import io.reactivex.Observable;
 
 /**

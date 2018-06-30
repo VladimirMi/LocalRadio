@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.favorite;
+package io.github.vladimirmi.localradio.presentation.stations.favorites;
 
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -7,7 +7,7 @@ import android.view.View;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
-import io.github.vladimirmi.localradio.presentation.stations.BaseStationsFragment;
+import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsFragment;
 
 /**
  * Created by Vladimir Mikhalev 13.04.2018.

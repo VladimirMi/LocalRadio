@@ -33,7 +33,6 @@ public class MainPresenter extends BasePresenter<MainView> {
     protected void onFirstAttach(MainView view, CompositeDisposable disposables) {
         controlInteractor.connect();
 
-        initPage(mainInteractor.getPagePosition());
         disposables.add(mainInteractor.initApp()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
@@ -52,17 +51,11 @@ public class MainPresenter extends BasePresenter<MainView> {
                         handleIsNullStation(isNull);
                     }
                 }));
-
     }
 
     @Override
     protected void onDestroy() {
         controlInteractor.disconnect();
-    }
-
-    public void selectPage(int position) {
-        mainInteractor.savePagePosition(position);
-        if (hasView()) initPage(position);
     }
 
     public void exit() {
@@ -75,27 +68,6 @@ public class MainPresenter extends BasePresenter<MainView> {
             view.hideControls(false);
         } else if (!mainInteractor.isSearchPage()) {
             view.showControls(false);
-        }
-    }
-
-    private void initPage(int position) {
-        switch (position) {
-            case MainActivity.PAGE_FAVORITE:
-                view.showFavorite();
-                if (!stationsInteractor.getCurrentStation().isNullObject) {
-                    view.showControls(true);
-                }
-                break;
-            case MainActivity.PAGE_STATIONS:
-                view.showStations();
-                if (!stationsInteractor.getCurrentStation().isNullObject) {
-                    view.showControls(true);
-                }
-                break;
-            case MainActivity.PAGE_SEARCH:
-                view.showSearch();
-                view.hideControls(true);
-                break;
         }
     }
 }

@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.stations;
+package io.github.vladimirmi.localradio.presentation.stations.stations;
 
 import java.util.List;
 import java.util.Set;
@@ -11,6 +11,8 @@ import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsPresenter;
+import io.github.vladimirmi.localradio.presentation.stations.base.StationsView;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;

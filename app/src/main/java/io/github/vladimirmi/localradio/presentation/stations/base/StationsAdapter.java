@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.stations;
+package io.github.vladimirmi.localradio.presentation.stations.base;
 
 import android.graphics.PorterDuff;
 import android.os.Build;

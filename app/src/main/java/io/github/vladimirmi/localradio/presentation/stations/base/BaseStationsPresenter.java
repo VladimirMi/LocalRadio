@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.stations;
+package io.github.vladimirmi.localradio.presentation.stations.base;
 
 import android.support.v4.media.session.PlaybackStateCompat;
 

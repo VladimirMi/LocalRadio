@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.stations;
+package io.github.vladimirmi.localradio.presentation.stations.base;
 
 import android.graphics.PorterDuff;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,9 +22,9 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 public abstract class BaseStationsFragment<P extends BasePresenter> extends BaseFragment<P>
         implements StationsView, StationsAdapter.onStationListener {
 
-    @BindView(R.id.stationList) RecyclerView stationList;
-    @BindView(R.id.placeholder) TextView placeholder;
-    @BindView(R.id.loadingPb) ProgressBar loadingPb;
+    protected @BindView(R.id.stationList) RecyclerView stationList;
+    protected @BindView(R.id.placeholder) TextView placeholder;
+    protected @BindView(R.id.loadingPb) ProgressBar loadingPb;
 
     protected StationsAdapter stationsAdapter;
     protected LinearLayoutManager layoutManager;

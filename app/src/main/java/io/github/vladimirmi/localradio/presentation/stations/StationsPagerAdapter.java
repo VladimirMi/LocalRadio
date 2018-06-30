@@ -1,20 +1,19 @@
-package io.github.vladimirmi.localradio.presentation.main;
+package io.github.vladimirmi.localradio.presentation.stations;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import io.github.vladimirmi.localradio.presentation.favorite.FavoriteFragment;
-import io.github.vladimirmi.localradio.presentation.search.SearchFragment;
-import io.github.vladimirmi.localradio.presentation.stations.StationsFragment;
+import io.github.vladimirmi.localradio.presentation.stations.favorites.FavoriteFragment;
+import io.github.vladimirmi.localradio.presentation.stations.stations.StationsFragment;
 
 /**
  * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class StationsPagerAdapter extends FragmentPagerAdapter {
 
-    public SectionsPagerAdapter(FragmentManager fm) {
+    public StationsPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -25,8 +24,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                 return new FavoriteFragment();
             case 1:
                 return new StationsFragment();
-            case 2:
-                return new SearchFragment();
             default:
                 throw new IllegalStateException();
         }
@@ -34,6 +31,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 }

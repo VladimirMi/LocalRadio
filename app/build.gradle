@@ -76,6 +76,7 @@ dependencies {
 
     //Play services
     implementation "com.google.android.gms:play-services-location:$PLAY_SERVICES_VERSION"
+    implementation "com.google.android.gms:play-services-maps:$PLAY_SERVICES_VERSION"
 
     //ExoPlayer
     implementation "com.google.android.exoplayer:exoplayer-core:2.7.1"
