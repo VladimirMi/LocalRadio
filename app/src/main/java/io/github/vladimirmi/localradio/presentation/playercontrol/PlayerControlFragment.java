@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
@@ -135,7 +134,8 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     private void animateStationInfoLayout() {
         ChangeBounds transition = new ChangeBounds();
-        transition.setDuration(NonSwipeableViewPager.ANIMATION_DURATION);
+        // TODO: 6/30/18 check duration
+        transition.setDuration(200);
         transition.addTarget(root);
         transition.setInterpolator(new FastOutSlowInInterpolator());
         TransitionManager.beginDelayedTransition(root, transition);

@@ -23,7 +23,6 @@ import java.lang.reflect.Field;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.about.AboutActivity;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
@@ -146,9 +145,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @NonNull
     private Slide createSlideTransition(boolean horizontal) {
+        // TODO: 6/30/18 remake
         Slide slide = new Slide();
         slide.setSlideEdge(horizontal ? Gravity.START : Gravity.BOTTOM);
-        slide.setDuration(NonSwipeableViewPager.ANIMATION_DURATION);
+        slide.setDuration(200);
         slide.addTarget(playerControlsFr);
         slide.setInterpolator(new FastOutSlowInInterpolator());
         return slide;

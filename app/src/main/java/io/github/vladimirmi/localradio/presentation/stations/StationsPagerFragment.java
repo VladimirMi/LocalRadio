@@ -1,11 +1,11 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 
@@ -18,7 +18,7 @@ public class StationsPagerFragment extends BaseFragment<StationsPagerPresenter> 
     public static final int PAGE_STATIONS = 1;
 
     @BindView(R.id.tabs) TabLayout tabs;
-    @BindView(R.id.viewPager) NonSwipeableViewPager viewPager;
+    @BindView(R.id.viewPager) ViewPager viewPager;
 
     @Override
     protected int getLayout() {

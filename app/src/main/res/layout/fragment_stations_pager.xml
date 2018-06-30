@@ -27,7 +27,7 @@
     </android.support.design.widget.TabLayout>
 
 
-    <io.github.vladimirmi.localradio.custom.NonSwipeableViewPager
+    <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
