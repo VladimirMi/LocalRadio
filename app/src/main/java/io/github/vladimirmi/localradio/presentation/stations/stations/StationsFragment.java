@@ -36,7 +36,7 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_stations, menu);
 
-        searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.action_filter).getActionView();
         searchView.setOnQueryTextListener(this);
         searchView.setQueryHint(getString(R.string.filter));
         String filter = presenter.getFilter();

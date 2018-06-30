@@ -82,6 +82,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
             showAbout();
             return true;
 
+        } else if (item.getItemId() == R.id.action_search) {
+            showSearch();
+            return true;
+
         } else if (item.getItemId() == R.id.action_exit) {
             exit();
             return true;
@@ -100,6 +104,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     public void showStations() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentContainer, new StationsPagerFragment())
+                .addToBackStack(null)
                 .commit();
     }
 
@@ -107,6 +112,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     public void showSearch() {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentContainer, new SearchFragment())
+                .addToBackStack(null)
                 .commit();
     }
 
