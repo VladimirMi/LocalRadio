@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.search;
+package io.github.vladimirmi.localradio.presentation.search.manual;
 
 import android.Manifest;
 
@@ -19,26 +19,26 @@ import io.reactivex.disposables.CompositeDisposable;
  * Created by Vladimir Mikhalev 03.04.2018.
  */
 
-public class SearchPresenter extends BasePresenter<SearchView> {
+public class SearchManualPresenter extends BasePresenter<SearchManualView> {
 
     private final LocationInteractor locationInteractor;
     private final SearchInteractor searchInteractor;
 
     @Inject
-    SearchPresenter(LocationInteractor locationInteractor,
-                    SearchInteractor searchInteractor) {
+    SearchManualPresenter(LocationInteractor locationInteractor,
+                          SearchInteractor searchInteractor) {
         this.locationInteractor = locationInteractor;
         this.searchInteractor = searchInteractor;
     }
 
     @Override
-    protected void onFirstAttach(SearchView view, CompositeDisposable disposables) {
+    protected void onFirstAttach(SearchManualView view, CompositeDisposable disposables) {
         view.setCountrySuggestions(locationInteractor.getCountriesName());
         view.setAutodetect(locationInteractor.isAutodetect());
     }
 
     @Override
-    protected void onAttach(SearchView view) {
+    protected void onAttach(SearchManualView view) {
         viewSubs.add(searchInteractor.getSearchResultObs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {

@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.search;
+package io.github.vladimirmi.localradio.presentation.search.manual;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -27,7 +27,7 @@ import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
  * Created by Vladimir Mikhalev 03.04.2018.
  */
 
-public class SearchFragment extends BaseFragment<SearchPresenter> implements SearchView {
+public class SearchManualFragment extends BaseFragment<SearchManualPresenter> implements SearchManualView {
 
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
@@ -46,8 +46,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     }
 
     @Override
-    protected SearchPresenter providePresenter() {
-        return Scopes.getAppScope().getInstance(SearchPresenter.class);
+    protected SearchManualPresenter providePresenter() {
+        return Scopes.getAppScope().getInstance(SearchManualPresenter.class);
     }
 
     @Override

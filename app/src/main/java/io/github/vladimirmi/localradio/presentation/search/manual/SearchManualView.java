@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.presentation.search;
+package io.github.vladimirmi.localradio.presentation.search.manual;
 
 import java.util.List;
 
@@ -8,7 +8,7 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
  * Created by Vladimir Mikhalev 03.04.2018.
  */
 
-public interface SearchView extends BaseView {
+public interface SearchManualView extends BaseView {
 
     void setCountrySuggestions(List<String> countries);
 
