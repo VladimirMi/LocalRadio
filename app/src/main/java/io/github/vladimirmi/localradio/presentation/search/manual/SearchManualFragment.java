@@ -42,7 +42,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 
     @Override
     protected int getLayout() {
-        return R.layout.fragment_search;
+        return R.layout.fragment_search_manual;
     }
 
     @Override

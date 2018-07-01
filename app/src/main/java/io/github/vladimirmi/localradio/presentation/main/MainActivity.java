@@ -26,7 +26,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.about.AboutActivity;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
-import io.github.vladimirmi.localradio.presentation.search.manual.SearchManualFragment;
+import io.github.vladimirmi.localradio.presentation.search.SearchFragment;
 import io.github.vladimirmi.localradio.presentation.stations.StationsPagerFragment;
 import timber.log.Timber;
 
@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     public void showSearch() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.contentContainer, new SearchManualFragment())
+                .replace(R.id.contentContainer, new SearchFragment())
                 .addToBackStack(null)
                 .commit();
     }
