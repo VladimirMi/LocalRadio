@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import io.github.vladimirmi.localradio.presentation.search.manual.SearchManualFragment;
+import io.github.vladimirmi.localradio.presentation.search.map.SearchMapFragment;
 
 /**
  * Created by Vladimir Mikhalev 01.07.2018.
@@ -24,7 +25,7 @@ public class SearchPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new SearchManualFragment();
+                return new SearchMapFragment();
             case 1:
                 return new SearchManualFragment();
             default:
