@@ -9,7 +9,7 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity(tableName = "locations")
 public class LocationEntity {
 
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int id;
     public String name;
     public float latitude;
@@ -22,3 +22,4 @@ public class LocationEntity {
     public LocationEntity() {
     }
 }
+

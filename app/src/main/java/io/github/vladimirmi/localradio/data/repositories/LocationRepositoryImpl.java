@@ -27,7 +27,7 @@ public class LocationRepositoryImpl implements LocationRepository {
     private final CountrySource countrySource;
     private final Preferences preferences;
     private final LocationSource locationSource;
-    private final LocationsDao dao;
+    private final LocationsDao locationsDao;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -38,7 +38,7 @@ public class LocationRepositoryImpl implements LocationRepository {
         this.countrySource = countrySource;
         this.preferences = preferences;
         this.locationSource = locationSource;
-        this.dao = database.locationsDao();
+        this.locationsDao = database.locationsDao();
     }
 
     @Override
@@ -95,6 +95,6 @@ public class LocationRepositoryImpl implements LocationRepository {
 
     @Override
     public List<LocationEntity> getLocations() {
-        return dao.findAll();
+        return locationsDao.findAll();
     }
 }

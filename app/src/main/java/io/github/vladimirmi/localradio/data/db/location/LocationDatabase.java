@@ -18,14 +18,16 @@ import timber.log.Timber;
 @Database(entities = {LocationEntity.class}, version = 1)
 public abstract class LocationDatabase extends RoomDatabase {
 
-    private static final String DB_NAME = "location_db";
+    private static final String DB_NAME = "locations.db";
 
     public abstract LocationsDao locationsDao();
 
     public static LocationDatabase getInstance(Context context) {
         tryCopyDatabaseFile(context);
         return Room.databaseBuilder(context.getApplicationContext(),
-                LocationDatabase.class, DB_NAME).build();
+                LocationDatabase.class, DB_NAME)
+                .allowMainThreadQueries() // TODO: 7/3/18 remove
+                .build();
     }
 
     private static void tryCopyDatabaseFile(Context context) {

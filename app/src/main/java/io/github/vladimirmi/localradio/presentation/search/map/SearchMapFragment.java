@@ -7,10 +7,14 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.maps.android.clustering.ClusterManager;
+
+import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 
 /**
@@ -24,6 +28,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.countryRBtn) RadioButton countryRBtn;
     @BindView(R.id.selectionRg) RadioGroup selectionRg;
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
+    private ClusterManager<LocationCluster> clusterManager;
 
     @Override
     protected int getLayout() {
@@ -46,7 +51,21 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(GoogleMap map) {
+        //noinspection ConstantConditions
+        clusterManager = new ClusterManager<>(getContext(), map);
+        map.setOnCameraIdleListener(clusterManager);
+        map.setOnMarkerClickListener(clusterManager);
+
         presenter.onMapReady();
     }
+
+    //region =============== SearchMapView ==============
+
+    @Override
+    public void setClusterItems(List<LocationCluster> clusters) {
+        clusterManager.addItems(clusters);
+    }
+
+    //endregion
 }
