@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.data.db.location.LocationDatabase;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
+import io.github.vladimirmi.localradio.data.db.location.LocationsDao;
 import io.github.vladimirmi.localradio.data.models.Country;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.CountrySource;
@@ -24,15 +27,18 @@ public class LocationRepositoryImpl implements LocationRepository {
     private final CountrySource countrySource;
     private final Preferences preferences;
     private final LocationSource locationSource;
+    private final LocationsDao dao;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
     public LocationRepositoryImpl(CountrySource countrySource,
                                   Preferences preferences,
-                                  LocationSource locationSource) {
+                                  LocationSource locationSource,
+                                  LocationDatabase database) {
         this.countrySource = countrySource;
         this.preferences = preferences;
         this.locationSource = locationSource;
+        this.dao = database.locationsDao();
     }
 
     @Override
@@ -85,5 +91,10 @@ public class LocationRepositoryImpl implements LocationRepository {
     @Nullable
     public Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates) {
         return locationSource.getCountryCodeCity(coordinates);
+    }
+
+    @Override
+    public List<LocationEntity> getLocations() {
+        return dao.findAll();
     }
 }

@@ -5,6 +5,7 @@ import android.util.Pair;
 
 import java.util.List;
 
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.data.models.Country;
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -34,4 +35,6 @@ public interface LocationRepository {
 
     @Nullable
     Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates);
+
+    List<LocationEntity> getLocations();
 }

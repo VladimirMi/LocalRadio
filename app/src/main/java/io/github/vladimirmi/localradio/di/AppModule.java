@@ -5,6 +5,7 @@ import android.content.Context;
 import com.squareup.moshi.Moshi;
 
 import io.github.vladimirmi.localradio.data.db.favorite.AppDatabase;
+import io.github.vladimirmi.localradio.data.db.location.LocationDatabase;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
@@ -53,6 +54,7 @@ public class AppModule extends Module {
         bind(NetworkChecker.class).singletonInScope();
 
         bind(AppDatabase.class).toInstance(AppDatabase.getInstance(context));
+        bind(LocationDatabase.class).toInstance(LocationDatabase.getInstance(context));
 
         bind(Preferences.class).singletonInScope();
 

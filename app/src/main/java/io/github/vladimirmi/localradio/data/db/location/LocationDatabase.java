@@ -20,6 +20,8 @@ public abstract class LocationDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "location_db";
 
+    public abstract LocationsDao locationsDao();
+
     public static LocationDatabase getInstance(Context context) {
         tryCopyDatabaseFile(context);
         return Room.databaseBuilder(context.getApplicationContext(),

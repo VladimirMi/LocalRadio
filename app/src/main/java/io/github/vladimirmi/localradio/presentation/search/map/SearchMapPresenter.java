@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search.map;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 
 /**
@@ -9,7 +10,15 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
  */
 public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
+    // TODO: 7/3/18 interactor
+    private final LocationRepository locationRepository;
+
     @Inject
-    public SearchMapPresenter() {
+    public SearchMapPresenter(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
+    }
+
+    public void onMapReady() {
+
     }
 }

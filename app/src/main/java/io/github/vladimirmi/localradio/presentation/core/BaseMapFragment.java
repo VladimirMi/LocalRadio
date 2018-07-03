@@ -8,56 +8,57 @@ import android.view.View;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
-import butterknife.BindView;
-import io.github.vladimirmi.localradio.R;
-
 /**
  * Created by Vladimir Mikhalev 03.07.2018.
  */
 public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragment<P>
         implements OnMapReadyCallback {
 
-    @BindView(R.id.mapView) MapView mapView;
+    private static final String MAP_BUNDLE_KEY = "MapBundleKey";
+
+    protected abstract MapView getMapView();
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        Bundle bundle = savedInstanceState == null ? null : savedInstanceState.getBundle(MAP_BUNDLE_KEY);
+        getMapView().onCreate(bundle);
+        getMapView().getMapAsync(this);
+        super.onViewCreated(view, savedInstanceState);
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
+        getMapView().onResume();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        mapView.onStart();
+        getMapView().onStart();
     }
 
     @Override
     public void onStop() {
-        mapView.onStop();
+        getMapView().onStop();
         super.onStop();
     }
 
     @Override
     public void onPause() {
-        mapView.onPause();
+        getMapView().onPause();
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        mapView.onDestroy();
+        getMapView().onDestroy();
         super.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
-        mapView.onLowMemory();
+        getMapView().onLowMemory();
         super.onLowMemory();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        mapView.getMapAsync(this);
-        super.onViewCreated(view, savedInstanceState);
     }
 }
