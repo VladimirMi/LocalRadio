@@ -6,14 +6,55 @@
     android:layout_height="match_parent"
     >
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="256dp"
+        />
+
+    <RadioGroup
+        android:id="@+id/selectionRg"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Map"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mapView"
+        >
+
+        <RadioButton
+            android:id="@+id/currentLocRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Current"
+            />
+
+        <RadioButton
+            android:id="@+id/mile50RBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="50 Miles"
+            />
+
+        <RadioButton
+            android:id="@+id/countryRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Country"
+            />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/selectionResultTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/selectionRg"
+        android:layout_margin="16dp"
         />
+
+
 </android.support.constraint.ConstraintLayout>
