@@ -37,4 +37,12 @@ public interface LocationRepository {
     Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates);
 
     List<LocationEntity> getLocations();
+
+    void saveLocationMode(String mode);
+
+    String getLocationMode();
+
+    void saveMapMode(String mode);
+
+    String getMapMode();
 }

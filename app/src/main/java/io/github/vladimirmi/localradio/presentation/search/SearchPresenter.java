@@ -10,6 +10,9 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 @SuppressWarnings("WeakerAccess")
 public class SearchPresenter extends BasePresenter<SearchView> {
 
+    public static final String MAP_MODE = "MAP_MODE";
+    public static final String MANUAL_MODE = "MANUAL_MODE";
+
     @Inject
     public SearchPresenter() {
     }

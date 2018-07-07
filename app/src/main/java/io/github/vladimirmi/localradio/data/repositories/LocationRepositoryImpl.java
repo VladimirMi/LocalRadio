@@ -97,4 +97,24 @@ public class LocationRepositoryImpl implements LocationRepository {
     public List<LocationEntity> getLocations() {
         return locationsDao.findAll();
     }
+
+    @Override
+    public void saveLocationMode(String mode) {
+        preferences.locationMode.put(mode);
+    }
+
+    @Override
+    public String getLocationMode() {
+        return preferences.locationMode.get();
+    }
+
+    @Override
+    public void saveMapMode(String mode) {
+        preferences.mapMode.put(mode);
+    }
+
+    @Override
+    public String getMapMode() {
+        return preferences.mapMode.get();
+    }
 }

@@ -16,6 +16,10 @@ import timber.log.Timber;
  */
 public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
+    public static final String EXACT_MODE = "EXACT_MODE";
+    public static final String RADIUS_MODE = "RADIUS_MODE";
+    public static final String COUNTRY_MODE = "COUNTRY_MODE";
+
     // TODO: 7/3/18 interactor
     private final LocationRepository locationRepository;
 
@@ -34,5 +38,17 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         }
 
         view.setClusterItems(clusters);
+    }
+
+    public void selectCountry() {
+        locationRepository.saveMapMode(COUNTRY_MODE);
+    }
+
+    public void selectRadius() {
+        locationRepository.saveMapMode(RADIUS_MODE);
+    }
+
+    public void selectExact() {
+        locationRepository.saveMapMode(EXACT_MODE);
     }
 }

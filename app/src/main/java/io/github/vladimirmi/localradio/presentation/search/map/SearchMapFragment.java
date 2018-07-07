@@ -42,7 +42,15 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     protected void setupView(View view) {
-
+        selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.countryRBtn) {
+                presenter.selectCountry();
+            } else if (checkedId == R.id.mile50RBtn) {
+                presenter.selectRadius();
+            } else {
+                presenter.selectExact();
+            }
+        });
     }
 
     @Override

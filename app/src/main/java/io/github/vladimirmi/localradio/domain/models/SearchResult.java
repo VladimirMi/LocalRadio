@@ -11,8 +11,11 @@ import static io.github.vladimirmi.localradio.domain.models.SearchResult.State.N
 
 public class SearchResult {
 
+    public enum State {NOT_DONE, LOADING, AUTO_DONE, MANUAL_DONE}
+
     public final State state;
     public final int result;
+
     public final String message;
 
     private SearchResult(State state, int result, String message) {
@@ -44,8 +47,6 @@ public class SearchResult {
     public boolean isSearchDone() {
         return state == AUTO_DONE || state == MANUAL_DONE;
     }
-
-    public enum State {NOT_DONE, LOADING, AUTO_DONE, MANUAL_DONE}
 
     @Override
     public boolean equals(Object o) {
