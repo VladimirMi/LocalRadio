@@ -4,20 +4,11 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.transition.Slide;
-import android.support.transition.TransitionManager;
-import android.support.transition.Visibility;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
 
@@ -33,9 +24,7 @@ import timber.log.Timber;
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.playerControlsFr) View playerControlsFr;
 
-    private BottomSheetBehavior<View> bottomSheetBehavior;
 
     @Override
     protected int getLayout() {
@@ -95,8 +84,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     protected void setupView() {
         setSupportActionBar(toolbar);
-
-        bottomSheetBehavior = BottomSheetBehavior.from(playerControlsFr);
     }
 
     @Override
@@ -124,33 +111,5 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     private void exit() {
         presenter.exit();
         finish();
-    }
-
-    @Override
-    public void showControls(boolean horizontal) {
-        Slide slide = createSlideTransition(horizontal);
-        slide.setMode(Visibility.MODE_IN);
-        TransitionManager.beginDelayedTransition(((ViewGroup) contentView), slide);
-        playerControlsFr.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideControls(boolean horizontal) {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        Slide slide = createSlideTransition(horizontal);
-        slide.setMode(Visibility.MODE_OUT);
-        TransitionManager.beginDelayedTransition(((ViewGroup) contentView), slide);
-        playerControlsFr.setVisibility(View.GONE);
-    }
-
-    @NonNull
-    private Slide createSlideTransition(boolean horizontal) {
-        // TODO: 6/30/18 remake
-        Slide slide = new Slide();
-        slide.setSlideEdge(horizontal ? Gravity.START : Gravity.BOTTOM);
-        slide.setDuration(200);
-        slide.addTarget(playerControlsFr);
-        slide.setInterpolator(new FastOutSlowInInterpolator());
-        return slide;
     }
 }

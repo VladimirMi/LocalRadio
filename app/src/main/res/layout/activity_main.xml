@@ -2,7 +2,6 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -35,17 +34,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
-
-    <fragment
-        android:id="@+id/playerControlsFr"
-        android:name="io.github.vladimirmi.localradio.presentation.playercontrol.PlayerControlFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="@dimen/player_controls_height"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-        tools:layout="@layout/fragment_player_controls"
         />
 
 </android.support.design.widget.CoordinatorLayout>

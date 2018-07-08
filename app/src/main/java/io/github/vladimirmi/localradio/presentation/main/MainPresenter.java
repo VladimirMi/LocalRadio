@@ -64,10 +64,11 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     private void handleIsNullStation(boolean isNull) {
         if (view == null) return;
-        if (isNull) {
-            view.hideControls(false);
-        } else if (!mainInteractor.isSearchPage()) {
-            view.showControls(false);
-        }
+        // TODO: 7/8/18 refactor
+//        if (isNull) {
+//            view.hideControls(false);
+//        } else if (!mainInteractor.isSearchPage()) {
+//            view.showControls(false);
+//        }
     }
 }

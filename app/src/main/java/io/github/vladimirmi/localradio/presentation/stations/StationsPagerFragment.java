@@ -1,8 +1,16 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
+import android.support.transition.Slide;
+import android.support.transition.TransitionManager;
+import android.support.transition.Visibility;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
@@ -19,6 +27,9 @@ public class StationsPagerFragment extends BaseFragment<StationsPagerPresenter> 
 
     @BindView(R.id.tabs) TabLayout tabs;
     @BindView(R.id.viewPager) ViewPager viewPager;
+    @BindView(R.id.playerControlsFr) View playerControlsFr;
+
+    private BottomSheetBehavior<View> bottomSheetBehavior;
 
     @Override
     protected int getLayout() {
@@ -42,6 +53,8 @@ public class StationsPagerFragment extends BaseFragment<StationsPagerPresenter> 
                 presenter.selectPage(tab.getPosition());
             }
         });
+
+        bottomSheetBehavior = BottomSheetBehavior.from(playerControlsFr);
     }
 
     @Override
@@ -52,5 +65,34 @@ public class StationsPagerFragment extends BaseFragment<StationsPagerPresenter> 
     @Override
     public void showStations() {
         viewPager.setCurrentItem(PAGE_STATIONS);
+    }
+
+    @Override
+    public void showControls() {
+        Slide slide = createSlideTransition();
+        slide.setMode(Visibility.MODE_IN);
+        //noinspection ConstantConditions
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), slide);
+        playerControlsFr.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideControls() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        Slide slide = createSlideTransition();
+        slide.setMode(Visibility.MODE_OUT);
+        //noinspection ConstantConditions
+        TransitionManager.beginDelayedTransition((ViewGroup) getView(), slide);
+        playerControlsFr.setVisibility(View.GONE);
+    }
+
+    @NonNull
+    private Slide createSlideTransition() {
+        Slide slide = new Slide();
+        slide.setSlideEdge(Gravity.BOTTOM);
+        slide.setDuration(200);
+        slide.addTarget(playerControlsFr);
+        slide.setInterpolator(new FastOutSlowInInterpolator());
+        return slide;
     }
 }
