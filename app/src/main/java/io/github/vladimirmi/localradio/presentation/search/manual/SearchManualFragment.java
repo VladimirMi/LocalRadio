@@ -1,17 +1,13 @@
 package io.github.vladimirmi.localradio.presentation.search.manual;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.support.design.widget.FloatingActionButton;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckedTextView;
 import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.List;
@@ -29,12 +25,8 @@ import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 
 public class SearchManualFragment extends BaseFragment<SearchManualPresenter> implements SearchManualView {
 
-    @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
-    @BindView(R.id.searchBt) FloatingActionButton searchBt;
-    @BindView(R.id.searchResultTv) TextView searchResultTv;
-    @BindView(R.id.loadingPb) ProgressBar loadingPb;
     @BindView(R.id.clearCountryBt) ImageButton clearCountryBt;
     @BindView(R.id.clearCityBt) ImageButton clearCityBt;
 
@@ -64,10 +56,12 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO: 7/8/18 refactor
+
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
-        autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
+//        autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
         countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
         cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
         clearCountryBt.setOnClickListener(v -> countryEt.setText(""));
@@ -83,16 +77,16 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
             return true;
         });
 
-        searchBt.setOnClickListener(v -> {
-            countryEt.performValidation();
-            cityEt.performValidation();
-            String countryName = countryEt.getText().toString();
-            String city = cityEt.getText().toString();
-            presenter.search(countryName, city);
-        });
+//        searchBt.setOnClickListener(v -> {
+//            countryEt.performValidation();
+//            cityEt.performValidation();
+//            String countryName = countryEt.getText().toString();
+//            String city = cityEt.getText().toString();
+//            presenter.search(countryName, city);
+//        });
 
-        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
-                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
+//        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+//                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -139,8 +133,8 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 
     private void initAutoDetectCheckBox() {
         if (!autodetectInitialized) {
-            autodetectCb.setChecked(!isAutodetect);
-            autodetectCb.setChecked(isAutodetect);
+//            autodetectCb.setChecked(!isAutodetect);
+//            autodetectCb.setChecked(isAutodetect);
             autodetectInitialized = true;
         }
     }
@@ -148,7 +142,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
     @Override
     public void setAutodetect(boolean enabled) {
         isAutodetect = enabled;
-        autodetectCb.setChecked(isAutodetect);
+//        autodetectCb.setChecked(isAutodetect);
     }
 
     @Override
@@ -157,7 +151,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
         enableTextView(cityEt, !done);
         setVisible(clearCountryBt, !done);
         setVisible(clearCityBt, !done);
-        searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
+//        searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
 
         isRefreshEnabled = done;
         //noinspection ConstantConditions
@@ -166,28 +160,28 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 
     @Override
     public void showSearchBtn(boolean visible) {
-        setVisible(searchBt, visible);
+//        setVisible(searchBt, visible);
     }
 
 
     @Override
     public void setSearchResult(String result) {
-        searchResultTv.setText(result);
+//        searchResultTv.setText(result);
     }
 
     @Override
     public void resetSearchResult() {
-        searchResultTv.setText("");
+//        searchResultTv.setText("");
     }
 
     @Override
     public void setSearching(boolean enabled) {
-        setVisible(loadingPb, enabled);
+//        setVisible(loadingPb, enabled);
     }
 
     @Override
     public void enableAutodetect(boolean enabled) {
-        autodetectCb.setEnabled(enabled);
+//        autodetectCb.setEnabled(enabled);
     }
 
 

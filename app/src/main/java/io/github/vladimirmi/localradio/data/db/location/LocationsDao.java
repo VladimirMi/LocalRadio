@@ -11,7 +11,7 @@ import java.util.List;
 @Dao
 public interface LocationsDao {
 
-    @Query("SELECT * FROM locations")
+    @Query("SELECT * FROM locations WHERE country != ''")
     List<LocationEntity> findAll();
 
 }

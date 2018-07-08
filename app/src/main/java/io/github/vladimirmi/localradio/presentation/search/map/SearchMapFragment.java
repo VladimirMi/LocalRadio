@@ -1,7 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
 import android.view.View;
-import android.widget.RadioButton;
+import android.widget.CheckedTextView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -23,9 +23,7 @@ import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> implements SearchMapView {
 
     @BindView(R.id.mapView) MapView mapView;
-    @BindView(R.id.exactLocRBtn) RadioButton exactLocRBtn;
-    @BindView(R.id.radiusRBtn) RadioButton radiusRBtn;
-    @BindView(R.id.countryRBtn) RadioButton countryRBtn;
+    @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.selectionRg) RadioGroup selectionRg;
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     private ClusterManager<LocationCluster> clusterManager;

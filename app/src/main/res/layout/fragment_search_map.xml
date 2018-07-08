@@ -4,12 +4,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     >
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/autodetectCb"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="16dp"
+        />
+
+    <CheckedTextView
+        android:id="@+id/autodetectCb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:gravity="center_vertical"
+        android:padding="4dp"
+        android:text="@string/automatic_location_detection"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/selectionRg"
         />
 
     <RadioGroup
@@ -20,7 +39,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mapView"
+        app:layout_constraintBottom_toTopOf="@id/selectionResultTv"
         >
 
         <RadioButton
@@ -52,8 +71,10 @@
         android:id="@+id/selectionResultTv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/selectionRg"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="16dp"
+        style="@style/CustomText"
+        tools:text="Not shangri-la or hell, reject the totality."
         />
 
 
