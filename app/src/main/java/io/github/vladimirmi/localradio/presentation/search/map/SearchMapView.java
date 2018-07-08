@@ -10,6 +10,8 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
  */
 public interface SearchMapView extends BaseView {
 
+    void initOptions(String mapMode);
+
     void setClusterItems(List<LocationCluster> clusters);
 
     void setExactMode();

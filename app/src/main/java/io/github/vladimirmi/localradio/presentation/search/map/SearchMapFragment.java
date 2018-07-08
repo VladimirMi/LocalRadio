@@ -16,7 +16,6 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -44,7 +43,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     protected void setupView(View view) {
         selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
-            Timber.e("setupView: check");
             if (checkedId == R.id.countryRBtn) {
                 presenter.selectCountry();
             } else if (checkedId == R.id.radiusRBtn) {
@@ -70,7 +68,28 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         presenter.onMapReady();
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (getView() != null && isVisibleToUser) presenter.initOptions();
+    }
+
     //region =============== SearchMapView ==============
+
+    @Override
+    public void initOptions(String mapMode) {
+        if (!getUserVisibleHint()) return;
+        switch (mapMode) {
+            case SearchMapPresenter.EXACT_MODE:
+                selectionRg.check(R.id.exactLocRBtn);
+                break;
+            case SearchMapPresenter.RADIUS_MODE:
+                selectionRg.check(R.id.radiusRBtn);
+                break;
+            case SearchMapPresenter.COUNTRY_MODE:
+                selectionRg.check(R.id.countryRBtn);
+        }
+    }
 
     @Override
     public void setClusterItems(List<LocationCluster> clusters) {
@@ -79,17 +98,14 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setExactMode() {
-        selectionRg.check(R.id.exactLocRBtn);
     }
 
     @Override
     public void setRadiusMode() {
-        selectionRg.check(R.id.radiusRBtn);
     }
 
     @Override
     public void setCountryMode() {
-        selectionRg.check(R.id.countryRBtn);
     }
 
     //endregion

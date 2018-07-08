@@ -30,20 +30,12 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     @Override
     protected void onFirstAttach(SearchMapView view, CompositeDisposable disposables) {
-        initMode();
+        initOptions();
+        initMapMode();
     }
 
-    private void initMode() {
-        switch (locationRepository.getMapMode()) {
-            case EXACT_MODE:
-                view.setExactMode();
-                break;
-            case RADIUS_MODE:
-                view.setRadiusMode();
-                break;
-            case COUNTRY_MODE:
-                view.setCountryMode();
-        }
+    public void initOptions() {
+        view.initOptions(locationRepository.getMapMode());
     }
 
     public void onMapReady() {
@@ -67,5 +59,18 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     public void selectExact() {
         locationRepository.saveMapMode(EXACT_MODE);
+    }
+
+    private void initMapMode() {
+        switch (locationRepository.getMapMode()) {
+            case EXACT_MODE:
+                view.setExactMode();
+                break;
+            case RADIUS_MODE:
+                view.setRadiusMode();
+                break;
+            case COUNTRY_MODE:
+                view.setCountryMode();
+        }
     }
 }

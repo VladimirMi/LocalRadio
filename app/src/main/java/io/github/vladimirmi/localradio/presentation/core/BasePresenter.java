@@ -18,11 +18,11 @@ public abstract class BasePresenter<V extends BaseView> {
 
     public final void attachView(V view) {
         this.view = view;
-        onAttach(view);
         if (isFirstAttach) {
             onFirstAttach(view, dataSubs);
             isFirstAttach = false;
         }
+        onAttach(view);
     }
 
     public final void detachView() {
