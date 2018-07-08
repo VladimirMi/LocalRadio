@@ -40,8 +40,8 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
 
     @Override
     public void onStop() {
-        getMapView().onStop();
         super.onStop();
+        getMapView().onStop();
     }
 
     @Override
@@ -51,14 +51,14 @@ public abstract class BaseMapFragment<P extends BasePresenter> extends BaseFragm
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroyView() {
         getMapView().onDestroy();
-        super.onDestroy();
+        super.onDestroyView();
     }
 
     @Override
     public void onLowMemory() {
-        getMapView().onLowMemory();
         super.onLowMemory();
+        getMapView().onLowMemory();
     }
 }
