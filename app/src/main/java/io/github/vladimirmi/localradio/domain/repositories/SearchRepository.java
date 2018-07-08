@@ -27,4 +27,8 @@ public interface SearchRepository {
     Single<List<Station>> searchStationsByCoordinates(Pair<Float, Float> coordinates);
 
     Single<List<Station>> searchStationsByIp();
+
+    void saveSearchMode(int mode);
+
+    int getSearchMode();
 }

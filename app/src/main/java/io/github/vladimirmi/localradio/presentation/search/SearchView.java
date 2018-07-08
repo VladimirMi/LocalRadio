@@ -7,4 +7,6 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
  */
 public interface SearchView extends BaseView {
 
+    void setSearchMode(int mode);
+
 }

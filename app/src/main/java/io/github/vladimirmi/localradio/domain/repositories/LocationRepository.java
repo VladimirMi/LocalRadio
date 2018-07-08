@@ -38,10 +38,6 @@ public interface LocationRepository {
 
     List<LocationEntity> getLocations();
 
-    void saveLocationMode(String mode);
-
-    String getLocationMode();
-
     void saveMapMode(String mode);
 
     String getMapMode();

@@ -41,6 +41,14 @@ public class SearchInteractor {
         this.searchRepository = searchRepository;
     }
 
+    public void saveSearchMode(int mode) {
+        searchRepository.saveSearchMode(mode);
+    }
+
+    public int getSearchMode() {
+        return searchRepository.getSearchMode();
+    }
+
     public Observable<SearchResult> getSearchResultObs() {
         return searchRepository.searchResult();
     }

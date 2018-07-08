@@ -16,6 +16,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -23,8 +24,8 @@ import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> implements SearchMapView {
 
     @BindView(R.id.mapView) MapView mapView;
-    @BindView(R.id.currentLocRBtn) RadioButton currentLocRBtn;
-    @BindView(R.id.mile50RBtn) RadioButton mile50RBtn;
+    @BindView(R.id.exactLocRBtn) RadioButton exactLocRBtn;
+    @BindView(R.id.radiusRBtn) RadioButton radiusRBtn;
     @BindView(R.id.countryRBtn) RadioButton countryRBtn;
     @BindView(R.id.selectionRg) RadioGroup selectionRg;
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
@@ -43,9 +44,10 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     protected void setupView(View view) {
         selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
+            Timber.e("setupView: check");
             if (checkedId == R.id.countryRBtn) {
                 presenter.selectCountry();
-            } else if (checkedId == R.id.mile50RBtn) {
+            } else if (checkedId == R.id.radiusRBtn) {
                 presenter.selectRadius();
             } else {
                 presenter.selectExact();
@@ -73,6 +75,21 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void setClusterItems(List<LocationCluster> clusters) {
         clusterManager.addItems(clusters);
+    }
+
+    @Override
+    public void setExactMode() {
+        selectionRg.check(R.id.exactLocRBtn);
+    }
+
+    @Override
+    public void setRadiusMode() {
+        selectionRg.check(R.id.radiusRBtn);
+    }
+
+    @Override
+    public void setCountryMode() {
+        selectionRg.check(R.id.countryRBtn);
     }
 
     //endregion

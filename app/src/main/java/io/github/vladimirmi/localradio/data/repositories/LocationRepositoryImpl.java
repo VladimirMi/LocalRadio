@@ -99,16 +99,6 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public void saveLocationMode(String mode) {
-        preferences.locationMode.put(mode);
-    }
-
-    @Override
-    public String getLocationMode() {
-        return preferences.locationMode.get();
-    }
-
-    @Override
     public void saveMapMode(String mode) {
         preferences.mapMode.put(mode);
     }

@@ -156,4 +156,14 @@ public class SearchRepositoryImpl implements SearchRepository {
     private String getResultMessage(List<Station> stations, int pluralsId) {
         return resourceManager.getFormatQuantityString(pluralsId, stations.size(), stations.size());
     }
+
+    @Override
+    public void saveSearchMode(int mode) {
+        preferences.searchMode.put(mode);
+    }
+
+    @Override
+    public int getSearchMode() {
+        return preferences.searchMode.get();
+    }
 }

@@ -32,8 +32,8 @@ public class Preferences {
     private static final String KEY_PAGE = "PAGE";
     public final Preference<Integer> pagePosition;
 
-    private static final String KEY_LOCATION_MODE = "LOCATION_MODE";
-    public final Preference<String> locationMode;
+    private static final String KEY_SEARCH_MODE = "SEARCH_MODE";
+    public final Preference<Integer> searchMode;
 
     private static final String KEY_MAP_MODE = "MAP_MODE";
     public final Preference<String> mapMode;
@@ -49,7 +49,7 @@ public class Preferences {
         currentStationId = new Preference<>(prefs, KEY_CURRENT_STATION_ID, 0);
         currentStationIsFavorite = new Preference<>(prefs, KEY_CURRENT_STATION_IS_FAVORITE, false);
         pagePosition = new Preference<>(prefs, KEY_PAGE, StationsPagerFragment.PAGE_STATIONS);
-        locationMode = new Preference<>(prefs, KEY_LOCATION_MODE, SearchPresenter.MAP_MODE);
+        searchMode = new Preference<>(prefs, KEY_SEARCH_MODE, SearchPresenter.MAP_MODE);
         mapMode = new Preference<>(prefs, KEY_MAP_MODE, SearchMapPresenter.EXACT_MODE);
     }
 }

@@ -14,7 +14,7 @@ import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 /**
  * Created by Vladimir Mikhalev 01.07.2018.
  */
-public class SearchFragment extends BaseFragment<SearchPresenter> {
+public class SearchFragment extends BaseFragment<SearchPresenter> implements SearchView {
 
     @BindView(R.id.tabs) TabLayout tabs;
     @BindView(R.id.viewPager) ViewPager viewPager;
@@ -37,5 +37,21 @@ public class SearchFragment extends BaseFragment<SearchPresenter> {
         SearchPagerAdapter adapter = new SearchPagerAdapter(getChildFragmentManager(), pagerTitles);
         viewPager.setAdapter(adapter);
         tabs.setupWithViewPager(viewPager);
+
+        viewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                presenter.setSearchMode(position);
+            }
+        });
     }
+
+    //region =============== SearchView ==============
+
+    @Override
+    public void setSearchMode(int mode) {
+        viewPager.setCurrentItem(mode);
+    }
+
+    //endregion
 }

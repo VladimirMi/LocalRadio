@@ -9,7 +9,7 @@ import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
-import timber.log.Timber;
+import io.reactivex.disposables.CompositeDisposable;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -28,9 +28,26 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         this.locationRepository = locationRepository;
     }
 
+    @Override
+    protected void onFirstAttach(SearchMapView view, CompositeDisposable disposables) {
+        initMode();
+    }
+
+    private void initMode() {
+        switch (locationRepository.getMapMode()) {
+            case EXACT_MODE:
+                view.setExactMode();
+                break;
+            case RADIUS_MODE:
+                view.setRadiusMode();
+                break;
+            case COUNTRY_MODE:
+                view.setCountryMode();
+        }
+    }
+
     public void onMapReady() {
         List<LocationEntity> locations = locationRepository.getLocations();
-        Timber.e("onMapReady: " + locations.size());
         List<LocationCluster> clusters = new ArrayList<>(locations.size());
 
         for (LocationEntity location : locations) {

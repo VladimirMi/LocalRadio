@@ -24,7 +24,7 @@
         >
 
         <RadioButton
-            android:id="@+id/currentLocRBtn"
+            android:id="@+id/exactLocRBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -32,7 +32,7 @@
             />
 
         <RadioButton
-            android:id="@+id/mile50RBtn"
+            android:id="@+id/radiusRBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
