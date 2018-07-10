@@ -31,6 +31,7 @@ public abstract class LocationDatabase extends RoomDatabase {
     }
 
     private static void tryCopyDatabaseFile(Context context) {
+        // TODO: 7/10/18 round countries coordinates to 4 digit in the locations.db
         final File dbFile = context.getDatabasePath(DB_NAME);
         if (dbFile.exists()) return;
 
