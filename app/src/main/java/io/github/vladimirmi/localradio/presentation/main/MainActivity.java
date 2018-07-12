@@ -46,7 +46,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
             }
         }
         super.onCreate(savedInstanceState);
-        showStations();
+//        showStations();
+        showSearch();
     }
 
     @Override

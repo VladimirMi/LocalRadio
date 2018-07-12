@@ -7,8 +7,6 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
@@ -19,6 +17,7 @@ import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
+import io.github.vladimirmi.localradio.utils.MapHelper;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -114,11 +113,10 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void setCountryMode(List<LocationEntity> countries) {
         clearMap();
         map.setMinZoomPreference(3f);
-        map.setMaxZoomPreference(5f);
+        map.setMaxZoomPreference(7f);
+        MapHelper helper = new MapHelper(getContext());
         for (LocationEntity country : countries) {
-            map.addMarker(new MarkerOptions()
-                    .position(new LatLng(country.latitude, country.longitude))
-                    .title(String.valueOf(country.name)));
+            map.addMarker(helper.createCountryMarker(country));
         }
     }
 

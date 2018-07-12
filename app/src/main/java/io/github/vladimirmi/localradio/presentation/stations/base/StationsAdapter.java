@@ -201,16 +201,16 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         void setBackground(int position, int itemCount) {
             int res;
             if (itemCount == 1) {
-                res = R.drawable.item_single;
+                res = R.drawable.shape_item_single;
                 dilimeter.setVisibility(View.GONE);
             } else if (position == 0) {
-                res = R.drawable.item_top;
+                res = R.drawable.shape_item_top;
                 dilimeter.setVisibility(View.VISIBLE);
             } else if (position == itemCount - 1) {
-                res = R.drawable.item_bottom;
+                res = R.drawable.shape_item_bottom;
                 dilimeter.setVisibility(View.GONE);
             } else {
-                res = R.drawable.item_middle;
+                res = R.drawable.shape_item_middle;
                 dilimeter.setVisibility(View.VISIBLE);
             }
             itemView.setBackground(ContextCompat.getDrawable(itemView.getContext(), res));
