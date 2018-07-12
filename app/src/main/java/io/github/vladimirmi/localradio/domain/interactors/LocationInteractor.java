@@ -149,6 +149,17 @@ public class LocationInteractor {
         return clusters;
     }
 
+    public List<LocationCluster> getCountryClusters() {
+        // TODO: 7/12/18 refactor duplicate code
+        List<LocationEntity> locations = locationRepository.getCountries1();
+        List<LocationCluster> clusters = new ArrayList<>(locations.size());
+
+        for (LocationEntity location : locations) {
+            clusters.add(new LocationCluster(location));
+        }
+        return clusters;
+    }
+
     public String getMapMode() {
         return locationRepository.getMapMode();
     }

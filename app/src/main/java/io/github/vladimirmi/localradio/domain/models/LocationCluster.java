@@ -13,11 +13,13 @@ public class LocationCluster implements ClusterItem {
     private final LatLng position;
     private final String title;
     private final String snippet;
+    private int stationsNum;
 
     public LocationCluster(LocationEntity location) {
         this.position = new LatLng(location.latitude, location.longitude);
         this.title = location.name;
         this.snippet = String.valueOf(location.id);
+        this.stationsNum = location.stations;
     }
 
     @Override
@@ -33,5 +35,9 @@ public class LocationCluster implements ClusterItem {
     @Override
     public String getSnippet() {
         return snippet;
+    }
+
+    public int getStationsNum() {
+        return stationsNum;
     }
 }

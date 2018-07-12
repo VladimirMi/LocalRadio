@@ -18,4 +18,10 @@
     <color name="grey_500">#9e9e9e</color>
     <color name="grey_600">#757575</color>
     <color name="blue_500">#2196f3</color>
+
+    <color name="cluster_1">#1A237E</color>
+    <color name="cluster_2">#01579B</color>
+    <color name="cluster_3">#1B5E20</color>
+    <color name="cluster_4">#BF360C</color>
+    <color name="cluster_5">#b71c1c</color>
 </resources>

@@ -59,7 +59,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                 view.setRadiusMode(locationInteractor.getCityClusters());
                 break;
             case COUNTRY_MODE:
-                view.setCountryMode(locationInteractor.getCountries());
+                view.setCountryMode(locationInteractor.getCountryClusters());
         }
     }
 }

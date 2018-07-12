@@ -13,11 +13,10 @@ import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
+import io.github.vladimirmi.localradio.custom.CustomClusterRenderer;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
-import io.github.vladimirmi.localradio.utils.MapHelper;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -57,6 +56,8 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         this.map = map;
         //noinspection ConstantConditions
         clusterManager = new ClusterManager<>(getContext(), map);
+        clusterManager.setRenderer(new CustomClusterRenderer(getContext(), map, clusterManager));
+
         map.setOnCameraIdleListener(clusterManager);
         map.setOnMarkerClickListener(clusterManager);
 
@@ -98,26 +99,23 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void setExactMode(List<LocationCluster> clusters) {
         clearMap();
-        map.setMinZoomPreference(4f);
+        map.setMinZoomPreference(2f);
         clusterManager.addItems(clusters);
     }
 
     @Override
     public void setRadiusMode(List<LocationCluster> clusters) {
         clearMap();
-        map.setMinZoomPreference(4f);
+        map.setMinZoomPreference(2f);
         clusterManager.addItems(clusters);
     }
 
     @Override
-    public void setCountryMode(List<LocationEntity> countries) {
+    public void setCountryMode(List<LocationCluster> clusters) {
         clearMap();
         map.setMinZoomPreference(3f);
         map.setMaxZoomPreference(7f);
-        MapHelper helper = new MapHelper(getContext());
-        for (LocationEntity country : countries) {
-            map.addMarker(helper.createCountryMarker(country));
-        }
+        clusterManager.addItems(clusters);
     }
 
     //endregion
