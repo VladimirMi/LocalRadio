@@ -10,8 +10,10 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.data.models.Country;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
@@ -127,5 +129,31 @@ public class LocationInteractor {
             }
         }
         return Collections.emptyList();
+    }
+
+    public List<LocationEntity> getCountries() {
+        return locationRepository.getCountries1();
+    }
+
+    public List<LocationEntity> getCities() {
+        return locationRepository.getCities();
+    }
+
+    public List<LocationCluster> getCityClusters() {
+        List<LocationEntity> locations = locationRepository.getCities();
+        List<LocationCluster> clusters = new ArrayList<>(locations.size());
+
+        for (LocationEntity location : locations) {
+            clusters.add(new LocationCluster(location));
+        }
+        return clusters;
+    }
+
+    public String getMapMode() {
+        return locationRepository.getMapMode();
+    }
+
+    public void saveMapMode(String mode) {
+        locationRepository.saveMapMode(mode);
     }
 }

@@ -36,9 +36,11 @@ public interface LocationRepository {
     @Nullable
     Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates);
 
-    List<LocationEntity> getLocations();
+    List<LocationEntity> getCities();
 
     void saveMapMode(String mode);
 
     String getMapMode();
+
+    List<LocationEntity> getCountries1();
 }

@@ -94,8 +94,14 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public List<LocationEntity> getLocations() {
-        return locationsDao.findAll();
+    public List<LocationEntity> getCities() {
+        return locationsDao.findCities();
+    }
+
+    // TODO: 7/11/18 rename
+    @Override
+    public List<LocationEntity> getCountries1() {
+        return locationsDao.findCountries();
     }
 
     @Override

@@ -7,12 +7,15 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
@@ -26,7 +29,9 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.selectionRg) RadioGroup selectionRg;
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
+
     private ClusterManager<LocationCluster> clusterManager;
+    private GoogleMap map;
 
     @Override
     protected int getLayout() {
@@ -40,15 +45,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     protected void setupView(View view) {
-        selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.countryRBtn) {
-                presenter.selectCountry();
-            } else if (checkedId == R.id.radiusRBtn) {
-                presenter.selectRadius();
-            } else {
-                presenter.selectExact();
-            }
-        });
+
     }
 
     @Override
@@ -58,6 +55,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
+        this.map = map;
         //noinspection ConstantConditions
         clusterManager = new ClusterManager<>(getContext(), map);
         map.setOnCameraIdleListener(clusterManager);
@@ -87,24 +85,47 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
             case SearchMapPresenter.COUNTRY_MODE:
                 selectionRg.check(R.id.countryRBtn);
         }
+        selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.countryRBtn) {
+                presenter.selectCountry();
+            } else if (checkedId == R.id.radiusRBtn) {
+                presenter.selectRadius();
+            } else {
+                presenter.selectExact();
+            }
+        });
     }
 
     @Override
-    public void setClusterItems(List<LocationCluster> clusters) {
+    public void setExactMode(List<LocationCluster> clusters) {
+        clearMap();
+        map.setMinZoomPreference(4f);
         clusterManager.addItems(clusters);
     }
 
     @Override
-    public void setExactMode() {
+    public void setRadiusMode(List<LocationCluster> clusters) {
+        clearMap();
+        map.setMinZoomPreference(4f);
+        clusterManager.addItems(clusters);
     }
 
     @Override
-    public void setRadiusMode() {
-    }
-
-    @Override
-    public void setCountryMode() {
+    public void setCountryMode(List<LocationEntity> countries) {
+        clearMap();
+        map.setMinZoomPreference(3f);
+        map.setMaxZoomPreference(5f);
+        for (LocationEntity country : countries) {
+            map.addMarker(new MarkerOptions()
+                    .position(new LatLng(country.latitude, country.longitude))
+                    .title(String.valueOf(country.name)));
+        }
     }
 
     //endregion
+
+    private void clearMap() {
+        clusterManager.clearItems();
+        map.clear();
+    }
 }
