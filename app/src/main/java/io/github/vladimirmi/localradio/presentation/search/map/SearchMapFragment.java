@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.UiSettings;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
@@ -43,7 +44,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     protected void setupView(View view) {
-
     }
 
     @Override
@@ -53,6 +53,14 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
+        UiSettings uiSettings = map.getUiSettings();
+        uiSettings.setZoomControlsEnabled(true);
+        uiSettings.setCompassEnabled(false);
+        uiSettings.setIndoorLevelPickerEnabled(false);
+        uiSettings.setMapToolbarEnabled(false);
+        uiSettings.setRotateGesturesEnabled(false);
+        uiSettings.setTiltGesturesEnabled(false);
+
         this.map = map;
         //noinspection ConstantConditions
         clusterManager = new ClusterManager<>(getContext(), map);
@@ -113,7 +121,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void setCountryMode(List<LocationCluster> clusters) {
         clearMap();
-        map.setMinZoomPreference(3f);
+        map.setMinZoomPreference(2f);
         map.setMaxZoomPreference(7f);
         clusterManager.addItems(clusters);
     }
