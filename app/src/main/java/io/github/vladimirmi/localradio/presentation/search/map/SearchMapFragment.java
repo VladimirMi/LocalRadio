@@ -108,6 +108,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void setExactMode(List<LocationCluster> clusters) {
         clearMap();
         map.setMinZoomPreference(2f);
+        map.setMaxZoomPreference(9f);
         clusterManager.addItems(clusters);
     }
 
@@ -115,6 +116,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void setRadiusMode(List<LocationCluster> clusters) {
         clearMap();
         map.setMinZoomPreference(2f);
+        map.setMaxZoomPreference(9f);
         clusterManager.addItems(clusters);
     }
 

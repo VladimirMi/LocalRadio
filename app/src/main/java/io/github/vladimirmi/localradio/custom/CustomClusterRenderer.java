@@ -51,4 +51,9 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
                         .build()
                 );
     }
+
+    @Override
+    protected boolean shouldRenderAsCluster(Cluster<LocationCluster> cluster) {
+        return cluster.getSize() > 2;
+    }
 }
