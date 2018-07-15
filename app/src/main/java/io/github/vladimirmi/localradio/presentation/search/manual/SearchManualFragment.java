@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -27,8 +26,8 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 
     @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
     @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
-    @BindView(R.id.clearCountryBt) ImageButton clearCountryBt;
-    @BindView(R.id.clearCityBt) ImageButton clearCityBt;
+//    @BindView(R.id.clearCountryBt) ImageButton clearCountryBt;
+//    @BindView(R.id.clearCityBt) ImageButton clearCityBt;
 
     private boolean isRefreshEnabled = false;
 
@@ -64,8 +63,8 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 //        autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
         countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
         cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
-        clearCountryBt.setOnClickListener(v -> countryEt.setText(""));
-        clearCityBt.setOnClickListener(v -> cityEt.setText(""));
+//        clearCountryBt.setOnClickListener(v -> countryEt.setText(""));
+//        clearCityBt.setOnClickListener(v -> cityEt.setText(""));
 
         cityEt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -149,8 +148,8 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
     public void setSearchDone(boolean done) {
         enableTextView(countryEt, !done);
         enableTextView(cityEt, !done);
-        setVisible(clearCountryBt, !done);
-        setVisible(clearCityBt, !done);
+//        setVisible(clearCountryBt, !done);
+//        setVisible(clearCityBt, !done);
 //        searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
 
         isRefreshEnabled = done;
