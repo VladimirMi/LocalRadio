@@ -22,8 +22,6 @@ public interface LocationRepository {
 
     Observable<List<LocationEntity>> getCountry(String isoCode);
 
-    Observable<List<LocationEntity>> getCities();
-
     Observable<List<LocationEntity>> getCities(String country);
 
     void saveLocations(int... locationId);

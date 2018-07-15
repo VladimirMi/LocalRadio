@@ -57,11 +57,6 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public Observable<List<LocationEntity>> getCities() {
-        return null;
-    }
-
-    @Override
     public Observable<List<LocationEntity>> getCities(String country) {
         return null;
     }
