@@ -132,7 +132,7 @@ public class LocationInteractor {
     }
 
     public List<LocationEntity> getCountries() {
-        return locationRepository.getCountries1();
+        return locationRepository.getCountries();
     }
 
     public List<LocationEntity> getCities() {
@@ -151,7 +151,7 @@ public class LocationInteractor {
 
     public List<LocationCluster> getCountryClusters() {
         // TODO: 7/12/18 refactor duplicate code
-        List<LocationEntity> locations = locationRepository.getCountries1();
+        List<LocationEntity> locations = locationRepository.getCountries();
         List<LocationCluster> clusters = new ArrayList<>(locations.size());
 
         for (LocationEntity location : locations) {

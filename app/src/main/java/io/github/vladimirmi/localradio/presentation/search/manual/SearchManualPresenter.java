@@ -34,7 +34,6 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     @Override
     protected void onFirstAttach(SearchManualView view, CompositeDisposable disposables) {
         view.setCountrySuggestions(locationInteractor.getCountriesName());
-        view.setAutodetect(locationInteractor.isAutodetect());
     }
 
     @Override
@@ -50,14 +49,12 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     }
 
     public void selectCountry(String countryName) {
-        if (!hasView()) return;
         List<String> cities = locationInteractor.findCities(countryName);
         view.setCitySuggestions(cities);
         view.setCountryName(countryName);
     }
 
     public void selectCity(String city) {
-        if (!hasView()) return;
         String countryName = locationInteractor.findCountryName(city);
         if (!countryName.isEmpty()) {
             view.setCountryName(countryName);
