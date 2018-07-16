@@ -15,6 +15,7 @@ import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.CustomArrayAdapter;
 import io.github.vladimirmi.localradio.custom.CustomAutoCompleteView;
+import io.github.vladimirmi.localradio.custom.TextViewValidator;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 
@@ -94,7 +95,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
                 android.R.layout.simple_dropdown_item_1line, countries);
 
         countryEt.setAdapter(countryAdapter);
-        countryEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(countries));
+        countryEt.setValidator(new TextViewValidator<>(countries));
     }
 
     @Override
