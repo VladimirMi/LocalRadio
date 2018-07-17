@@ -1,9 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.search.manual;
 
 import android.content.Context;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -16,6 +13,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.CustomArrayAdapter;
 import io.github.vladimirmi.localradio.custom.CustomAutoCompleteView;
 import io.github.vladimirmi.localradio.custom.TextViewValidator;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 
@@ -25,12 +23,8 @@ import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 
 public class SearchManualFragment extends BaseFragment<SearchManualPresenter> implements SearchManualView {
 
-    @BindView(R.id.countryEt) CustomAutoCompleteView countryEt;
-    @BindView(R.id.cityEt) CustomAutoCompleteView cityEt;
-//    @BindView(R.id.clearCountryBt) ImageButton clearCountryBt;
-//    @BindView(R.id.clearCityBt) ImageButton clearCityBt;
-
-    private boolean isRefreshEnabled = false;
+    @BindView(R.id.countryEt) CustomAutoCompleteView<LocationEntity> countryEt;
+    @BindView(R.id.cityEt) CustomAutoCompleteView<LocationEntity> cityEt;
 
     @Override
     protected int getLayout() {
@@ -42,28 +36,15 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
         return Scopes.getAppScope().getInstance(SearchManualPresenter.class);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(isRefreshEnabled ? R.menu.menu_refresh : R.menu.menu_common, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_refresh) {
-            presenter.refreshSearch();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    // TODO: 7/8/18 refactor
-
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
-//        autodetectCb.setOnClickListener(v -> presenter.enableAutodetect(!autodetectCb.isChecked()));
-        countryEt.setOnCompletionListener(text -> presenter.selectCountry(text));
-        cityEt.setOnCompletionListener(text -> presenter.selectCity(text));
+        countryEt.setOnCompletionListener(item -> {
+            presenter.selectCountry(item);
+        });
+        cityEt.setOnCompletionListener(item -> {
+            presenter.selectCity(item);
+        });
 //        clearCountryBt.setOnClickListener(v -> countryEt.setText(""));
 //        clearCityBt.setOnClickListener(v -> cityEt.setText(""));
 
@@ -90,8 +71,8 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
     }
 
     @Override
-    public void setCountrySuggestions(List<String> countries) {
-        CustomArrayAdapter<String> countryAdapter = new CustomArrayAdapter<>(getContext(),
+    public void setCountrySuggestions(List<LocationEntity> countries) {
+        CustomArrayAdapter<LocationEntity> countryAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, countries);
 
         countryEt.setAdapter(countryAdapter);
@@ -99,16 +80,16 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
     }
 
     @Override
-    public void setCitySuggestions(List<String> cities) {
-        CustomArrayAdapter<String> cityAdapter = new CustomArrayAdapter<>(getContext(),
+    public void setCitySuggestions(List<LocationEntity> cities) {
+        CustomArrayAdapter<LocationEntity> cityAdapter = new CustomArrayAdapter<>(getContext(),
                 android.R.layout.simple_dropdown_item_1line, cities);
 
         cityEt.setAdapter(cityAdapter);
-        cityEt.setValidator(new CustomAutoCompleteView.CustomValidator<>(cities));
+        cityEt.setValidator(new TextViewValidator<>(cities));
     }
 
     @Override
-    public void setCountryName(String name) {
+    public void setCountry(String name) {
         countryEt.setText(name);
         countryEt.setSelection(name.length());
     }
@@ -119,70 +100,29 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
         cityEt.setSelection(city.length());
     }
 
-    //workaround on not correct initialized checkbox view on a hidden fragment
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (getView() != null && isVisibleToUser) {
-            initAutoDetectCheckBox();
-        }
+    public void setState(String state) {
+
     }
 
-    private boolean isAutodetect;
-    private boolean autodetectInitialized;
-
-    private void initAutoDetectCheckBox() {
-        if (!autodetectInitialized) {
-//            autodetectCb.setChecked(!isAutodetect);
-//            autodetectCb.setChecked(isAutodetect);
-            autodetectInitialized = true;
-        }
-    }
-
-    @Override
-    public void setAutodetect(boolean enabled) {
-        isAutodetect = enabled;
+    //    @Override
+//    public void setAutodetect(boolean enabled) {
+//        isAutodetect = enabled;
 //        autodetectCb.setChecked(isAutodetect);
-    }
+//    }
 
-    @Override
-    public void setSearchDone(boolean done) {
-        enableTextView(countryEt, !done);
-        enableTextView(cityEt, !done);
+//    @Override
+//    public void setSearchDone(boolean done) {
+//        enableTextView(countryEt, !done);
+//        enableTextView(cityEt, !done);
 //        setVisible(clearCountryBt, !done);
 //        setVisible(clearCityBt, !done);
 //        searchBt.setImageResource(done ? R.drawable.ic_repeat_search : R.drawable.ic_search);
-
-        isRefreshEnabled = done;
-        //noinspection ConstantConditions
-        getActivity().invalidateOptionsMenu();
-    }
-
-    @Override
-    public void showSearchBtn(boolean visible) {
-//        setVisible(searchBt, visible);
-    }
-
-
-    @Override
-    public void setSearchResult(String result) {
-//        searchResultTv.setText(result);
-    }
-
-    @Override
-    public void resetSearchResult() {
-//        searchResultTv.setText("");
-    }
-
-    @Override
-    public void setSearching(boolean enabled) {
-//        setVisible(loadingPb, enabled);
-    }
-
-    @Override
-    public void enableAutodetect(boolean enabled) {
-//        autodetectCb.setEnabled(enabled);
-    }
+//
+//        isRefreshEnabled = done;
+//        //noinspection ConstantConditions
+//        getActivity().invalidateOptionsMenu();
+//    }
 
 
     private void enableTextView(TextView view, boolean enable) {

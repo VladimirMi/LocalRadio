@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
@@ -53,13 +54,31 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     private void initMapMode() {
         switch (locationInteractor.getMapMode()) {
             case EXACT_MODE:
-                view.setExactMode(locationInteractor.getCityClusters());
+                setExactMode();
                 break;
             case RADIUS_MODE:
-                view.setRadiusMode(locationInteractor.getCityClusters());
+                setRadiusMode();
                 break;
             case COUNTRY_MODE:
-                view.setCountryMode(locationInteractor.getCountryClusters());
+                setCountryMode();
         }
+    }
+
+    private void setExactMode() {
+        viewSubs.add(locationInteractor.getCityClusters()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(list -> view.setExactMode(list)));
+    }
+
+    private void setRadiusMode() {
+        viewSubs.add(locationInteractor.getCityClusters()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(list -> view.setRadiusMode(list)));
+    }
+
+    private void setCountryMode() {
+        viewSubs.add(locationInteractor.getCountryClusters()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(list -> view.setCountryMode(list)));
     }
 }

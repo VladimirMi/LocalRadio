@@ -37,7 +37,7 @@ public abstract class BasePresenter<V extends BaseView> {
         dataSubs.clear();
     }
 
-    protected void onFirstAttach(V view, CompositeDisposable disposables) {
+    protected void onFirstAttach(V view, CompositeDisposable dataSubs) {
     }
 
     protected void onAttach(V view) {

@@ -13,10 +13,10 @@ import java.lang.reflect.Field;
  * Created by Vladimir Mikhalev 05.04.2018.
  */
 
-public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
+public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
 
     private boolean isPopupDismissed = true;
-    private OnCompletionListener listener;
+    private OnCompletionListener<T> listener;
 
     public CustomAutoCompleteView(Context context) {
         this(context, null);
@@ -69,22 +69,27 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
         return true;
     }
 
-    public void setOnCompletionListener(OnCompletionListener listener) {
+    public void setOnCompletionListener(OnCompletionListener<T> listener) {
         this.listener = listener;
+        //noinspection unchecked
         setOnItemClickListener((parent, v, position, id) ->
-                listener.onCompletion((String) parent.getItemAtPosition(position)));
+                listener.onCompletion((T) parent.getItemAtPosition(position)));
     }
 
     @Override
     public void performValidation() {
+        // TODO: 7/16/18 ??
         if (getText().toString().isEmpty()) setText(" ");
         super.performValidation();
-        listener.onCompletion(getText().toString());
+
+        //noinspection unchecked
+        T item = (T) ((CustomArrayAdapter) getAdapter()).findItem(getText().toString());
+        listener.onCompletion(item);
     }
 
-    public interface OnCompletionListener {
+    public interface OnCompletionListener<T> {
 
-        void onCompletion(String text);
+        void onCompletion(T item);
     }
 
 }

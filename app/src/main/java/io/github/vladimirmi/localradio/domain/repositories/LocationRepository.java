@@ -18,11 +18,11 @@ public interface LocationRepository {
 
     String getMapMode();
 
-    Observable<List<LocationEntity>> getCountries();
+    Single<List<LocationEntity>> getCountries();
 
-    Observable<List<LocationEntity>> getCountry(String isoCode);
+    Single<LocationEntity> getCountry(String isoCode);
 
-    Observable<List<LocationEntity>> getCities(String country);
+    Single<List<LocationEntity>> getCities(String isoCode);
 
     void saveLocations(int... locationId);
 

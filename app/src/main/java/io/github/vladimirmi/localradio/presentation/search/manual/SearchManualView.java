@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search.manual;
 
 import java.util.List;
 
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**
@@ -10,25 +11,13 @@ import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 public interface SearchManualView extends BaseView {
 
-    void setCountrySuggestions(List<String> countries);
+    void setCountrySuggestions(List<LocationEntity> countries);
 
-    void setCitySuggestions(List<String> cities);
+    void setCitySuggestions(List<LocationEntity> cities);
 
-    void setCountryName(String name);
+    void setCountry(String name);
 
     void setCity(String city);
 
-    void setAutodetect(boolean enabled);
-
-    void setSearchDone(boolean done);
-
-    void showSearchBtn(boolean visible);
-
-    void setSearchResult(String result);
-
-    void resetSearchResult();
-
-    void setSearching(boolean enabled);
-
-    void enableAutodetect(boolean enabled);
+    void setState(String state);
 }

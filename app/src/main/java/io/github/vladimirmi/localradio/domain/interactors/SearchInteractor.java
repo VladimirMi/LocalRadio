@@ -1,14 +1,12 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
-import android.util.Pair;
-
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
-import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
@@ -91,44 +89,47 @@ public class SearchInteractor {
     }
 
     private Single<List<Station>> searchStationsAuto() {
-        return locationRepository.getCoordinates()
-                .flatMap(coordinates -> {
-                    Pair<String, String> countryCodeCity =
-                            locationRepository.getCountryCodeCity(coordinates);
-
-                    if (countryCodeCity == null) {
-                        return searchStationsByIp();
-                    }
-                    locationRepository.saveCountryCodeCity(countryCodeCity.first,
-                            countryCodeCity.second);
-
-                    if (countryCodeCity.first.equals("US")) {
-                        return searchRepository.searchStationsByCoordinates(coordinates);
-                    } else {
-                        return searchRepository.searchStationsAutoManual(countryCodeCity.first,
-                                countryCodeCity.second);
-                    }
-                }).onErrorResumeNext(throwable -> {
-                    if (throwable instanceof LocationSource.LocationTimeoutException) {
-                        return searchStationsByIp();
-                    } else {
-                        return Single.error(throwable);
-                    }
-                });
+        return Single.just(Collections.emptyList());
+//        return locationRepository.getCoordinates()
+//                .flatMap(coordinates -> {
+//                    Pair<String, String> countryCodeCity =
+//                            locationRepository.getCountryCodeCity(coordinates);
+//
+//                    if (countryCodeCity == null) {
+//                        return searchStationsByIp();
+//                    }
+//                    locationRepository.saveCountryCodeCity(countryCodeCity.first,
+//                            countryCodeCity.second);
+//
+//                    if (countryCodeCity.first.equals("US")) {
+//                        return searchRepository.searchStationsByCoordinates(coordinates);
+//                    } else {
+//                        return searchRepository.searchStationsAutoManual(countryCodeCity.first,
+//                                countryCodeCity.second);
+//                    }
+//                }).onErrorResumeNext(throwable -> {
+//                    if (throwable instanceof LocationSource.LocationTimeoutException) {
+//                        return searchStationsByIp();
+//                    } else {
+//                        return Single.error(throwable);
+//                    }
+//                });
     }
 
     private Single<List<Station>> searchStationsManual() {
-        return searchRepository.searchStationsManual(locationRepository.getCountryCode(),
-                locationRepository.getCity());
+        return Single.just(Collections.emptyList());
+//        return searchRepository.searchStationsManual(locationRepository.getCountryCode(),
+//                locationRepository.getCity());
     }
 
     private Single<List<Station>> searchStationsByIp() {
-        return searchRepository.searchStationsByIp()
-                .doOnSuccess(stations -> {
-                    if (!stations.isEmpty()) {
-                        locationRepository.saveCountryCodeCity(stations.get(0).countryCode, "");
-                    }
-                });
+        return Single.just(Collections.emptyList());
+//        return searchRepository.searchStationsByIp()
+//                .doOnSuccess(stations -> {
+//                    if (!stations.isEmpty()) {
+//                        locationRepository.saveCountryCodeCity(stations.get(0).countryCode, "");
+//                    }
+//                });
     }
 
     private Completable checkCanSearch() {

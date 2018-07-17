@@ -15,11 +15,15 @@ public class LocationEntity {
     public float latitude;
     public float longitude;
     public String country;
-    public String state;
-    public String city;
+    public String endpoints;
     public int stations;
 
     public LocationEntity() {
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
 

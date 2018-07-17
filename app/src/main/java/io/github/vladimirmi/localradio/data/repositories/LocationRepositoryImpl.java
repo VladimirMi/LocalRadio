@@ -15,6 +15,7 @@ import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -37,11 +38,6 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public Observable<List<LocationEntity>> getCountries() {
-        return locationsDao.findCountries();
-    }
-
-    @Override
     public void saveMapMode(String mode) {
         preferences.mapMode.put(mode);
     }
@@ -52,13 +48,24 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public Observable<List<LocationEntity>> getCountry(String isoCode) {
-        return null;
+    public Single<List<LocationEntity>> getCountries() {
+        return locationsDao.getCountries()
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Observable<List<LocationEntity>> getCities(String country) {
-        return null;
+    public Single<LocationEntity> getCountry(String isoCode) {
+        return locationsDao.getCountry(isoCode)
+                .subscribeOn(Schedulers.io());
+    }
+
+    @Override
+    public Single<List<LocationEntity>> getCities(String isoCode) {
+        if (isoCode.isEmpty()) {
+            return locationsDao.getCities().subscribeOn(Schedulers.io());
+        } else {
+            return locationsDao.getCities(isoCode).subscribeOn(Schedulers.io());
+        }
     }
 
     @Override
