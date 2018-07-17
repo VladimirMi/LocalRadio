@@ -15,7 +15,7 @@ import timber.log.Timber;
 /**
  * Created by Vladimir Mikhalev 29.06.2018.
  */
-@Database(entities = {LocationEntity.class}, version = 1)
+@Database(entities = {LocationEntity.class}, version = 1, exportSchema = false)
 public abstract class LocationDatabase extends RoomDatabase {
 
     private static final String DB_NAME = "locations.db";

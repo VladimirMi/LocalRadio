@@ -8,7 +8,7 @@ import android.content.Context;
 /**
  * Created by Vladimir Mikhalev 23.05.2018.
  */
-@Database(entities = {StationEntity.class}, version = 1)
+@Database(entities = {StationEntity.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract StationsDao stationsDao();
