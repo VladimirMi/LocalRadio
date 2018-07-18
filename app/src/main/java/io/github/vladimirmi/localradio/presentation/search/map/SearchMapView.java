@@ -12,9 +12,13 @@ public interface SearchMapView extends BaseView {
 
     void initOptions(String mapMode);
 
-    void setExactMode(List<LocationCluster> clusters);
+    void setExactMode();
 
-    void setRadiusMode(List<LocationCluster> clusters);
+    void setRadiusMode();
 
-    void setCountryMode(List<LocationCluster> clusters);
+    void setCountryMode();
+
+    void setRadius();
+
+    void setClusters(List<LocationCluster> clusters);
 }

@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
+import com.google.android.gms.maps.model.LatLngBounds;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -61,7 +63,7 @@ public class LocationInteractor {
     }
 
 
-    public Single<List<LocationCluster>> getCityClusters() {
+    public Single<List<LocationCluster>> getCityClusters(LatLngBounds bound) {
         return locationRepository.getCities("")
                 .toObservable()
                 .flatMapIterable(locationEntities -> locationEntities)
@@ -69,7 +71,7 @@ public class LocationInteractor {
                 .toList();
     }
 
-    public Single<List<LocationCluster>> getCountryClusters() {
+    public Single<List<LocationCluster>> getCountryClusters(LatLngBounds bound) {
         return locationRepository.getCountries()
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationCluster::new)
