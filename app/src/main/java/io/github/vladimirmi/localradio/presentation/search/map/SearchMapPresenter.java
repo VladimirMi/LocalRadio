@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
@@ -62,6 +63,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                         return locationInteractor.getCityClusters(bound);
                     }
                 })
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(clusters -> {
                     if (locationInteractor.getMapMode().equals(RADIUS_MODE)) {
                         view.setRadius();

@@ -20,7 +20,8 @@ import io.github.vladimirmi.localradio.custom.CustomClusterRenderer;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
-import io.github.vladimirmi.localradio.utils.MapUtils;
+import io.github.vladimirmi.localradio.utils.MapUtil;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -74,7 +75,10 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         map.setOnMarkerClickListener(clusterManager);
 
         presenter.onMapReady();
-        presenter.onMapMove(MapUtils.observeCameraMove(map));
+        presenter.onMapMove(MapUtil.observeCameraMove(map));
+        map.setOnCameraIdleListener(() -> {
+            Timber.e("onMapReady: idle " + map.getCameraPosition().zoom);
+        });
     }
 
     @Override
