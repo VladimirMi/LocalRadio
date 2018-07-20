@@ -43,7 +43,12 @@ public class MapClusterLoader {
     private final Observable<String> zoomObservable = observeCameraMove(googleMap ->
             googleMap.getCameraPosition().zoom)
             .distinctUntilChanged()
-            .doOnNext(zoom -> calculateBounds())
+            .doOnNext(zoom -> {
+                // TODO: 7/20/18 modify bounds except() method for working with bounds with different sizes
+                // TODO: 7/20/18 check performance with/without coordinate indices
+                loadBounds = null;
+                calculateBounds();
+            })
             .ignoreElements()
             .<String>toObservable()
             .doOnDispose(() -> Timber.e("dispose target"));
