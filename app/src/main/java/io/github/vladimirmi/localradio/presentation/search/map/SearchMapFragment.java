@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
@@ -65,6 +64,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         mapClusterLoader = new MapClusterLoader(map, clusterManager);
 
         presenter.onMapReady();
+        presenter.loadClusters(mapClusterLoader.observeQueryString());
     }
 
     @Override
@@ -103,30 +103,32 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void setExactMode() {
         map.setMinZoomPreference(2f);
         map.setMaxZoomPreference(9f);
+        mapClusterLoader.setIsCountry(false);
     }
 
     @Override
     public void setRadiusMode() {
         map.setMinZoomPreference(6f);
         map.setMaxZoomPreference(9f);
+        mapClusterLoader.setIsCountry(false);
     }
 
     @Override
     public void setRadius() {
-        if (radiusCircle != null) radiusCircle.remove();
-        radiusCircle = map.addCircle(new CircleOptions().center(map.getCameraPosition().target).radius(80000));
+//        if (radiusCircle != null) radiusCircle.remove();
+//        radiusCircle = map.addCircle(new CircleOptions().center(map.getCameraPosition().target).radius(80000));
     }
 
     @Override
     public void setCountryMode() {
         map.setMinZoomPreference(2f);
         map.setMaxZoomPreference(7f);
+        mapClusterLoader.setIsCountry(true);
     }
 
     @Override
     public void setClusters(List<LocationCluster> clusters) {
-        clusterManager.clearItems();
-        clusterManager.addItems(clusters);
+        mapClusterLoader.addClusters(clusters);
     }
 
     //endregion

@@ -1,5 +1,8 @@
 package io.github.vladimirmi.localradio.map;
 
+import android.arch.persistence.db.SimpleSQLiteQuery;
+import android.arch.persistence.db.SupportSQLiteQuery;
+
 /**
  * Created by Vladimir Mikhalev 20.07.2018.
  */
@@ -8,8 +11,8 @@ public class MapQueryBuilder {
     // TODO: 7/20/18 table name (locations) to const
     private final StringBuilder sb = new StringBuilder();
 
-    public String build() {
-        return sb.toString();
+    public SupportSQLiteQuery build() {
+        return new SimpleSQLiteQuery(sb.toString());
     }
 
     public MapQueryBuilder insideBounds(Bounds bounds) {
@@ -25,7 +28,7 @@ public class MapQueryBuilder {
     public MapQueryBuilder isCountry(boolean isCountry) {
         if (ensureInit()) sb.append(" AND ");
 
-        sb.append("endpoints").append(isCountry ? " == " : " != ").append("isCountry");
+        sb.append("endpoints").append(isCountry ? " == " : " != ").append("'isCountry'");
         return this;
     }
 

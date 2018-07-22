@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.data.repositories;
 
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.util.Pair;
 
 import java.util.List;
@@ -45,6 +46,11 @@ public class LocationRepositoryImpl implements LocationRepository {
     @Override
     public String getMapMode() {
         return preferences.mapMode.get();
+    }
+
+    @Override
+    public Single<List<LocationEntity>> loadClusters(SupportSQLiteQuery query) {
+        return locationsDao.query(query);
     }
 
     @Override

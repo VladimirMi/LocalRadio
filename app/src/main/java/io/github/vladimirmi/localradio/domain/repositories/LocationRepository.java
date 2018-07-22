@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.domain.repositories;
 
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.util.Pair;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public interface LocationRepository {
     void saveMapMode(String mode);
 
     String getMapMode();
+
+    Single<List<LocationEntity>> loadClusters(SupportSQLiteQuery query);
 
     Single<List<LocationEntity>> getCountries();
 

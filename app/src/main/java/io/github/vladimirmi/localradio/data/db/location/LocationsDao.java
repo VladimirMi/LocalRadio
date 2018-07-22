@@ -1,7 +1,9 @@
 package io.github.vladimirmi.localradio.data.db.location;
 
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.RawQuery;
 
 import java.util.List;
 
@@ -24,4 +26,7 @@ public interface LocationsDao {
 
     @Query("SELECT * FROM locations WHERE endpoints != 'isCountry' AND country == :isoCode")
     Single<List<LocationEntity>> getCities(String isoCode);
+
+    @RawQuery()
+    Single<List<LocationEntity>> query(SupportSQLiteQuery query);
 }

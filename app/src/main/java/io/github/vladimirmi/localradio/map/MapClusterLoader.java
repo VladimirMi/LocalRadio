@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.map;
 
+import android.arch.persistence.db.SupportSQLiteQuery;
+
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
@@ -16,6 +18,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 /**
@@ -26,7 +29,7 @@ public class MapClusterLoader {
     private static final double LOAD = 0.5;
     private static final double THRESHOLD = 0.3;
 
-    private final PublishRelay<String> loadQueryRelay = PublishRelay.create();
+    private final PublishRelay<SupportSQLiteQuery> loadQueryRelay = PublishRelay.create();
 
     private GoogleMap map;
     private ClusterManager<LocationCluster> clusterManager;
@@ -40,26 +43,27 @@ public class MapClusterLoader {
     private boolean isCountry = false;
     private volatile boolean loading = false;
 
-    private final Observable<String> zoomObservable = observeCameraMove(googleMap ->
+    private final Observable<SupportSQLiteQuery> zoomObservable = observeCameraMove(googleMap ->
             googleMap.getCameraPosition().zoom)
             .distinctUntilChanged()
             .doOnNext(zoom -> {
                 // TODO: 7/20/18 modify bounds except() method for working with bounds with different sizes
                 // TODO: 7/20/18 check performance with/without coordinate indices
                 loadBounds = null;
-                calculateBounds();
+                clusterManager.clearItems();
+                loadNext();
             })
             .ignoreElements()
-            .<String>toObservable()
+            .<SupportSQLiteQuery>toObservable()
             .doOnDispose(() -> Timber.e("dispose target"));
 
-    private final Observable<String> targetObservable = observeCameraMove(googleMap ->
+    private final Observable<SupportSQLiteQuery> targetObservable = observeCameraMove(googleMap ->
             googleMap.getCameraPosition().target)
             .distinctUntilChanged()
             .filter(latLng -> !loading)
             .doOnNext(this::checkThreshold)
             .ignoreElements()
-            .<String>toObservable()
+            .<SupportSQLiteQuery>toObservable()
             .doOnDispose(() -> Timber.e("dispose target"));
 
     public MapClusterLoader(GoogleMap map, ClusterManager<LocationCluster> clusterManager) {
@@ -73,12 +77,17 @@ public class MapClusterLoader {
         clusterManager.addItems(clusters);
     }
 
-    public Observable<String> observeQueryString() {
+    public Observable<SupportSQLiteQuery> observeQueryString() {
         return Observable.merge(zoomObservable, targetObservable, loadQueryRelay)
-                .doOnSubscribe(disposable -> loadNext());
+                .observeOn(Schedulers.io())
+                .doOnNext(supportSQLiteQuery -> Timber.e("observeQueryString: " + supportSQLiteQuery.getSql()));
     }
 
     public void setIsCountry(boolean isCountry) {
+        if (this.isCountry != isCountry) {
+            loadBounds = null;
+            clusterManager.clearItems();
+        }
         this.isCountry = isCountry;
     }
 
@@ -96,6 +105,7 @@ public class MapClusterLoader {
     }
 
     private void checkThreshold(LatLng target) {
+        Timber.e("checkThreshold: ");
         double deltaY = MapUtils.delta(originTarget.latitude, target.latitude);
         if (deltaY >= thresholdY) {
             loadNext();
@@ -108,12 +118,13 @@ public class MapClusterLoader {
     }
 
     private void loadNext() {
+        Timber.e("loadNext: ");
         calculateBounds();
         Bounds newLoadBounds = visibleBounds.multiplyBy(LOAD);
 
+        loading = true;
         if (loadBounds == null) {
             loadQueryRelay.accept(getQueryString(newLoadBounds));
-            loading = true;
 
         } else {
             removeClustersOutside(newLoadBounds);
@@ -144,9 +155,8 @@ public class MapClusterLoader {
         }
     }
 
-    private String getQueryString(Bounds bounds) {
+    private SupportSQLiteQuery getQueryString(Bounds bounds) {
         return new MapQueryBuilder()
-                .isCountry(isCountry)
                 .insideBounds(bounds)
                 .build();
     }
@@ -166,6 +176,7 @@ public class MapClusterLoader {
             emitter.setDisposable(Disposables.fromRunnable(() -> {
                 map.setOnCameraMoveListener(null);
             }));
-        }).sample(100, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread(), true);
+        }).sample(100, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread(), true)
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 }

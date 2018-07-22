@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
+import android.arch.persistence.db.SupportSQLiteQuery;
+
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import javax.inject.Inject;
@@ -9,6 +11,7 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -83,6 +86,13 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
             case COUNTRY_MODE:
                 view.setCountryMode();
         }
+    }
+
+    public void loadClusters(Observable<SupportSQLiteQuery> queryObservable) {
+        viewSubs.add(queryObservable
+                .flatMapSingle(locationInteractor::loadClusters)
+                .doOnNext(locationClusters -> Timber.e("loadClusters: " + locationClusters.size()))
+                .subscribe(clusters -> view.setClusters(clusters)));
     }
 
 //    private void setExactMode() {

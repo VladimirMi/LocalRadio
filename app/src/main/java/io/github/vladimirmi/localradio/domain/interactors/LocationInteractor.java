@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
+import android.arch.persistence.db.SupportSQLiteQuery;
+
 import com.google.android.gms.maps.model.LatLngBounds;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 24.04.2018.
@@ -62,11 +65,17 @@ public class LocationInteractor {
         return locationRepository.getSavedLocations();
     }
 
+    public Single<List<LocationCluster>> loadClusters(SupportSQLiteQuery query) {
+        return locationRepository.loadClusters(query)
+                .doOnSuccess(locationEntities -> Timber.e("loadClusters: " + locationEntities.size()))
+                .flattenAsObservable(locationEntities -> locationEntities)
+                .map(LocationCluster::new)
+                .toList();
+    }
 
     public Single<List<LocationCluster>> getCityClusters(LatLngBounds bound) {
         return locationRepository.getCities("")
-                .toObservable()
-                .flatMapIterable(locationEntities -> locationEntities)
+                .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationCluster::new)
                 .toList();
     }
