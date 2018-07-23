@@ -101,7 +101,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setExactMode() {
-        map.setMinZoomPreference(2f);
+        map.setMinZoomPreference(6f);
         map.setMaxZoomPreference(9f);
         mapClusterLoader.setIsCountry(false);
     }

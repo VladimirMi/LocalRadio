@@ -1,4 +1,4 @@
-package io.github.vladimirmi.localradio.utils;
+package io.github.vladimirmi.localradio.map;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 12.07.2018.

@@ -9,7 +9,6 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
-import io.github.vladimirmi.localradio.utils.MarkerIconBuilder;
 
 /**
  * Created by Vladimir Mikhalev 12.07.2018.

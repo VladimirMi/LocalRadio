@@ -2,8 +2,6 @@ package io.github.vladimirmi.localradio.presentation.search.map;
 
 import android.arch.persistence.db.SupportSQLiteQuery;
 
-import com.google.android.gms.maps.model.LatLngBounds;
-
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
@@ -11,7 +9,6 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -57,24 +54,6 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         initMapMode();
     }
 
-    public void onMapMove(Observable<LatLngBounds> cameraMove) {
-        viewSubs.add(cameraMove
-                .flatMapSingle(bound -> {
-                    if (locationInteractor.getMapMode().equals(COUNTRY_MODE)) {
-                        return locationInteractor.getCountryClusters(bound);
-                    } else {
-                        return locationInteractor.getCityClusters(bound);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(clusters -> {
-                    if (locationInteractor.getMapMode().equals(RADIUS_MODE)) {
-                        view.setRadius();
-                    }
-                    view.setClusters(clusters);
-                }));
-    }
-
     private void initMapMode() {
         switch (locationInteractor.getMapMode()) {
             case EXACT_MODE:
@@ -91,7 +70,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     public void loadClusters(Observable<SupportSQLiteQuery> queryObservable) {
         viewSubs.add(queryObservable
                 .flatMapSingle(locationInteractor::loadClusters)
-                .doOnNext(locationClusters -> Timber.e("loadClusters: " + locationClusters.size()))
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(clusters -> view.setClusters(clusters)));
     }
 

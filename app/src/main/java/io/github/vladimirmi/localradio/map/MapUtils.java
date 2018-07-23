@@ -1,7 +1,7 @@
 package io.github.vladimirmi.localradio.map;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+import android.arch.persistence.db.SimpleSQLiteQuery;
+import android.arch.persistence.db.SupportSQLiteQuery;
 
 /**
  * Created by Vladimir Mikhalev 20.07.2018.
@@ -12,46 +12,29 @@ public class MapUtils {
     private MapUtils() {
     }
 
-    public static Point normalize(LatLng latLng) {
-        return new Point(normalizeLat(latLng.latitude), normalizeLong(latLng.longitude));
-    }
-
-    public static Bounds normalize(LatLngBounds bounds) {
-        return new Bounds(
-                normalizeLat(bounds.northeast.latitude),
-                normalizeLong(bounds.northeast.longitude),
-                normalizeLat(bounds.southwest.latitude),
-                normalizeLong(bounds.southwest.longitude));
-    }
-
-    public static double delta(double a, double b) {
+    public static double delta(double x1, double x2) {
+        double a = round(x1);
+        double b = round(x2);
         double d1 = Math.abs(a - b);
         double d2 = Math.abs(360 + a - b);
         double d3 = Math.abs(360 + b - a);
         return Math.min(Math.min(d1, d2), d3);
     }
 
-    private static double normalizeLat(double latitude) {
-        return 90 - latitude;
+    public static double round(double a) {
+        return Math.round(a * 10000.0) / 10000.0;
     }
 
-    public static double toLatitude(double normLat) {
-        return 90 - normLat;
-    }
+    public static SupportSQLiteQuery createQueryFor(Bounds bounds, boolean isCountry) {
+        String sb = new StringBuilder()
+                .append("SELECT * FROM locations WHERE ")
+                .append("endpoints ").append(isCountry ? "==" : "!=").append(" 'isCountry'")
+                .append(" AND latitude >= ").append(bounds.bottom)
+                .append(" AND latitude <= ").append(bounds.top)
+                .append(" AND longitude >= ").append(bounds.left)
+                .append(" AND longitude <= ").append(bounds.right)
+                .toString();
 
-    private static double normalizeLong(double longitude) {
-        if (longitude >= 0) {
-            return longitude;
-        } else {
-            return 360 + longitude;
-        }
-    }
-
-    public static double toLongitude(double normLong) {
-        if (normLong <= 180) {
-            return normLong;
-        } else {
-            return normLong - 360;
-        }
+        return new SimpleSQLiteQuery(sb);
     }
 }
