@@ -15,7 +15,7 @@ import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.models.LocationCluster;
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.CustomClusterRenderer;
 import io.github.vladimirmi.localradio.map.MapClusterLoader;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
@@ -31,7 +31,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     @BindView(R.id.radiusView) RadiusView radiusView;
 
-    private ClusterManager<LocationCluster> clusterManager;
+    private ClusterManager<LocationClusterItem> clusterManager;
     private GoogleMap map;
     private MapClusterLoader mapClusterLoader;
 
@@ -128,7 +128,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void setClusters(List<LocationCluster> clusters) {
+    public void setClusters(List<LocationClusterItem> clusters) {
         mapClusterLoader.addClusters(clusters);
     }
 

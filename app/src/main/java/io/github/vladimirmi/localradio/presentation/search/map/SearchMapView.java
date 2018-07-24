@@ -2,7 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search.map;
 
 import java.util.List;
 
-import io.github.vladimirmi.localradio.domain.models.LocationCluster;
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**
@@ -20,5 +20,5 @@ public interface SearchMapView extends BaseView {
 
     void changeRadius(Float zoom);
 
-    void setClusters(List<LocationCluster> clusters);
+    void setClusters(List<LocationClusterItem> clusters);
 }

@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import io.github.vladimirmi.localradio.domain.models.LocationCluster;
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposables;
@@ -30,7 +30,7 @@ public class MapClusterLoader {
     private final BehaviorRelay<SupportSQLiteQuery> loadQueryRelay = BehaviorRelay.create();
 
     private GoogleMap map;
-    private ClusterManager<LocationCluster> clusterManager;
+    private ClusterManager<LocationClusterItem> clusterManager;
 
     private LatLng originTarget;
     private Bounds visibleBounds;
@@ -57,13 +57,13 @@ public class MapClusterLoader {
             .ignoreElements()
             .toObservable();
 
-    public MapClusterLoader(GoogleMap map, ClusterManager<LocationCluster> clusterManager) {
+    public MapClusterLoader(GoogleMap map, ClusterManager<LocationClusterItem> clusterManager) {
         this.map = map;
         this.clusterManager = clusterManager;
         configureMap();
     }
 
-    public void addClusters(List<LocationCluster> clusters) {
+    public void addClusters(List<LocationClusterItem> clusters) {
         Timber.e("addClusters: " + clusters.size());
         clusterManager.addItems(clusters);
         clusterManager.cluster();
@@ -143,8 +143,8 @@ public class MapClusterLoader {
     }
 
     private void removeClustersOutside(Bounds bounds) {
-        Collection<LocationCluster> clusters = clusterManager.getAlgorithm().getItems();
-        for (LocationCluster cluster : clusters) {
+        Collection<LocationClusterItem> clusters = clusterManager.getAlgorithm().getItems();
+        for (LocationClusterItem cluster : clusters) {
             if (!bounds.contains(cluster.getPosition())) {
                 clusterManager.removeItem(cluster);
             }

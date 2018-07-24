@@ -7,7 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
-import io.github.vladimirmi.localradio.domain.models.LocationCluster;
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -62,10 +62,10 @@ public class LocationInteractor {
         return locationRepository.getSavedLocations();
     }
 
-    public Single<List<LocationCluster>> loadClusters(SupportSQLiteQuery query) {
+    public Single<List<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
         return locationRepository.loadClusters(query)
                 .flattenAsObservable(locationEntities -> locationEntities)
-                .map(LocationCluster::new)
+                .map(LocationClusterItem::new)
                 .toList();
     }
 

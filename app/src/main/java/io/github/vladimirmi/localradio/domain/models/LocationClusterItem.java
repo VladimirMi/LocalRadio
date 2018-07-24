@@ -8,14 +8,14 @@ import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 /**
  * Created by Vladimir Mikhalev 03.07.2018.
  */
-public class LocationCluster implements ClusterItem {
+public class LocationClusterItem implements ClusterItem {
 
     private final LatLng position;
     private final String title;
     private final String snippet;
     private int stationsNum;
 
-    public LocationCluster(LocationEntity location) {
+    public LocationClusterItem(LocationEntity location) {
         this.position = new LatLng(location.latitude, location.longitude);
         this.title = location.name;
         this.snippet = String.valueOf(location.id);
