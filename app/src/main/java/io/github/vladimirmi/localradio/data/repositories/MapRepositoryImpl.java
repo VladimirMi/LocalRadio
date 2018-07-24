@@ -3,7 +3,10 @@ package io.github.vladimirmi.localradio.data.repositories;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.content.Context;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.Collections;
@@ -23,7 +26,7 @@ import io.reactivex.Observable;
 /**
  * Created by Vladimir Mikhalev 24.07.2018.
  */
-public class MapRepositoryImpl implements MapRepository {
+public class MapRepositoryImpl implements MapRepository, GoogleMap.OnCameraIdleListener {
 
     private final Context context;
     private final Preferences preferences;
@@ -54,12 +57,12 @@ public class MapRepositoryImpl implements MapRepository {
     @Override
     public void onMapReady(GoogleMap map) {
         mapWrapper.setMap(map);
+        restoreMap();
 
         ClusterManager<LocationClusterItem> clusterManager = new ClusterManager<>(context, map);
         renderer = new CustomClusterRenderer(context, map, clusterManager);
         clusterManager.setRenderer(renderer);
-        map.setOnCameraIdleListener(clusterManager);
-        map.setOnMarkerClickListener(clusterManager);
+        map.setOnCameraIdleListener(this);
 
         clusterLoader = new ClusterLoader(map, clusterManager);
         clusterLoader.setIsCountry(getMapMode().equals(SearchMapPresenter.COUNTRY_MODE));
@@ -84,5 +87,21 @@ public class MapRepositoryImpl implements MapRepository {
     @Override
     public List<LocationClusterItem> getSelectedItems() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void onCameraIdle() {
+        clusterLoader.onCameraIdle();
+        float zoom = mapWrapper.getMap().getCameraPosition().zoom;
+        LatLng target = mapWrapper.getMap().getCameraPosition().target;
+        preferences.mapLat.put((float) target.latitude);
+        preferences.mapLong.put((float) target.longitude);
+        preferences.mapZoom.put(zoom);
+    }
+
+    private void restoreMap() {
+        LatLng position = new LatLng(preferences.mapLat.get(), preferences.mapLong.get());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, preferences.mapZoom.get());
+        mapWrapper.getMap().moveCamera(cameraUpdate);
     }
 }

@@ -66,6 +66,10 @@ public class ClusterLoader {
         }
     }
 
+    public void onCameraIdle() {
+        clusterManager.onCameraIdle();
+    }
+
     private boolean isNeedLoad(LatLng target) {
         if (originTarget == null) return false;
         double deltaLat = MapUtils.delta(originTarget.latitude, target.latitude);
