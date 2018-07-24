@@ -13,6 +13,7 @@ import io.github.vladimirmi.localradio.data.db.location.LocationsDao;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
+import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -36,6 +37,32 @@ public class LocationRepositoryImpl implements LocationRepository {
         this.preferences = preferences;
         this.locationSource = locationSource;
         this.locationsDao = database.locationsDao();
+    }
+
+    @Override
+    public void saveMapMode(String mode) {
+        preferences.mapMode.put(mode);
+    }
+
+    @Override
+    public String getMapMode() {
+        return preferences.mapMode.get();
+    }
+
+    @Override
+    public void saveMapState(MapState mapState) {
+        preferences.mapLat.put(mapState.latitude);
+        preferences.mapLong.put(mapState.longitude);
+        preferences.mapZoom.put(mapState.zoom);
+    }
+
+    @Override
+    public MapState getMapState() {
+        return new MapState(
+                preferences.mapLat.get(),
+                preferences.mapLong.get(),
+                preferences.mapZoom.get()
+        );
     }
 
     @Override

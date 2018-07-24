@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
+import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -24,6 +25,22 @@ public class LocationInteractor {
     @Inject
     public LocationInteractor(LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
+    }
+
+    public String getMapMode() {
+        return locationRepository.getMapMode();
+    }
+
+    public void saveMapMode(String mode) {
+        locationRepository.saveMapMode(mode);
+    }
+
+    public MapState getMapState() {
+        return locationRepository.getMapState();
+    }
+
+    public void saveMapState(MapState mapState) {
+        locationRepository.saveMapState(mapState);
     }
 
     public void saveAutodetect(boolean enabled) {

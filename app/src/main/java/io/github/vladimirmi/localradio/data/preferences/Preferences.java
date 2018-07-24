@@ -5,8 +5,8 @@ import android.content.SharedPreferences;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
-import io.github.vladimirmi.localradio.presentation.search.map.SearchMapPresenter;
 import io.github.vladimirmi.localradio.presentation.stations.StationsPagerFragment;
 
 public class Preferences {
@@ -59,7 +59,7 @@ public class Preferences {
         currentStationIsFavorite = new Preference<>(prefs, KEY_CURRENT_STATION_IS_FAVORITE, false);
         pagePosition = new Preference<>(prefs, KEY_PAGE, StationsPagerFragment.PAGE_STATIONS);
         searchMode = new Preference<>(prefs, KEY_SEARCH_MODE, SearchPresenter.MAP_MODE);
-        mapMode = new Preference<>(prefs, KEY_MAP_MODE, SearchMapPresenter.EXACT_MODE);
+        mapMode = new Preference<>(prefs, KEY_MAP_MODE, MapWrapper.COUNTRY_MODE);
         mapLat = new Preference<>(prefs, KEY_MAP_LAT, 0f);
         mapLong = new Preference<>(prefs, KEY_MAP_LONG, 0f);
         mapZoom = new Preference<>(prefs, KEY_MAP_ZOOM, 0f);

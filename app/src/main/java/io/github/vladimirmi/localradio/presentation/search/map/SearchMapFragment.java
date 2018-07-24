@@ -8,10 +8,15 @@ import android.widget.TextView;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 
+import java.util.List;
+
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
+import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 
 /**
@@ -25,7 +30,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     @BindView(R.id.radiusView) RadiusView radiusView;
 
-    private GoogleMap map;
+    private MapWrapper mapWrapper;
 
     @Override
     protected int getLayout() {
@@ -48,8 +53,13 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
-        this.map = map;
-        presenter.onMapReady(map);
+        mapWrapper = new MapWrapper(map, getContext());
+        presenter.onMapReady();
+        presenter.loadClusters(mapWrapper.getQueryObservable());
+        presenter.radiusZoomChange(mapWrapper.getRadiusZoomObservable());
+        mapWrapper.setOnSaveStateListener(state -> {
+            presenter.saveMapState(state);
+        });
     }
 
 
@@ -65,13 +75,13 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void initOptions(String mapMode) {
         if (!getUserVisibleHint()) return;
         switch (mapMode) {
-            case SearchMapPresenter.EXACT_MODE:
+            case MapWrapper.EXACT_MODE:
                 selectionRg.check(R.id.exactLocRBtn);
                 break;
-            case SearchMapPresenter.RADIUS_MODE:
+            case MapWrapper.RADIUS_MODE:
                 selectionRg.check(R.id.radiusRBtn);
                 break;
-            case SearchMapPresenter.COUNTRY_MODE:
+            case MapWrapper.COUNTRY_MODE:
                 selectionRg.check(R.id.countryRBtn);
         }
         selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
@@ -86,15 +96,20 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
+    public void setMapMode(String mode) {
+        mapWrapper.setMapMode(mode);
+    }
+
+    @Override
     public void setExactMode() {
-        map.setMinZoomPreference(6f);
-        map.setMaxZoomPreference(8f);
+        mapWrapper.map.setMinZoomPreference(6f);
+        mapWrapper.map.setMaxZoomPreference(8f);
     }
 
     @Override
     public void setRadiusMode() {
-        map.setMinZoomPreference(6f);
-        map.setMaxZoomPreference(8f);
+        mapWrapper.map.setMinZoomPreference(6f);
+        mapWrapper.map.setMaxZoomPreference(8f);
     }
 
     @Override
@@ -104,8 +119,18 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setCountryMode() {
-        map.setMinZoomPreference(2f);
-        map.setMaxZoomPreference(7f);
+        mapWrapper.map.setMinZoomPreference(2f);
+        mapWrapper.map.setMaxZoomPreference(7f);
+    }
+
+    @Override
+    public void restoreMapState(MapState state) {
+        mapWrapper.restoreMapState(state);
+    }
+
+    @Override
+    public void addClusters(List<LocationClusterItem> clusterItems) {
+        mapWrapper.addClusters(clusterItems);
     }
 
     //endregion

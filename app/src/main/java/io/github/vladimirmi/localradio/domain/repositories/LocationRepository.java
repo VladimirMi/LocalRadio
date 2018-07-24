@@ -6,6 +6,7 @@ import android.util.Pair;
 import java.util.List;
 
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
+import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -14,6 +15,14 @@ import io.reactivex.Single;
  * Created by Vladimir Mikhalev 30.05.2018.
  */
 public interface LocationRepository {
+
+    void saveMapMode(String mode);
+
+    String getMapMode();
+
+    void saveMapState(MapState mapState);
+
+    MapState getMapState();
 
     Single<List<LocationEntity>> loadClusters(SupportSQLiteQuery query);
 

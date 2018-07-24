@@ -1,12 +1,14 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
-import com.google.android.gms.maps.GoogleMap;
+import android.arch.persistence.db.SupportSQLiteQuery;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
-import io.github.vladimirmi.localradio.domain.interactors.MapInteractor;
+import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -15,18 +17,11 @@ import io.reactivex.disposables.CompositeDisposable;
  */
 public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
-    public static final String EXACT_MODE = "EXACT_MODE";
-    public static final String RADIUS_MODE = "RADIUS_MODE";
-    public static final String COUNTRY_MODE = "COUNTRY_MODE";
-
     private final LocationInteractor locationInteractor;
-    private final MapInteractor mapInteractor;
-    private String mapMode;
 
     @Inject
-    public SearchMapPresenter(LocationInteractor locationInteractor, MapInteractor mapInteractor) {
+    public SearchMapPresenter(LocationInteractor locationInteractor) {
         this.locationInteractor = locationInteractor;
-        this.mapInteractor = mapInteractor;
     }
 
     @Override
@@ -35,49 +30,57 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void initOptions() {
-        view.initOptions(mapInteractor.getMapMode());
+        view.initOptions(locationInteractor.getMapMode());
     }
 
-    public void onMapReady(GoogleMap map) {
+    public void onMapReady() {
         initMapMode();
-        mapInteractor.onMapReady(map);
+        view.restoreMapState(locationInteractor.getMapState());
+    }
 
-        viewSubs.add(mapInteractor.getQueryObservable()
+    public void loadClusters(Observable<SupportSQLiteQuery> queryObservable) {
+        viewSubs.add(queryObservable
                 .flatMapSingle(locationInteractor::loadClusters)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mapInteractor::addClusters));
+                .subscribe(view::addClusters));
+    }
 
-        viewSubs.add(mapInteractor.getZoomObservable()
+    public void radiusZoomChange(Observable<Float> radiusZoomObservable) {
+        viewSubs.add(radiusZoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::changeRadius));
     }
 
     public void selectCountry() {
-        mapInteractor.saveMapMode(COUNTRY_MODE);
+        locationInteractor.saveMapMode(MapWrapper.COUNTRY_MODE);
         initMapMode();
     }
 
     public void selectRadius() {
-        mapInteractor.saveMapMode(RADIUS_MODE);
+        locationInteractor.saveMapMode(MapWrapper.RADIUS_MODE);
         initMapMode();
     }
 
     public void selectExact() {
-        mapInteractor.saveMapMode(EXACT_MODE);
+        locationInteractor.saveMapMode(MapWrapper.EXACT_MODE);
         initMapMode();
     }
 
     private void initMapMode() {
-        mapMode = mapInteractor.getMapMode();
-        switch (mapMode) {
-            case EXACT_MODE:
+        view.setMapMode(locationInteractor.getMapMode());
+        switch (locationInteractor.getMapMode()) {
+            case MapWrapper.EXACT_MODE:
                 view.setExactMode();
                 break;
-            case RADIUS_MODE:
+            case MapWrapper.RADIUS_MODE:
                 view.setRadiusMode();
                 break;
-            case COUNTRY_MODE:
+            case MapWrapper.COUNTRY_MODE:
                 view.setCountryMode();
         }
+    }
+
+    public void saveMapState(MapState state) {
+        locationInteractor.saveMapState(state);
     }
 }

@@ -1,10 +1,19 @@
 package io.github.vladimirmi.localradio.map;
 
+import android.arch.persistence.db.SupportSQLiteQuery;
+import android.content.Context;
+
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterManager;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposables;
@@ -12,51 +21,83 @@ import io.reactivex.disposables.Disposables;
 /**
  * Created by Vladimir Mikhalev 24.07.2018.
  */
-public class MapWrapper {
+public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
-    private GoogleMap map;
-    private GoogleMap.OnCameraMoveListener cameraMoveListener;
+    public static final String EXACT_MODE = "EXACT_MODE";
+    public static final String RADIUS_MODE = "RADIUS_MODE";
+    public static final String COUNTRY_MODE = "COUNTRY_MODE";
 
+    public final GoogleMap map;
+    private String mapMode = COUNTRY_MODE;
     private final Object emit = new Object();
-    private Observable<Object> cameraMoveObservable = Observable.create(emitter -> {
-        cameraMoveListener = () -> {
-            try {
-                if (!emitter.isDisposed()) emitter.onNext(emit);
-            } catch (Exception e) {
-                emitter.tryOnError(e);
-            }
-        };
-        if (isMapReady()) getMap().setOnCameraMoveListener(cameraMoveListener);
-        emitter.onNext(emit);
+    private final Observable<Object> cameraMoveObservable;
+    private CustomClusterRenderer renderer;
+    private ClusterLoader clusterLoader;
+    private OnSaveMapStateListener onSaveStateListener;
 
-        emitter.setDisposable(Disposables.fromRunnable(() -> {
-            cameraMoveListener = null;
-            if (isMapReady()) getMap().setOnCameraMoveListener(null);
-        }));
-    }).sample(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread(), true)
-            .unsubscribeOn(AndroidSchedulers.mainThread())
-            .share();
-
-
-    public GoogleMap getMap() {
-        if (!isMapReady()) throw new IllegalStateException("Map not ready");
-        return map;
-    }
-
-    public void setMap(GoogleMap map) {
+    public MapWrapper(GoogleMap map, Context context) {
         this.map = map;
+        cameraMoveObservable = createCameraMoveObservable();
         configureMap();
-        if (cameraMoveListener != null) {
+
+        ClusterManager<LocationClusterItem> clusterManager = new ClusterManager<>(context, map);
+        renderer = new CustomClusterRenderer(context, map, clusterManager);
+        clusterManager.setRenderer(renderer);
+        map.setOnCameraIdleListener(this);
+
+        clusterLoader = new ClusterLoader(map, clusterManager);
+    }
+
+    public void setMapMode(String mode) {
+        mapMode = mode;
+        clusterLoader.setIsCountry(mode.equals(COUNTRY_MODE));
+    }
+
+    public void addClusters(List<LocationClusterItem> clusterItems) {
+        clusterLoader.addClusters(clusterItems);
+    }
+
+    public Observable<SupportSQLiteQuery> getQueryObservable() {
+        return clusterLoader.getQueryObservable(cameraMoveObservable);
+    }
+
+    public Observable<Float> getRadiusZoomObservable() {
+        return cameraMoveObservable
+                .map(o -> map.getCameraPosition().zoom)
+                .distinctUntilChanged()
+                .filter(zoom -> mapMode.equals(RADIUS_MODE));
+    }
+
+    public void setOnSaveStateListener(OnSaveMapStateListener listener) {
+        onSaveStateListener = listener;
+    }
+
+    public void restoreMapState(MapState state) {
+        LatLng position = new LatLng(state.latitude, state.longitude);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, state.zoom);
+        map.moveCamera(cameraUpdate);
+    }
+
+    @Override
+    public void onCameraIdle() {
+        clusterLoader.onCameraIdle();
+        float zoom = map.getCameraPosition().zoom;
+        LatLng target = map.getCameraPosition().target;
+        onSaveStateListener.onSaveMapState(new MapState(target, zoom));
+    }
+
+    private Observable<Object> createCameraMoveObservable() {
+        return Observable.create(emitter -> {
+            GoogleMap.OnCameraMoveListener cameraMoveListener = () -> {
+                if (!emitter.isDisposed()) emitter.onNext(emit);
+            };
             map.setOnCameraMoveListener(cameraMoveListener);
-        }
-    }
+            emitter.onNext(emit);
 
-    public boolean isMapReady() {
-        return map != null;
-    }
-
-    public Observable<Object> getCameraMoveObservable() {
-        return cameraMoveObservable;
+            emitter.setDisposable(Disposables.fromRunnable(() -> map.setOnCameraMoveListener(null)));
+        }).sample(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread(), true)
+                .unsubscribeOn(AndroidSchedulers.mainThread())
+                .share();
     }
 
     private void configureMap() {
@@ -67,5 +108,10 @@ public class MapWrapper {
         uiSettings.setMapToolbarEnabled(false);
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
+    }
+
+    public interface OnSaveMapStateListener {
+
+        void onSaveMapState(MapState state);
     }
 }
