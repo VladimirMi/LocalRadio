@@ -16,6 +16,15 @@
         android:layout_marginBottom="16dp"
         />
 
+    <io.github.vladimirmi.localradio.custom.RadiusView
+        android:id="@+id/radiusView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/autodetectCb"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="16dp"
+        />
+
     <CheckedTextView
         android:id="@+id/autodetectCb"
         android:layout_width="match_parent"

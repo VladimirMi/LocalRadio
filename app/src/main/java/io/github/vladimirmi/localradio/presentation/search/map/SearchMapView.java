@@ -18,7 +18,7 @@ public interface SearchMapView extends BaseView {
 
     void setCountryMode();
 
-    void setRadius();
+    void changeRadius(Float zoom);
 
     void setClusters(List<LocationCluster> clusters);
 }

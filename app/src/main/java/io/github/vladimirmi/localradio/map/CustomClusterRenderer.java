@@ -17,6 +17,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
 
     private final Context context;
 
+
     public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager<LocationCluster> clusterManager) {
         super(context, map, clusterManager);
         this.context = context;

@@ -7,13 +7,13 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.model.Circle;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationCluster;
 import io.github.vladimirmi.localradio.map.CustomClusterRenderer;
@@ -29,10 +29,10 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.selectionRg) RadioGroup selectionRg;
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
+    @BindView(R.id.radiusView) RadiusView radiusView;
 
     private ClusterManager<LocationCluster> clusterManager;
     private GoogleMap map;
-    private Circle radiusCircle;
     private MapClusterLoader mapClusterLoader;
 
     @Override
@@ -56,7 +56,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
-
         this.map = map;
         //noinspection ConstantConditions
         clusterManager = new ClusterManager<>(getContext(), map);
@@ -64,8 +63,11 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         mapClusterLoader = new MapClusterLoader(map, clusterManager);
 
         presenter.onMapReady();
-        presenter.loadClusters(mapClusterLoader.observeQueryString());
+        presenter.loadClusters(mapClusterLoader.getQueryObservable());
+        presenter.zoomChanged(mapClusterLoader.getCameraObservable()
+                .map(o -> map.getCameraPosition().zoom));
     }
+
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -102,21 +104,20 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void setExactMode() {
         map.setMinZoomPreference(6f);
-        map.setMaxZoomPreference(9f);
+        map.setMaxZoomPreference(8f);
         mapClusterLoader.setIsCountry(false);
     }
 
     @Override
     public void setRadiusMode() {
         map.setMinZoomPreference(6f);
-        map.setMaxZoomPreference(9f);
+        map.setMaxZoomPreference(8f);
         mapClusterLoader.setIsCountry(false);
     }
 
     @Override
-    public void setRadius() {
-//        if (radiusCircle != null) radiusCircle.remove();
-//        radiusCircle = map.addCircle(new CircleOptions().center(map.getCameraPosition().target).radius(80000));
+    public void changeRadius(Float zoom) {
+        radiusView.setZoomLevel(zoom);
     }
 
     @Override
@@ -132,9 +133,4 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     //endregion
-
-    private void clearMap() {
-        clusterManager.clearItems();
-        map.clear();
-    }
 }

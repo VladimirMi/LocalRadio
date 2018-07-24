@@ -10,6 +10,7 @@
     <color name="transparent">#00ffffff</color>
     <color name="selected">#bdbdbd</color>
     <color name="playing">#c5e1a5</color>
+    <color name="radius">#a09e9e9e</color>
 
     <color name="grey_50">#fafafa</color>
     <color name="grey_200">#eeeeee</color>

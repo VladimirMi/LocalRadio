@@ -69,9 +69,13 @@ public class MapClusterLoader {
         clusterManager.cluster();
     }
 
-    public Observable<SupportSQLiteQuery> observeQueryString() {
+    public Observable<SupportSQLiteQuery> getQueryObservable() {
         return Observable.merge(loadQueryRelay, zoomObservable, targetObservable)
                 .observeOn(Schedulers.io());
+    }
+
+    public Observable<Object> getCameraObservable() {
+        return cameraObservable;
     }
 
     public void setIsCountry(boolean isCountry) {

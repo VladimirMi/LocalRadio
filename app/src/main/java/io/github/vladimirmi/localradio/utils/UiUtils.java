@@ -77,4 +77,9 @@ public class UiUtils {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return (int) (displayMetrics.density * dp);
     }
+
+    public static double dpToPx(Context context, double dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return displayMetrics.density * dp;
+    }
 }

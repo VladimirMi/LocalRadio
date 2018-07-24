@@ -20,6 +20,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     public static final String COUNTRY_MODE = "COUNTRY_MODE";
 
     private final LocationInteractor locationInteractor;
+    private String mapMode;
 
     @Inject
     public SearchMapPresenter(LocationInteractor locationInteractor) {
@@ -55,7 +56,8 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     private void initMapMode() {
-        switch (locationInteractor.getMapMode()) {
+        mapMode = locationInteractor.getMapMode();
+        switch (mapMode) {
             case EXACT_MODE:
                 view.setExactMode();
                 break;
@@ -72,6 +74,15 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                 .flatMapSingle(locationInteractor::loadClusters)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(clusters -> view.setClusters(clusters)));
+    }
+
+    public void zoomChanged(Observable<Float> zoomObservable) {
+        dataSubs.add(zoomObservable
+                .filter(zoom -> mapMode.equals(RADIUS_MODE))
+                .distinctUntilChanged()
+                .subscribe(zoom -> {
+                    if (hasView()) view.changeRadius(zoom);
+                }));
     }
 
 //    private void setExactMode() {
