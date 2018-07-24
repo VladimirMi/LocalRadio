@@ -15,10 +15,6 @@ import io.reactivex.Single;
  */
 public interface LocationRepository {
 
-    void saveMapMode(String mode);
-
-    String getMapMode();
-
     Single<List<LocationEntity>> loadClusters(SupportSQLiteQuery query);
 
     Single<List<LocationEntity>> getCountries();

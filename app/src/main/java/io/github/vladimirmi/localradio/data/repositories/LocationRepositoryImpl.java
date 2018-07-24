@@ -39,16 +39,6 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public void saveMapMode(String mode) {
-        preferences.mapMode.put(mode);
-    }
-
-    @Override
-    public String getMapMode() {
-        return preferences.mapMode.get();
-    }
-
-    @Override
     public Single<List<LocationEntity>> loadClusters(SupportSQLiteQuery query) {
         return locationsDao.query(query);
     }

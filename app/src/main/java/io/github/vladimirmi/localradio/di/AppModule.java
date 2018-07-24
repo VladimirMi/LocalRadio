@@ -12,6 +12,7 @@ import io.github.vladimirmi.localradio.data.net.RestServiceProvider;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.repositories.FavoriteRepositoryImpl;
 import io.github.vladimirmi.localradio.data.repositories.LocationRepositoryImpl;
+import io.github.vladimirmi.localradio.data.repositories.MapRepositoryImpl;
 import io.github.vladimirmi.localradio.data.repositories.PlayerControllerImpl;
 import io.github.vladimirmi.localradio.data.repositories.SearchRepositoryImpl;
 import io.github.vladimirmi.localradio.data.repositories.StationsRepositoryImpl;
@@ -19,11 +20,13 @@ import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.domain.interactors.FavoriteInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MapInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
+import io.github.vladimirmi.localradio.domain.repositories.MapRepository;
 import io.github.vladimirmi.localradio.domain.repositories.PlayerController;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
@@ -63,6 +66,8 @@ public class AppModule extends Module {
         bind(SearchRepository.class).to(SearchRepositoryImpl.class).singletonInScope();
         bind(FavoriteRepository.class).to(FavoriteRepositoryImpl.class).singletonInScope();
         bind(PlayerController.class).to(PlayerControllerImpl.class).singletonInScope();
+        // TODO: 7/24/18 to own scope
+        bind(MapRepository.class).to(MapRepositoryImpl.class).singletonInScope();
 
         bind(FavoriteInteractor.class).singletonInScope();
         bind(PlayerControlsInteractor.class).singletonInScope();
@@ -70,5 +75,7 @@ public class AppModule extends Module {
         bind(LocationInteractor.class).singletonInScope();
         bind(StationsInteractor.class).singletonInScope();
         bind(MainInteractor.class).singletonInScope();
+        // TODO: 7/24/18 scope
+        bind(MapInteractor.class).singletonInScope();
     }
 }

@@ -9,7 +9,6 @@ import android.view.View;
 
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.utils.UiUtils;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 23.07.2018.
@@ -39,13 +38,11 @@ public class RadiusView extends View {
 
     private void init() {
         baseRadius = UiUtils.dpToPx(getContext(), BASE_RADIUS_DP);
-        Timber.e("init: " + baseRadius);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(getResources().getColor(R.color.radius));
     }
 
     public void setZoomLevel(float zoom) {
-        Timber.e("setZoomLevel: " + zoom);
         this.zoom = zoom;
         invalidate();
     }

@@ -7,17 +7,11 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.maps.android.clustering.ClusterManager;
-
-import java.util.List;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
-import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import io.github.vladimirmi.localradio.map.CustomClusterRenderer;
-import io.github.vladimirmi.localradio.map.MapClusterLoader;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 
 /**
@@ -31,9 +25,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     @BindView(R.id.radiusView) RadiusView radiusView;
 
-    private ClusterManager<LocationClusterItem> clusterManager;
     private GoogleMap map;
-    private MapClusterLoader mapClusterLoader;
 
     @Override
     protected int getLayout() {
@@ -57,15 +49,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void onMapReady(GoogleMap map) {
         this.map = map;
-        //noinspection ConstantConditions
-        clusterManager = new ClusterManager<>(getContext(), map);
-        clusterManager.setRenderer(new CustomClusterRenderer(getContext(), map, clusterManager));
-        mapClusterLoader = new MapClusterLoader(map, clusterManager);
-
-        presenter.onMapReady();
-        presenter.loadClusters(mapClusterLoader.getQueryObservable());
-        presenter.zoomChanged(mapClusterLoader.getCameraObservable()
-                .map(o -> map.getCameraPosition().zoom));
+        presenter.onMapReady(map);
     }
 
 
@@ -105,14 +89,12 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void setExactMode() {
         map.setMinZoomPreference(6f);
         map.setMaxZoomPreference(8f);
-        mapClusterLoader.setIsCountry(false);
     }
 
     @Override
     public void setRadiusMode() {
         map.setMinZoomPreference(6f);
         map.setMaxZoomPreference(8f);
-        mapClusterLoader.setIsCountry(false);
     }
 
     @Override
@@ -124,12 +106,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void setCountryMode() {
         map.setMinZoomPreference(2f);
         map.setMaxZoomPreference(7f);
-        mapClusterLoader.setIsCountry(true);
-    }
-
-    @Override
-    public void setClusters(List<LocationClusterItem> clusters) {
-        mapClusterLoader.addClusters(clusters);
     }
 
     //endregion

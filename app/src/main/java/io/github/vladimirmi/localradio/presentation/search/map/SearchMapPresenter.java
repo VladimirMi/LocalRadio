@@ -1,12 +1,12 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
+import com.google.android.gms.maps.GoogleMap;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
+import io.github.vladimirmi.localradio.domain.interactors.MapInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -20,11 +20,13 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     public static final String COUNTRY_MODE = "COUNTRY_MODE";
 
     private final LocationInteractor locationInteractor;
+    private final MapInteractor mapInteractor;
     private String mapMode;
 
     @Inject
-    public SearchMapPresenter(LocationInteractor locationInteractor) {
+    public SearchMapPresenter(LocationInteractor locationInteractor, MapInteractor mapInteractor) {
         this.locationInteractor = locationInteractor;
+        this.mapInteractor = mapInteractor;
     }
 
     @Override
@@ -33,30 +35,40 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void initOptions() {
-        view.initOptions(locationInteractor.getMapMode());
+        view.initOptions(mapInteractor.getMapMode());
     }
 
-    public void onMapReady() {
+    public void onMapReady(GoogleMap map) {
         initMapMode();
+        mapInteractor.onMapReady(map);
+
+        viewSubs.add(mapInteractor.getQueryObservable()
+                .flatMapSingle(locationInteractor::loadClusters)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mapInteractor::addClusters));
+
+        viewSubs.add(mapInteractor.getZoomObservable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::changeRadius));
     }
 
     public void selectCountry() {
-        locationInteractor.saveMapMode(COUNTRY_MODE);
+        mapInteractor.saveMapMode(COUNTRY_MODE);
         initMapMode();
     }
 
     public void selectRadius() {
-        locationInteractor.saveMapMode(RADIUS_MODE);
+        mapInteractor.saveMapMode(RADIUS_MODE);
         initMapMode();
     }
 
     public void selectExact() {
-        locationInteractor.saveMapMode(EXACT_MODE);
+        mapInteractor.saveMapMode(EXACT_MODE);
         initMapMode();
     }
 
     private void initMapMode() {
-        mapMode = locationInteractor.getMapMode();
+        mapMode = mapInteractor.getMapMode();
         switch (mapMode) {
             case EXACT_MODE:
                 view.setExactMode();
@@ -68,38 +80,4 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                 view.setCountryMode();
         }
     }
-
-    public void loadClusters(Observable<SupportSQLiteQuery> queryObservable) {
-        viewSubs.add(queryObservable
-                .flatMapSingle(locationInteractor::loadClusters)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(clusters -> view.setClusters(clusters)));
-    }
-
-    public void zoomChanged(Observable<Float> zoomObservable) {
-        dataSubs.add(zoomObservable
-                .filter(zoom -> mapMode.equals(RADIUS_MODE))
-                .distinctUntilChanged()
-                .subscribe(zoom -> {
-                    if (hasView()) view.changeRadius(zoom);
-                }));
-    }
-
-//    private void setExactMode() {
-//        viewSubs.add(locationInteractor.getCityClusters(bound)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(list -> view.setExactMode(list)));
-//    }
-//
-//    private void setRadiusMode() {
-//        viewSubs.add(locationInteractor.getCityClusters(bound)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(list -> view.setRadiusMode(list)));
-//    }
-//
-//    private void setCountryMode() {
-//        viewSubs.add(locationInteractor.getCountryClusters(bound)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(list -> view.setCountryMode(list)));
-//    }
 }

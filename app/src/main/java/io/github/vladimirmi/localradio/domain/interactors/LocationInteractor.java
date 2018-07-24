@@ -26,14 +26,6 @@ public class LocationInteractor {
         this.locationRepository = locationRepository;
     }
 
-    public String getMapMode() {
-        return locationRepository.getMapMode();
-    }
-
-    public void saveMapMode(String mode) {
-        locationRepository.saveMapMode(mode);
-    }
-
     public void saveAutodetect(boolean enabled) {
         locationRepository.saveAutodetect(enabled);
     }
