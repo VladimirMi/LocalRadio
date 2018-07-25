@@ -191,7 +191,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
             final int color;
             if (select) {
                 color = ContextCompat.getColor(itemView.getContext(),
-                        playing ? R.color.playing : R.color.selected);
+                        playing ? R.color.playing_station : R.color.selected_station);
             } else {
                 color = ContextCompat.getColor(itemView.getContext(), R.color.grey_50);
             }

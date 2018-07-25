@@ -39,7 +39,7 @@ public class RadiusView extends View {
     private void init() {
         baseRadius = UiUtils.dpToPx(getContext(), BASE_RADIUS_DP);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(getResources().getColor(R.color.radius));
+        paint.setColor(getResources().getColor(R.color.map_radius));
     }
 
     public void setZoomLevel(float zoom) {

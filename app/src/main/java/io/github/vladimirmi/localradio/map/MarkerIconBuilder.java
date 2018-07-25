@@ -37,6 +37,7 @@ public class MarkerIconBuilder {
     private String text;
     private int stations;
     private boolean isCluster;
+    private boolean isSelected;
 
     public MarkerIconBuilder(Context context) {
         this.context = context;
@@ -47,7 +48,6 @@ public class MarkerIconBuilder {
 
         textColor = Color.WHITE;
         textSize = UiUtils.spToPx(context, textM);
-        markerColor = context.getResources().getColor(R.color.colorAccent);
     }
 
     public MarkerIconBuilder stations(int stations) {
@@ -60,6 +60,11 @@ public class MarkerIconBuilder {
         return this;
     }
 
+    public MarkerIconBuilder setSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+        return this;
+    }
+
     public BitmapDescriptor build() {
         updateText();
         if (isCluster) {
@@ -67,6 +72,8 @@ public class MarkerIconBuilder {
             updateClusterSize();
         } else {
             updateMarkerSize();
+            markerColor = context.getResources().getColor(isSelected ? R.color.selected_marker
+                    : R.color.colorAccent);
         }
         textPaint.setColor(textColor);
         textPaint.setTextSize(textSize);

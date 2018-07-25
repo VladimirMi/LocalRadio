@@ -57,6 +57,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         presenter.onMapReady();
         presenter.loadClusters(mapWrapper.getQueryObservable());
         presenter.radiusZoomChange(mapWrapper.getRadiusZoomObservable());
+        presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
         mapWrapper.setOnSaveStateListener(state -> {
             presenter.saveMapState(state);
         });

@@ -3,10 +3,14 @@ package io.github.vladimirmi.localradio.map;
 import android.content.Context;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+
+import java.util.Collections;
+import java.util.List;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 
@@ -55,5 +59,31 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
     @Override
     protected boolean shouldRenderAsCluster(Cluster<LocationClusterItem> cluster) {
         return cluster.getSize() > 2;
+
+    }
+
+    List<LocationClusterItem> selected = Collections.emptyList();
+
+    public void selectItems(List<LocationClusterItem> locationClusterItems) {
+        for (LocationClusterItem selectedItem : selected) {
+            if (!locationClusterItems.contains(selectedItem)) {
+                Marker marker = getMarker(selectedItem);
+                if (marker == null) continue;
+                marker.setIcon(new MarkerIconBuilder(context)
+                        .stations(selectedItem.getStationsNum())
+                        .setSelected(false)
+                        .build());
+            }
+        }
+        selected = locationClusterItems;
+
+        for (LocationClusterItem selectedItem : selected) {
+            Marker marker = getMarker(selectedItem);
+            if (marker == null) continue;
+            marker.setIcon(new MarkerIconBuilder(context)
+                    .stations(selectedItem.getStationsNum())
+                    .setSelected(true)
+                    .build());
+        }
     }
 }

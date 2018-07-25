@@ -2,15 +2,19 @@ package io.github.vladimirmi.localradio.presentation.search.map;
 
 import android.arch.persistence.db.SupportSQLiteQuery;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -49,6 +53,12 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         viewSubs.add(radiusZoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::changeRadius));
+    }
+
+    public void selectedItemsChange(Observable<List<LocationClusterItem>> selectedItemsObservable) {
+        viewSubs.add(selectedItemsObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(locationClusterItems -> Timber.e("selectedItemsChange: " + locationClusterItems.size())));
     }
 
     public void selectCountry() {
