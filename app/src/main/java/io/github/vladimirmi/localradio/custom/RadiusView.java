@@ -16,7 +16,9 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 
 public class RadiusView extends View {
 
-    private static final double BASE_RADIUS_DP = 50.0 * 256 / 24095;
+    // 50 miles in dp
+    // equator 24095 miles but in that case radius smaller than needed
+    private static final double BASE_RADIUS_DP = 50.0 * 256 / 20000;
     private double baseRadius;
     private double zoom;
     private Paint paint;
@@ -49,7 +51,6 @@ public class RadiusView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-//        Timber.e("onDraw: ");
         float radius = (float) (baseRadius * Math.pow(2, zoom));
         canvas.drawCircle(getWidth() / 2, canvas.getHeight() / 2, radius, paint);
     }
