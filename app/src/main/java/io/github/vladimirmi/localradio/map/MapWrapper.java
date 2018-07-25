@@ -28,11 +28,12 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     public static final String COUNTRY_MODE = "COUNTRY_MODE";
 
     public final GoogleMap map;
-    private String mapMode = COUNTRY_MODE;
     private final Object emit = new Object();
     private final Observable<Object> cameraMoveObservable;
-    private CustomClusterRenderer renderer;
-    private ClusterLoader clusterLoader;
+    private final CustomClusterRenderer renderer;
+    private final ClusterManager<LocationClusterItem> clusterManager;
+    private final ClusterLoader clusterLoader;
+    private String mapMode = COUNTRY_MODE;
     private OnSaveMapStateListener onSaveStateListener;
 
     public MapWrapper(GoogleMap map, Context context) {
@@ -40,7 +41,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         cameraMoveObservable = createCameraMoveObservable();
         configureMap();
 
-        ClusterManager<LocationClusterItem> clusterManager = new ClusterManager<>(context, map);
+        clusterManager = new ClusterManager<>(context, map);
         renderer = new CustomClusterRenderer(context, map, clusterManager);
         clusterManager.setRenderer(renderer);
         map.setOnCameraIdleListener(this);
@@ -78,9 +79,18 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         map.moveCamera(cameraUpdate);
     }
 
+    public Observable<List<LocationClusterItem>> getSelectedItemsObservable() {
+        // TODO: 7/24/18 refactor collect from many sources
+        return cameraMoveObservable
+                .map(o -> clusterManager.getAlgorithm().getItems())
+                .flatMapSingle(locationClusterItems -> Observable.fromIterable(locationClusterItems)
+                        .filter(item -> MapUtils.distance(map.getCameraPosition().target, item.getPosition()) < 50)
+                        .toList());
+    }
+
     @Override
     public void onCameraIdle() {
-        clusterLoader.onCameraIdle();
+        clusterManager.onCameraIdle();
         float zoom = map.getCameraPosition().zoom;
         LatLng target = map.getCameraPosition().target;
         onSaveStateListener.onSaveMapState(new MapState(target, zoom));

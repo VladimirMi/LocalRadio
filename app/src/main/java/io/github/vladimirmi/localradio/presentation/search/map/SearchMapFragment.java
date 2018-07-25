@@ -102,6 +102,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setExactMode() {
+        // TODO: 7/24/18 move to wrapper
         mapWrapper.map.setMinZoomPreference(6f);
         mapWrapper.map.setMaxZoomPreference(8f);
     }
