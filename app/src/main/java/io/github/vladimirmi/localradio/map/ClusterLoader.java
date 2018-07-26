@@ -14,7 +14,6 @@ import java.util.List;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 18.07.2018.
@@ -43,7 +42,6 @@ public class ClusterLoader {
     }
 
     public void addClusters(List<LocationClusterItem> clusters) {
-        Timber.e("addClusters: " + clusters.size());
         clusterManager.addItems(clusters);
         clusterManager.cluster();
     }

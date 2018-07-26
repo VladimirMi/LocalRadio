@@ -58,7 +58,13 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     public void selectedItemsChange(Observable<List<LocationClusterItem>> selectedItemsObservable) {
         viewSubs.add(selectedItemsObservable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(locationClusterItems -> Timber.e("selectedItemsChange: " + locationClusterItems.size())));
+                .subscribe(locationClusterItems -> {
+                    int c = 0;
+                    for (LocationClusterItem locationClusterItem : locationClusterItems) {
+                        c += locationClusterItem.getStationsNum();
+                    }
+                    Timber.e("selectedItemsChange: " + c);
+                }));
     }
 
     public void selectCountry() {

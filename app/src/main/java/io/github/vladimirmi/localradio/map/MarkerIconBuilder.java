@@ -66,15 +66,14 @@ public class MarkerIconBuilder {
     }
 
     public BitmapDescriptor build() {
-        updateText();
         if (isCluster) {
-            updateClusterColor();
-            updateClusterSize();
+            setupClusterSize();
+            setupClusterColor();
         } else {
-            updateMarkerSize();
-            markerColor = context.getResources().getColor(isSelected ? R.color.selected_marker
-                    : R.color.colorAccent);
+            setupMarkerSize();
+            setupMarkerColor();
         }
+        setupText();
         textPaint.setColor(textColor);
         textPaint.setTextSize(textSize);
         circlePaint.setColor(markerColor);
@@ -96,7 +95,7 @@ public class MarkerIconBuilder {
         return image;
     }
 
-    private void updateText() {
+    private void setupText() {
         if (isCluster) {
             if (stations < 100) {
                 text = String.valueOf(stations);
@@ -116,7 +115,7 @@ public class MarkerIconBuilder {
         }
     }
 
-    private void updateMarkerSize() {
+    private void setupMarkerSize() {
         int size;
         if (stations < 100) {
             size = markerS;
@@ -130,7 +129,12 @@ public class MarkerIconBuilder {
         markerSize = UiUtils.dpToPx(context, size);
     }
 
-    private void updateClusterSize() {
+    private void setupMarkerColor() {
+        markerColor = context.getResources().getColor(isSelected ? R.color.selected_marker
+                : R.color.colorAccent);
+    }
+
+    private void setupClusterSize() {
         int size;
         if (stations < 100) {
             size = markerL;
@@ -142,9 +146,11 @@ public class MarkerIconBuilder {
         markerSize = UiUtils.dpToPx(context, size);
     }
 
-    private void updateClusterColor() {
+    private void setupClusterColor() {
         int res;
-        if (stations < 100) {
+        if (isSelected) {
+            res = R.color.selected_marker;
+        } else if (stations < 100) {
             res = R.color.cluster_1;
         } else if (stations < 500) {
             res = R.color.cluster_2;

@@ -86,7 +86,10 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 .flatMapSingle(locationClusterItems -> Observable.fromIterable(locationClusterItems)
                         .filter(item -> MapUtils.distance(map.getCameraPosition().target, item.getPosition()) < 50)
                         .toList())
-                .doOnNext(renderer::selectItems);
+                .doOnNext(clusterItems -> {
+                    renderer.selectItems(clusterItems);
+                    clusterManager.cluster();
+                });
     }
 
     @Override
