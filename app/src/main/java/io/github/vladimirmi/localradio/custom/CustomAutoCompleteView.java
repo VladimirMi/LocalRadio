@@ -80,8 +80,6 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
 
     @Override
     public void performValidation() {
-        // TODO: 7/16/18 ??
-        if (getText().toString().isEmpty()) setText(" ");
         super.performValidation();
 
         //noinspection unchecked

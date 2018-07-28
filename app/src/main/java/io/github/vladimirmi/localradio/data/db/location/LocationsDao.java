@@ -15,16 +15,16 @@ import io.reactivex.Single;
 @Dao
 public interface LocationsDao {
 
-    @Query("SELECT * FROM locations WHERE endpoints == 'isCountry'")
+    @Query("SELECT * FROM locations WHERE endpoints == 'isCountry' ORDER BY name")
     Single<List<LocationEntity>> getCountries();
 
-    @Query("SELECT * FROM locations WHERE endpoints != 'isCountry'")
+    @Query("SELECT * FROM locations WHERE endpoints != 'isCountry' ORDER BY name")
     Single<List<LocationEntity>> getCities();
 
     @Query("SELECT * FROM locations WHERE endpoints == 'isCountry' AND country == :isoCode")
     Single<LocationEntity> getCountry(String isoCode);
 
-    @Query("SELECT * FROM locations WHERE endpoints != 'isCountry' AND country == :isoCode")
+    @Query("SELECT * FROM locations WHERE endpoints != 'isCountry' AND country == :isoCode ORDER BY name")
     Single<List<LocationEntity>> getCities(String isoCode);
 
     @RawQuery()
