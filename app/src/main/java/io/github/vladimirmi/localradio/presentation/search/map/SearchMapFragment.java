@@ -15,8 +15,8 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
+import io.github.vladimirmi.localradio.map.CustomClusterManager;
 import io.github.vladimirmi.localradio.map.MapState;
-import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 
 /**
@@ -30,7 +30,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     @BindView(R.id.radiusView) RadiusView radiusView;
 
-    private MapWrapper mapWrapper;
+    private CustomClusterManager clusterManager;
 
     @Override
     protected int getLayout() {
@@ -53,12 +53,12 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
-        mapWrapper = new MapWrapper(map, getContext());
+        clusterManager = new CustomClusterManager(getContext(), map);
         presenter.onMapReady();
-        presenter.loadClusters(mapWrapper.getQueryObservable());
-        presenter.radiusZoomChange(mapWrapper.getRadiusZoomObservable());
-        presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
-        mapWrapper.setOnSaveStateListener(state -> {
+        presenter.loadClusters(clusterManager.getQueryObservable());
+        presenter.radiusZoomChange(clusterManager.getRadiusZoomObservable());
+        presenter.selectedItemsChange(clusterManager.getSelectedItemsObservable());
+        clusterManager.setOnSaveStateListener(state -> {
             presenter.saveMapState(state);
         });
     }
@@ -76,13 +76,13 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void initOptions(String mapMode) {
         if (!getUserVisibleHint()) return;
         switch (mapMode) {
-            case MapWrapper.EXACT_MODE:
+            case CustomClusterManager.EXACT_MODE:
                 selectionRg.check(R.id.exactLocRBtn);
                 break;
-            case MapWrapper.RADIUS_MODE:
+            case CustomClusterManager.RADIUS_MODE:
                 selectionRg.check(R.id.radiusRBtn);
                 break;
-            case MapWrapper.COUNTRY_MODE:
+            case CustomClusterManager.COUNTRY_MODE:
                 selectionRg.check(R.id.countryRBtn);
         }
         selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
@@ -98,20 +98,20 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setMapMode(String mode) {
-        mapWrapper.setMapMode(mode);
+        clusterManager.setMapMode(mode);
     }
 
     @Override
     public void setExactMode() {
         // TODO: 7/24/18 move to wrapper
-        mapWrapper.map.setMinZoomPreference(6f);
-        mapWrapper.map.setMaxZoomPreference(8f);
+        clusterManager.map.setMinZoomPreference(6f);
+        clusterManager.map.setMaxZoomPreference(9f);
     }
 
     @Override
     public void setRadiusMode() {
-        mapWrapper.map.setMinZoomPreference(6f);
-        mapWrapper.map.setMaxZoomPreference(8f);
+        clusterManager.map.setMinZoomPreference(6f);
+        clusterManager.map.setMaxZoomPreference(9f);
     }
 
     @Override
@@ -121,18 +121,18 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setCountryMode() {
-        mapWrapper.map.setMinZoomPreference(2f);
-        mapWrapper.map.setMaxZoomPreference(7f);
+        clusterManager.map.setMinZoomPreference(2f);
+        clusterManager.map.setMaxZoomPreference(7f);
     }
 
     @Override
     public void restoreMapState(MapState state) {
-        mapWrapper.restoreMapState(state);
+        clusterManager.restoreMapState(state);
     }
 
     @Override
     public void addClusters(List<LocationClusterItem> clusterItems) {
-        mapWrapper.addClusters(clusterItems);
+        clusterManager.addItems(clusterItems);
     }
 
     //endregion

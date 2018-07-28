@@ -9,12 +9,10 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 12.07.2018.
@@ -38,6 +36,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
                 .anchor(0.5f, 0.5f)
                 .icon(new MarkerIconBuilder(context)
                         .stations(item.getStationsNum())
+                        .setSelected(selectedItems.contains(item))
                         .build()
                 );
     }
@@ -46,7 +45,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
     protected void onBeforeClusterRendered(Cluster<LocationClusterItem> cluster, MarkerOptions markerOptions) {
         int stations = calculateStations(cluster);
         boolean isSelected = isClusterSelected(cluster);
-        Timber.d("onBeforeClusterRendered: %s, %s", stations, isSelected);
+//        Timber.d("onBeforeClusterRendered: %s, %s", stations, isSelected);
 
         markerOptions
                 .position(cluster.getPosition())
@@ -60,64 +59,49 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
     }
 
     @Override
+    protected void onClusterItemRendered(LocationClusterItem clusterItem, Marker marker) {
+        marker.setIcon(new MarkerIconBuilder(context)
+                .stations(clusterItem.getStationsNum())
+                .setSelected(selectedItems.contains(clusterItem))
+                .build());
+    }
+
+    @Override
     protected void onClusterRendered(Cluster<LocationClusterItem> cluster, Marker marker) {
-        int stations = 0;
-        for (LocationClusterItem locationCluster : cluster.getItems()) {
-            stations += locationCluster.getStationsNum();
-        }
-        Timber.i("onClusterRendered: " + stations);
+        marker.setIcon(new MarkerIconBuilder(context)
+                .stations(calculateStations(cluster))
+                .isCluster()
+                .setSelected(isClusterSelected(cluster))
+                .build());
     }
 
     @Override
     protected boolean shouldRenderAsCluster(Cluster<LocationClusterItem> cluster) {
-        boolean containsAtLeastOne = false;
-        boolean containsAll = true;
-        for (LocationClusterItem clusterItem : cluster.getItems()) {
-            if (selectedItems.contains(clusterItem)) {
-                containsAtLeastOne = true;
-            } else {
-                containsAll = false;
-            }
-        }
-        //noinspection SimplifiableIfStatement
-        if (containsAtLeastOne && !containsAll) {
-            return false;
-        } else {
-            return cluster.getSize() > 2;
-        }
+        return cluster.getSize() > 3;
     }
 
+
     public void selectItems(List<LocationClusterItem> items) {
-        for (LocationClusterItem item : except(selectedItems, items)) {
+        for (LocationClusterItem item : selectedItems) {
             Marker marker = getMarker(item);
-            if (marker == null) continue;
-            marker.setIcon(new MarkerIconBuilder(context)
-                    .stations(item.getStationsNum())
-                    .setSelected(false)
-                    .build());
+            if (marker != null && !items.contains(item)) {
+                marker.setIcon(new MarkerIconBuilder(context)
+                        .stations(item.getStationsNum())
+                        .setSelected(false)
+                        .build());
+            }
         }
 
         selectedItems = items;
 
         for (LocationClusterItem item : selectedItems) {
             Marker marker = getMarker(item);
-            if (marker == null) continue;
-            marker.setIcon(new MarkerIconBuilder(context)
-                    .stations(item.getStationsNum())
-                    .setSelected(true)
-                    .build());
-
-
-            Cluster<LocationClusterItem> cluster = getCluster(marker);
-            if (cluster == null) continue;
-            Marker clusterMarker = getMarker(cluster);
-            if (clusterMarker == null) continue;
-
-            clusterMarker.setIcon(new MarkerIconBuilder(context)
-                    .stations(calculateStations(cluster))
-                    .isCluster()
-                    .setSelected(isClusterSelected(cluster))
-                    .build());
+            if (marker != null) {
+                marker.setIcon(new MarkerIconBuilder(context)
+                        .stations(item.getStationsNum())
+                        .setSelected(true)
+                        .build());
+            }
         }
     }
 
@@ -138,15 +122,5 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
             stations += item.getStationsNum();
         }
         return stations;
-    }
-
-    private List<LocationClusterItem> except(List<LocationClusterItem> list1,
-                                             List<LocationClusterItem> list2) {
-
-        List<LocationClusterItem> result = new ArrayList<>();
-        for (LocationClusterItem item : list1) {
-            if (!list2.contains(item)) result.add(item);
-        }
-        return result;
     }
 }

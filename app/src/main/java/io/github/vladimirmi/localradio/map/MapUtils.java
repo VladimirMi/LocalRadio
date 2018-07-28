@@ -15,6 +15,13 @@ public class MapUtils {
     }
 
     /**
+     * Rounds the value to the 4th decimal place
+     */
+    public static double round(double a) {
+        return Math.round(a * 10000.0) / 10000.0;
+    }
+
+    /**
      * Calculates distance in degrees between two coordinates on the same longitude or latitude
      *
      * @param x1 latitude1 or longitude1
@@ -30,19 +37,22 @@ public class MapUtils {
     }
 
     /**
-     * Rounds the value to the 4th decimal place
+     * Calculates distance in degrees between two points
      */
-    public static double round(double a) {
-        return Math.round(a * 10000.0) / 10000.0;
+    public static double distanceDegrees(LatLng latLng1, LatLng latLng2) {
+        double deltaLongitude = delta(latLng1.longitude, latLng2.longitude);
+        double deltaLatitude = delta(latLng1.latitude, latLng2.latitude);
+
+        return Math.sqrt(deltaLatitude * deltaLatitude + deltaLongitude * deltaLongitude);
     }
 
     /**
-     * Calculate distance between two points in latitude and longitude taking
-     * into account height difference. Uses Haversine method as its base.
+     * Calculate distance between two points in latitude and longitude.
+     * Uses Haversine method as its base.
      *
      * @return Distance in miles
      */
-    public static double distance(LatLng latLng1, LatLng latLng2) {
+    public static double distanceMiles(LatLng latLng1, LatLng latLng2) {
 
         final int R = 3960; // Radius of the earth in statute miles
 

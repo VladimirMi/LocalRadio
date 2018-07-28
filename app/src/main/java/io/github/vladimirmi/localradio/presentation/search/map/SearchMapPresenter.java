@@ -8,13 +8,12 @@ import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
+import io.github.vladimirmi.localradio.map.CustomClusterManager;
 import io.github.vladimirmi.localradio.map.MapState;
-import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -63,35 +62,34 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                     for (LocationClusterItem locationClusterItem : locationClusterItems) {
                         c += locationClusterItem.getStationsNum();
                     }
-                    Timber.e("selectedItemsChange: " + c);
                 }));
     }
 
     public void selectCountry() {
-        locationInteractor.saveMapMode(MapWrapper.COUNTRY_MODE);
+        locationInteractor.saveMapMode(CustomClusterManager.COUNTRY_MODE);
         initMapMode();
     }
 
     public void selectRadius() {
-        locationInteractor.saveMapMode(MapWrapper.RADIUS_MODE);
+        locationInteractor.saveMapMode(CustomClusterManager.RADIUS_MODE);
         initMapMode();
     }
 
     public void selectExact() {
-        locationInteractor.saveMapMode(MapWrapper.EXACT_MODE);
+        locationInteractor.saveMapMode(CustomClusterManager.EXACT_MODE);
         initMapMode();
     }
 
     private void initMapMode() {
         view.setMapMode(locationInteractor.getMapMode());
         switch (locationInteractor.getMapMode()) {
-            case MapWrapper.EXACT_MODE:
+            case CustomClusterManager.EXACT_MODE:
                 view.setExactMode();
                 break;
-            case MapWrapper.RADIUS_MODE:
+            case CustomClusterManager.RADIUS_MODE:
                 view.setRadiusMode();
                 break;
-            case MapWrapper.COUNTRY_MODE:
+            case CustomClusterManager.COUNTRY_MODE:
                 view.setCountryMode();
         }
     }

@@ -41,11 +41,6 @@ public class ClusterLoader {
         this.clusterManager = clusterManager;
     }
 
-    public void addClusters(List<LocationClusterItem> clusters) {
-        clusterManager.addItems(clusters);
-        clusterManager.cluster();
-    }
-
     public Observable<SupportSQLiteQuery> getQueryObservable(Observable<Object> cameraObservable) {
         return Observable.merge(loadQueryRelay,
                 createZoomObservable(cameraObservable),
