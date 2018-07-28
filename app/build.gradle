@@ -19,7 +19,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "io.github.vladimirmi.localradio"
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 28
         versionCode generateVersionCode()
         versionName generateVersionName()
