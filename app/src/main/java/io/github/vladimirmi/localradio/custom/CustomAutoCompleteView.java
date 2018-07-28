@@ -2,18 +2,12 @@ package io.github.vladimirmi.localradio.custom;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.AutoCompleteTextView;
-import android.widget.ListPopupWindow;
-
-import java.lang.reflect.Field;
 
 import io.github.vladimirmi.localradio.R;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 05.04.2018.
@@ -49,7 +43,7 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
             if (hasFocus) showPopup();
         });
 
-        trySetOnDismissListener();
+        setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
 
         clearButtonImage = ResourcesCompat.getDrawable(getResources(),
                 R.drawable.ic_clear, null);
@@ -62,31 +56,15 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
         });
 
         setOnTouchListener((view, motionEvent) -> {
-            performClick();
-            if ((getCompoundDrawables()[2] != null)) {
-                float clearButtonStart;
-                boolean isClearButtonClicked = false;
-                clearButtonStart = (getWidth() - getPaddingRight()
-                        - clearButtonImage.getIntrinsicWidth());
-                if (motionEvent.getX() > clearButtonStart) {
-                    isClearButtonClicked = true;
-                }
-                if (isClearButtonClicked) {
-                    if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                        clearButtonImage = ResourcesCompat.getDrawable(getResources(),
-                                R.drawable.ic_clear, null);
-                        getText().clear();
-                        hideClearButton();
-                        return true;
-                    }
-                } else {
-                    return false;
-                }
+            if ((getCompoundDrawables()[2] != null) && isClearButtonClicked(motionEvent)) {
+                getText().clear();
+                hideClearButton();
+                performClick();
+                return true;
             }
             return false;
         });
     }
-
 
     public void setOnCompletionListener(OnCompletionListener<T> listener) {
         this.listener = listener;
@@ -116,32 +94,25 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
         isPopupDismissed = false;
     }
 
-    private void trySetOnDismissListener() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            try {
-                Class<?> parent = AutoCompleteTextView.class;
-                //noinspection JavaReflectionMemberAccess
-                Field popupField = parent.getDeclaredField("mPopup");
-                popupField.setAccessible(true);
-                ListPopupWindow popup = (ListPopupWindow) popupField.get(this);
-                popup.setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
-        }
-    }
-
     private void showClearButton() {
-        Timber.e("showClearButton: ");
-        setCompoundDrawablesWithIntrinsicBounds(null, null, clearButtonImage, null);
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, clearButtonImage, null);
     }
-
 
     private void hideClearButton() {
-        setCompoundDrawables(null, null, null, null);
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
+    }
+
+    private boolean isClearButtonClicked(MotionEvent motionEvent) {
+        boolean isInBounds;
+        if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
+            float clearButtonEnd = clearButtonImage.getIntrinsicWidth() + getPaddingStart();
+            isInBounds = motionEvent.getX() < clearButtonEnd;
+        } else {
+            float clearButtonStart = (getWidth() - getPaddingEnd()
+                    - clearButtonImage.getIntrinsicWidth());
+            isInBounds = motionEvent.getX() > clearButtonStart;
+        }
+        return isInBounds && motionEvent.getAction() == MotionEvent.ACTION_UP;
     }
 
     public interface OnCompletionListener<T> {
