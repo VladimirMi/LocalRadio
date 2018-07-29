@@ -51,14 +51,14 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
         addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void onTextChanged(CharSequence s, int start, int count, int after) {
-                showClearButton();
+                if (!s.toString().isEmpty()) showClearButton();
             }
         });
 
         setOnTouchListener((view, motionEvent) -> {
             if ((getCompoundDrawables()[2] != null) && isClearButtonClicked(motionEvent)) {
                 getText().clear();
-                hideClearButton();
+                performValidation();
                 performClick();
                 return true;
             }
@@ -81,10 +81,14 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
     @Override
     public void performValidation() {
         super.performValidation();
-
-        //noinspection unchecked
-        T item = (T) ((CustomArrayAdapter) getAdapter()).findItem(getText().toString());
-        listener.onCompletion(item);
+        if (getText().toString().isEmpty()) {
+            listener.onCompletion(null);
+            hideClearButton();
+        } else {
+            //noinspection unchecked
+            T item = (T) ((CustomArrayAdapter) getAdapter()).findItem(getText().toString());
+            listener.onCompletion(item);
+        }
     }
 
     private void showPopup() {

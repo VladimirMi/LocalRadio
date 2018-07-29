@@ -17,7 +17,7 @@ public class TextViewValidator<T> implements AutoCompleteTextView.Validator {
 
     @Override
     public boolean isValid(CharSequence text) {
-        if (text.toString().equals(" ")) return false;
+        if (text.toString().isEmpty()) return false;
         for (T element : list) {
             if (element.toString().equals(text.toString())) {
                 return true;

@@ -21,6 +21,10 @@ public class LocationEntity {
     public LocationEntity() {
     }
 
+    public boolean isCountry() {
+        return endpoints.equals("isCountry");
+    }
+
     @Override
     public String toString() {
         return name;

@@ -20,6 +20,7 @@ import io.reactivex.Single;
 public class LocationInteractor {
 
     private final LocationRepository locationRepository;
+    private LocationEntity currentLocation;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -63,8 +64,18 @@ public class LocationInteractor {
         return locationRepository.getCountry(countryCode);
     }
 
-    public void saveLocations(int... locationId) {
-        locationRepository.saveLocations(locationId);
+    public void saveLocations(int... locationsId) {
+        locationRepository.saveLocations(locationsId);
+    }
+
+    public LocationEntity saveLocation(LocationEntity location) {
+        if (currentLocation != null && !currentLocation.isCountry()
+                && currentLocation.country.equals(location.country)) {
+            return currentLocation;
+        }
+        currentLocation = location;
+        locationRepository.saveLocations(currentLocation.id);
+        return currentLocation;
     }
 
     public Observable<List<LocationEntity>> getSavedLocations() {

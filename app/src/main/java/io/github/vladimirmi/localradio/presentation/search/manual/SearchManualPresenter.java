@@ -56,17 +56,6 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
                 }));
     }
 
-    private void setCountry(String countryCode) {
-        viewSubs.add(locationInteractor.getCountry(countryCode)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorSingleObserver<LocationEntity>(view) {
-                    @Override
-                    public void onSuccess(LocationEntity location) {
-                        view.setCountry(location.name);
-                    }
-                }));
-    }
-
     @Override
     protected void onAttach(SearchManualView view) {
 //        viewSubs.add(searchInteractor.getSearchResultObs()
@@ -80,15 +69,40 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     }
 
     public void selectCountry(LocationEntity location) {
-        if (location == null) return;
-        setCitySuggestions(location.country);
-        view.setCountry(location.name);
+        if (location == null) {
+            setCitySuggestions("");
+            return;
+        }
+        LocationEntity savedLocation = locationInteractor.saveLocation(location);
+        setLocation(savedLocation);
     }
 
     public void selectCity(LocationEntity location) {
-        if (location == null || location.name.isEmpty()) return;
-        setCountry(location.country);
-        view.setCity(location.name);
+        if (location == null) return;
+        LocationEntity savedLocation = locationInteractor.saveLocation(location);
+        setLocation(savedLocation);
+    }
+
+    private void setLocation(LocationEntity location) {
+        if (location.isCountry()) {
+            view.setCountry(location.name);
+            view.setCity("");
+            setCitySuggestions(location.country);
+        } else {
+            setCountry(location.country);
+            view.setCity(location.name);
+        }
+    }
+
+    private void setCountry(String countryCode) {
+        viewSubs.add(locationInteractor.getCountry(countryCode)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorSingleObserver<LocationEntity>(view) {
+                    @Override
+                    public void onSuccess(LocationEntity location) {
+                        view.setCountry(location.name);
+                    }
+                }));
     }
 
 //    public void enableAutodetect(boolean autodetect) {
