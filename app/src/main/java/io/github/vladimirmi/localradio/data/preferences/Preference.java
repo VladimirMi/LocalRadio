@@ -2,6 +2,8 @@ package io.github.vladimirmi.localradio.data.preferences;
 
 import android.content.SharedPreferences;
 
+import java.util.Set;
+
 import timber.log.Timber;
 
 /**
@@ -23,55 +25,57 @@ public class Preference<T> {
 
     @SuppressWarnings("unchecked")
     public T get() {
-        PreferenceType type;
-        try {
-            type = PreferenceType.valueOf(defaultValue.getClass().getSimpleName());
-        } catch (IllegalArgumentException e) {
-            Timber.e("Can not find type %s", defaultValue.getClass().getSimpleName());
-            return defaultValue;
-        }
+        String type = defaultValue.getClass().getSimpleName();
+        Timber.e("Can not find type %s", defaultValue.getClass().getSimpleName());
 
         switch (type) {
-            case String:
+            case "String":
                 return (T) prefs.getString(key, (String) defaultValue);
-            case Long:
+            case "Long":
                 return (T) Long.valueOf(prefs.getLong(key, (Long) defaultValue));
-            case Float:
+            case "Float":
                 return (T) Float.valueOf(prefs.getFloat(key, (Float) defaultValue));
-            case Boolean:
+            case "Boolean":
                 return (T) Boolean.valueOf(prefs.getBoolean(key, (Boolean) defaultValue));
-            case Integer:
+            case "Integer":
                 return (T) Integer.valueOf(prefs.getInt(key, (Integer) defaultValue));
+            case "Set":
+            case "EmptySet":
+                return (T) prefs.getStringSet(key, (Set<String>) defaultValue);
+            default:
+                Timber.e("Can not find type %s", type);
+                return defaultValue;
         }
-        return defaultValue;
     }
 
     public void put(T value) {
-        PreferenceType type;
-        try {
-            type = PreferenceType.valueOf(defaultValue.getClass().getSimpleName());
-        } catch (IllegalArgumentException e) {
-            Timber.e("Can not find type %s", defaultValue.getClass().getSimpleName());
-            return;
-        }
+        String type = defaultValue.getClass().getSimpleName();
+        Timber.e("Can not find type %s", defaultValue.getClass().getSimpleName());
 
         SharedPreferences.Editor editor = prefs.edit();
         switch (type) {
-            case String:
+            case "String":
                 editor.putString(key, (String) value);
                 break;
-            case Long:
+            case "Long":
                 editor.putLong(key, (Long) value);
                 break;
-            case Float:
+            case "Float":
                 editor.putFloat(key, (Float) value);
                 break;
-            case Boolean:
+            case "Boolean":
                 editor.putBoolean(key, (Boolean) value);
                 break;
-            case Integer:
+            case "Integer":
                 editor.putInt(key, (Integer) value);
                 break;
+            case "Set":
+            case "EmptySet":
+                //noinspection unchecked
+                editor.putStringSet(key, (Set<String>) value);
+                break;
+            default:
+                throw new IllegalArgumentException("Can not find type " + type);
         }
         editor.apply();
     }

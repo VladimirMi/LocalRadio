@@ -3,6 +3,9 @@ package io.github.vladimirmi.localradio.data.preferences;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Collections;
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.map.CustomClusterManager;
@@ -14,11 +17,16 @@ public class Preferences {
     private static final String KEY_AUTODETECT = "AUTODETECT";
     public final Preference<Boolean> autodetect;
 
+    // TODO: 7/29/18 remove
     private static final String KEY_COUNTRY_CODE = "COUNTRY_CODE";
     public final Preference<String> countryCode;
 
+    // TODO: 7/29/18 remove
     private static final String KEY_CITY = "CITY";
     public final Preference<String> city;
+
+    private static final String KEY_LOCATIONS = "LOCATIONS";
+    public final Preference<Set<String>> locations;
 
     private static final String KEY_SEARCH_DONE = "SEARCH_DONE";
     public final Preference<Boolean> isSearchDone;
@@ -54,6 +62,7 @@ public class Preferences {
         autodetect = new Preference<>(prefs, KEY_AUTODETECT, false);
         countryCode = new Preference<>(prefs, KEY_COUNTRY_CODE, "");
         city = new Preference<>(prefs, KEY_CITY, "");
+        locations = new Preference<>(prefs, KEY_LOCATIONS, Collections.emptySet());
         isSearchDone = new Preference<>(prefs, KEY_SEARCH_DONE, false);
         currentStationId = new Preference<>(prefs, KEY_CURRENT_STATION_ID, 0);
         currentStationIsFavorite = new Preference<>(prefs, KEY_CURRENT_STATION_IS_FAVORITE, false);
