@@ -3,7 +3,9 @@ package io.github.vladimirmi.localradio.data.repositories;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.util.Pair;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -92,13 +94,20 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public void saveLocations(int... locationId) {
-
+    public void saveLocations(int... locationIds) {
+        Set<String> locations = new HashSet<>();
+        for (int locationId : locationIds) {
+            locations.add(String.valueOf(locationId));
+        }
+        preferences.locations.put(locations);
     }
 
     @Override
-    public Observable<List<LocationEntity>> getSavedLocations() {
-        return null;
+    public Single<List<LocationEntity>> getSavedLocations() {
+        return Observable.fromIterable(preferences.locations.get())
+                .flatMapSingle(id -> locationsDao.getLocation(Integer.valueOf(id)))
+                .toList()
+                .subscribeOn(Schedulers.io());
     }
 
     @Override

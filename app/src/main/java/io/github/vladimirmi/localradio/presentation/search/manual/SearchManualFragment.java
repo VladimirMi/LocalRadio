@@ -45,8 +45,6 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
         cityEt.setOnCompletionListener(item -> {
             presenter.selectCity(item);
         });
-//        clearCountryBt.setOnClickListener(v -> countryEt.setText(""));
-//        clearCityBt.setOnClickListener(v -> cityEt.setText(""));
 
         cityEt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -90,13 +88,13 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 
     @Override
     public void setCountry(String name) {
-        countryEt.setText(name);
+        countryEt.setText(name, false);
         countryEt.setSelection(name.length());
     }
 
     @Override
     public void setCity(String city) {
-        cityEt.setText(city);
+        cityEt.setText(city, false);
         cityEt.setSelection(city.length());
     }
 

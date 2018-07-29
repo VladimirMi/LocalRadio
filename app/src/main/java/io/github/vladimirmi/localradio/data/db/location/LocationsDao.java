@@ -27,6 +27,9 @@ public interface LocationsDao {
     @Query("SELECT * FROM locations WHERE endpoints != 'isCountry' AND country == :isoCode ORDER BY name")
     Single<List<LocationEntity>> getCities(String isoCode);
 
+    @Query("SELECT * FROM locations WHERE id == :id")
+    Single<LocationEntity> getLocation(int id);
+
     @RawQuery()
     Single<List<LocationEntity>> query(SupportSQLiteQuery query);
 }

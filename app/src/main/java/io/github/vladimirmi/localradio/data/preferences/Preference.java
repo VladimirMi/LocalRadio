@@ -26,8 +26,6 @@ public class Preference<T> {
     @SuppressWarnings("unchecked")
     public T get() {
         String type = defaultValue.getClass().getSimpleName();
-        Timber.e("Can not find type %s", defaultValue.getClass().getSimpleName());
-
         switch (type) {
             case "String":
                 return (T) prefs.getString(key, (String) defaultValue);
@@ -50,8 +48,6 @@ public class Preference<T> {
 
     public void put(T value) {
         String type = defaultValue.getClass().getSimpleName();
-        Timber.e("Can not find type %s", defaultValue.getClass().getSimpleName());
-
         SharedPreferences.Editor editor = prefs.edit();
         switch (type) {
             case "String":

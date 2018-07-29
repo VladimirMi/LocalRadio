@@ -32,26 +32,12 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     protected void onFirstAttach(SearchManualView view, CompositeDisposable dataSubs) {
         setCountrySuggestions();
         setCitySuggestions("");
-    }
-
-    private void setCountrySuggestions() {
-        viewSubs.add(locationInteractor.getCountries()
+        dataSubs.add(locationInteractor.getSavedLocation()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorSingleObserver<List<LocationEntity>>(view) {
+                .subscribeWith(new RxUtils.ErrorMaybeObserver<LocationEntity>(view) {
                     @Override
-                    public void onSuccess(List<LocationEntity> locations) {
-                        view.setCountrySuggestions(locations);
-                    }
-                }));
-    }
-
-    private void setCitySuggestions(String countryCode) {
-        viewSubs.add(locationInteractor.getCities(countryCode)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorSingleObserver<List<LocationEntity>>(view) {
-                    @Override
-                    public void onSuccess(List<LocationEntity> locations) {
-                        view.setCitySuggestions(locations);
+                    public void onSuccess(LocationEntity locationEntity) {
+                        setLocation(locationEntity);
                     }
                 }));
     }
@@ -92,6 +78,28 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
             setCountry(location.country);
             view.setCity(location.name);
         }
+    }
+
+    private void setCountrySuggestions() {
+        viewSubs.add(locationInteractor.getCountries()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorSingleObserver<List<LocationEntity>>(view) {
+                    @Override
+                    public void onSuccess(List<LocationEntity> locations) {
+                        view.setCountrySuggestions(locations);
+                    }
+                }));
+    }
+
+    private void setCitySuggestions(String countryCode) {
+        viewSubs.add(locationInteractor.getCities(countryCode)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorSingleObserver<List<LocationEntity>>(view) {
+                    @Override
+                    public void onSuccess(List<LocationEntity> locations) {
+                        view.setCitySuggestions(locations);
+                    }
+                }));
     }
 
     private void setCountry(String countryCode) {

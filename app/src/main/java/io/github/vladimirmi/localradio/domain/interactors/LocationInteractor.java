@@ -11,7 +11,7 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
+import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -78,8 +78,15 @@ public class LocationInteractor {
         return currentLocation;
     }
 
-    public Observable<List<LocationEntity>> getSavedLocations() {
+    public Single<List<LocationEntity>> getSavedLocations() {
         return locationRepository.getSavedLocations();
+    }
+
+    public Maybe<LocationEntity> getSavedLocation() {
+        return locationRepository.getSavedLocations()
+                .filter(locationEntities -> !locationEntities.isEmpty())
+                .map(locationEntities -> locationEntities.get(0))
+                .doOnSuccess(locationEntity -> currentLocation = locationEntity);
     }
 
     public Single<List<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {

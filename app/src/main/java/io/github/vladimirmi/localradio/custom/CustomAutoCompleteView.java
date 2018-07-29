@@ -39,10 +39,6 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
             if (isPopupDismissed) showPopup();
         });
 
-        setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) showPopup();
-        });
-
         setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
 
         clearButtonImage = ResourcesCompat.getDrawable(getResources(),
@@ -57,7 +53,7 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
 
         setOnTouchListener((view, motionEvent) -> {
             if ((getCompoundDrawables()[2] != null) && isClearButtonClicked(motionEvent)) {
-                getText().clear();
+                setText("", false);
                 performValidation();
                 performClick();
                 return true;

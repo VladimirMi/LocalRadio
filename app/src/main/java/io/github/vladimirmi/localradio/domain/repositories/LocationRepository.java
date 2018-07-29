@@ -8,7 +8,6 @@ import java.util.List;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
-import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -34,7 +33,7 @@ public interface LocationRepository {
 
     void saveLocations(int... locationId);
 
-    Observable<List<LocationEntity>> getSavedLocations();
+    Single<List<LocationEntity>> getSavedLocations();
 
     void saveAutodetect(boolean enabled);
 
