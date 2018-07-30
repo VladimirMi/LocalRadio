@@ -53,9 +53,8 @@ public class UiUtils {
             } else if (errorHandler instanceof Context) {
                 Toast.makeText((Context) errorHandler, messageId, Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Timber.e(e);
         }
+        Timber.e(e);
     }
 
     public static void setLinkStyle(TextView textView) {

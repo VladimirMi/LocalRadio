@@ -97,7 +97,7 @@ public class LocationRepositoryImpl implements LocationRepository {
     public void saveLocations(int... locationIds) {
         Set<String> locations = new HashSet<>();
         for (int locationId : locationIds) {
-            locations.add(String.valueOf(locationId));
+            if (locationId != -1) locations.add(String.valueOf(locationId));
         }
         preferences.locations.put(locations);
     }

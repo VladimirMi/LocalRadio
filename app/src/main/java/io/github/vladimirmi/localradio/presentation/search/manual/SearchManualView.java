@@ -19,5 +19,5 @@ public interface SearchManualView extends BaseView {
 
     void setCity(String city);
 
-    void setState(String state);
+    void setStationsNumber(int stations);
 }

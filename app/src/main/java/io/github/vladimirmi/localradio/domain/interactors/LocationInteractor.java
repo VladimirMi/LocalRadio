@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
 import android.arch.persistence.db.SupportSQLiteQuery;
+import android.support.annotation.Nullable;
 
 import java.util.List;
 
@@ -11,7 +12,6 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
-import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 /**
@@ -20,7 +20,8 @@ import io.reactivex.Single;
 public class LocationInteractor {
 
     private final LocationRepository locationRepository;
-    private LocationEntity currentLocation;
+    @Nullable private LocationEntity countryLocation;
+    @Nullable private LocationEntity cityLocation;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -68,13 +69,32 @@ public class LocationInteractor {
         locationRepository.saveLocations(locationsId);
     }
 
-    public LocationEntity saveLocation(LocationEntity location) {
-        if (currentLocation != null && !currentLocation.isCountry()
-                && currentLocation.country.equals(location.country)) {
-            return currentLocation;
+    public LocationEntity saveCountryLocation(@Nullable LocationEntity location) {
+        countryLocation = location;
+        LocationEntity currentLocation;
+        if ((countryLocation != null && cityLocation != null
+                && countryLocation.country.equals(cityLocation.country)) ||
+                (countryLocation == null && cityLocation != null)) {
+
+            currentLocation = cityLocation;
+        } else {
+            currentLocation = countryLocation;
+            cityLocation = null;
         }
-        currentLocation = location;
-        locationRepository.saveLocations(currentLocation.id);
+        saveLocations(currentLocation != null ? currentLocation.id : -1);
+        return currentLocation;
+    }
+
+    public LocationEntity saveCityLocation(@Nullable LocationEntity location) {
+        cityLocation = location;
+        LocationEntity currentLocation;
+        if (cityLocation == null && countryLocation != null) {
+
+            currentLocation = countryLocation;
+        } else {
+            currentLocation = cityLocation;
+        }
+        saveLocations(currentLocation != null ? currentLocation.id : -1);
         return currentLocation;
     }
 
@@ -82,11 +102,15 @@ public class LocationInteractor {
         return locationRepository.getSavedLocations();
     }
 
-    public Maybe<LocationEntity> getSavedLocation() {
+    public Single<LocationEntity> getSavedLocation() {
         return locationRepository.getSavedLocations()
                 .filter(locationEntities -> !locationEntities.isEmpty())
+                .toSingle()
                 .map(locationEntities -> locationEntities.get(0))
-                .doOnSuccess(locationEntity -> currentLocation = locationEntity);
+                .doOnSuccess(location -> {
+                    if (location.isCountry()) countryLocation = location;
+                    else cityLocation = location;
+                });
     }
 
     public Single<List<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {

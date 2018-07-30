@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.manual;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
@@ -34,10 +35,19 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
         setCitySuggestions("");
         dataSubs.add(locationInteractor.getSavedLocation()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorMaybeObserver<LocationEntity>(view) {
+                .subscribeWith(new RxUtils.ErrorSingleObserver<LocationEntity>(view) {
                     @Override
                     public void onSuccess(LocationEntity locationEntity) {
                         setLocation(locationEntity);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof NoSuchElementException) {
+                            setLocation(null);
+                        } else {
+                            super.onError(e);
+                        }
                     }
                 }));
     }
@@ -57,26 +67,32 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     public void selectCountry(LocationEntity location) {
         if (location == null) {
             setCitySuggestions("");
-            return;
         }
-        LocationEntity savedLocation = locationInteractor.saveLocation(location);
+        LocationEntity savedLocation = locationInteractor.saveCountryLocation(location);
         setLocation(savedLocation);
     }
 
     public void selectCity(LocationEntity location) {
-        if (location == null) return;
-        LocationEntity savedLocation = locationInteractor.saveLocation(location);
+        LocationEntity savedLocation = locationInteractor.saveCityLocation(location);
         setLocation(savedLocation);
     }
 
     private void setLocation(LocationEntity location) {
-        if (location.isCountry()) {
-            view.setCountry(location.name);
+        if (location == null) {
             view.setCity("");
-            setCitySuggestions(location.country);
+            view.setCountry("");
+            setCitySuggestions("");
+            view.setStationsNumber(0);
         } else {
-            setCountry(location.country);
-            view.setCity(location.name);
+            if (location.isCountry()) {
+                view.setCountry(location.name);
+                view.setCity("");
+                setCitySuggestions(location.country);
+            } else {
+                setCountry(location.country);
+                view.setCity(location.name);
+            }
+            view.setStationsNumber(location.stations);
         }
     }
 

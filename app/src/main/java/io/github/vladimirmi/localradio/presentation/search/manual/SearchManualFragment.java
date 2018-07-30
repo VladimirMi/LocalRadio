@@ -25,6 +25,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 
     @BindView(R.id.countryEt) CustomAutoCompleteView<LocationEntity> countryEt;
     @BindView(R.id.cityEt) CustomAutoCompleteView<LocationEntity> cityEt;
+    @BindView(R.id.selectionResultTv) TextView selectionResultTv;
 
     @Override
     protected int getLayout() {
@@ -99,8 +100,9 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
     }
 
     @Override
-    public void setState(String state) {
-
+    public void setStationsNumber(int stations) {
+        String s = getResources().getQuantityString(R.plurals.selection_result, stations, stations);
+        selectionResultTv.setText(s);
     }
 
     //    @Override
