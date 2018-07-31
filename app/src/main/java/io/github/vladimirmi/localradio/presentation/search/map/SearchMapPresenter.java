@@ -4,14 +4,14 @@ import android.arch.persistence.db.SupportSQLiteQuery;
 
 import com.google.android.gms.maps.model.CameraPosition;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import io.github.vladimirmi.localradio.map.CustomClusterManager;
 import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -56,7 +56,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                 .subscribe(view::changeRadius));
     }
 
-    public void selectedItemsChange(Observable<List<LocationClusterItem>> selectedItemsObservable) {
+    public void selectedItemsChange(Observable<Set<LocationClusterItem>> selectedItemsObservable) {
         viewSubs.add(selectedItemsObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(locationClusterItems -> {
@@ -68,32 +68,22 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void selectCountry() {
-        locationInteractor.saveMapMode(CustomClusterManager.COUNTRY_MODE);
+        locationInteractor.saveMapMode(MapWrapper.COUNTRY_MODE);
         initMapMode();
     }
 
     public void selectRadius() {
-        locationInteractor.saveMapMode(CustomClusterManager.RADIUS_MODE);
+        locationInteractor.saveMapMode(MapWrapper.RADIUS_MODE);
         initMapMode();
     }
 
     public void selectExact() {
-        locationInteractor.saveMapMode(CustomClusterManager.EXACT_MODE);
+        locationInteractor.saveMapMode(MapWrapper.EXACT_MODE);
         initMapMode();
     }
 
     private void initMapMode() {
         view.setMapMode(locationInteractor.getMapMode());
-        switch (locationInteractor.getMapMode()) {
-            case CustomClusterManager.EXACT_MODE:
-                view.setExactMode();
-                break;
-            case CustomClusterManager.RADIUS_MODE:
-                view.setRadiusMode();
-                break;
-            case CustomClusterManager.COUNTRY_MODE:
-                view.setCountryMode();
-        }
     }
 
     public void saveMapState(MapState state) {

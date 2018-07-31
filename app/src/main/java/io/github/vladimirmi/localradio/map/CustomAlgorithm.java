@@ -17,9 +17,9 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
  */
 public class CustomAlgorithm extends NonHierarchicalDistanceBasedAlgorithm<LocationClusterItem> {
 
-    private List<LocationClusterItem> selectedItems = Collections.emptyList();
+    private Set<LocationClusterItem> selectedItems = Collections.emptySet();
 
-    public void setSelectedItems(List<LocationClusterItem> selectedItems) {
+    public void setSelectedItems(Set<LocationClusterItem> selectedItems) {
         this.selectedItems = selectedItems;
     }
 

@@ -10,7 +10,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 
@@ -20,7 +20,7 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 public class CustomClusterRenderer extends DefaultClusterRenderer<LocationClusterItem> {
 
     private final Context context;
-    private List<LocationClusterItem> selectedItems = Collections.emptyList();
+    private Set<LocationClusterItem> selectedItems = Collections.emptySet();
 
     public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager<LocationClusterItem> clusterManager) {
         super(context, map, clusterManager);
@@ -81,7 +81,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
     }
 
 
-    public void selectItems(List<LocationClusterItem> items) {
+    public void selectItems(Set<LocationClusterItem> items) {
         for (LocationClusterItem item : selectedItems) {
             Marker marker = getMarker(item);
             if (marker != null && !items.contains(item)) {

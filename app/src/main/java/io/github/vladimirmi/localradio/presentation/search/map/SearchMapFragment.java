@@ -16,8 +16,8 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import io.github.vladimirmi.localradio.map.CustomClusterManager;
 import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 import timber.log.Timber;
 
@@ -32,8 +32,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     @BindView(R.id.radiusView) RadiusView radiusView;
 
-    private CustomClusterManager clusterManager;
-    private GoogleMap map;
+    private MapWrapper mapWrapper;
 
     @Override
     protected int getLayout() {
@@ -56,23 +55,22 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
-        this.map = map;
+        mapWrapper = new MapWrapper(getContext(), map);
         initMap();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (map != null) initMap();
+        if (mapWrapper != null) initMap();
     }
 
     private void initMap() {
-        clusterManager = new CustomClusterManager(getContext(), map);
         presenter.onMapReady();
-        presenter.loadClusters(clusterManager.getQueryObservable());
-        presenter.selectRadiusChange(clusterManager.getCameraPositionObservable());
-        presenter.selectedItemsChange(clusterManager.getSelectedItemsObservable());
-        clusterManager.setOnSaveStateListener(state -> {
+        presenter.loadClusters(mapWrapper.getQueryObservable());
+        presenter.selectRadiusChange(mapWrapper.getRadiusChangeObservable());
+        presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
+        mapWrapper.setOnSaveStateListener(state -> {
             presenter.saveMapState(state);
         });
     }
@@ -89,13 +87,13 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void initOptions(String mapMode) {
         if (!getUserVisibleHint()) return;
         switch (mapMode) {
-            case CustomClusterManager.EXACT_MODE:
+            case MapWrapper.EXACT_MODE:
                 selectionRg.check(R.id.exactLocRBtn);
                 break;
-            case CustomClusterManager.RADIUS_MODE:
+            case MapWrapper.RADIUS_MODE:
                 selectionRg.check(R.id.radiusRBtn);
                 break;
-            case CustomClusterManager.COUNTRY_MODE:
+            case MapWrapper.COUNTRY_MODE:
                 selectionRg.check(R.id.countryRBtn);
         }
         selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
@@ -111,20 +109,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setMapMode(String mode) {
-        clusterManager.setMapMode(mode);
-    }
-
-    @Override
-    public void setExactMode() {
-        // TODO: 7/24/18 move to wrapper
-        clusterManager.map.setMinZoomPreference(6f);
-        clusterManager.map.setMaxZoomPreference(9f);
-    }
-
-    @Override
-    public void setRadiusMode() {
-        clusterManager.map.setMinZoomPreference(6f);
-        clusterManager.map.setMaxZoomPreference(9f);
+        mapWrapper.setMapMode(mode);
     }
 
     @Override
@@ -133,20 +118,14 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void setCountryMode() {
-        clusterManager.map.setMinZoomPreference(2f);
-        clusterManager.map.setMaxZoomPreference(7f);
-    }
-
-    @Override
     public void restoreMapState(MapState state) {
-        clusterManager.restoreMapState(state);
+        mapWrapper.restoreMapState(state);
     }
 
     @Override
     public void addClusters(List<LocationClusterItem> clusterItems) {
         Timber.e("addClusters: ");
-        clusterManager.addItems(clusterItems);
+        mapWrapper.addClusters(clusterItems);
     }
 
     //endregion

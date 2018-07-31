@@ -15,12 +15,6 @@ public interface SearchMapView extends BaseView {
 
     void initOptions(String mapMode);
 
-    void setExactMode();
-
-    void setRadiusMode();
-
-    void setCountryMode();
-
     void changeRadius(CameraPosition cameraPosition);
 
     void restoreMapState(MapState state);

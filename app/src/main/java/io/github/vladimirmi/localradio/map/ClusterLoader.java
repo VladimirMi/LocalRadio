@@ -48,12 +48,15 @@ public class ClusterLoader {
                 .observeOn(Schedulers.io());
     }
 
+    public void setMapMode(String mode) {
+
+    }
+
     public void setIsCountry(boolean isCountry) {
         boolean old = this.isCountry;
         this.isCountry = isCountry;
         if (old != isCountry) {
             clusterManager.clearItems();
-            clusterManager.cluster();
             loadBounds = null;
             new Handler().postDelayed(this::loadNext, 500);
         }

@@ -5,6 +5,12 @@ import android.arch.persistence.db.SupportSQLiteQuery;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
+
 /**
  * Created by Vladimir Mikhalev 20.07.2018.
  */
@@ -37,17 +43,7 @@ public class MapUtils {
     }
 
     /**
-     * Calculates distance in degrees between two points
-     */
-    public static double distanceDegrees(LatLng latLng1, LatLng latLng2) {
-        double deltaLongitude = delta(latLng1.longitude, latLng2.longitude);
-        double deltaLatitude = delta(latLng1.latitude, latLng2.latitude);
-
-        return Math.sqrt(deltaLatitude * deltaLatitude + deltaLongitude * deltaLongitude);
-    }
-
-    /**
-     * Calculate distance between two points in latitude and longitude.
+     * Calculates distance between two points in latitude and longitude.
      * Uses Haversine method as its base.
      *
      * @return Distance in miles
@@ -64,6 +60,25 @@ public class MapUtils {
                 * Math.pow(Math.sin(lonDistance / 2), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+
+    /**
+     * Returns a subset of ClusterItems that within a circle with a given center and radius
+     *
+     * @param source Source set
+     * @param center Coordinates of the circle center
+     * @param radius Radius of the circle in miles
+     */
+    public static Set<LocationClusterItem> insideRadiusMiles(Collection<LocationClusterItem> source,
+                                                             LatLng center, int radius) {
+        Set<LocationClusterItem> inside = new HashSet<>();
+        for (LocationClusterItem item : source) {
+            if (distanceMiles(center, item.getPosition()) < radius) {
+                inside.add(item);
+            }
+        }
+        return inside;
     }
 
     public static SupportSQLiteQuery createQueryFor(Bounds bounds, boolean isCountry) {
