@@ -9,11 +9,13 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.Algorithm;
 import com.google.maps.android.clustering.view.ClusterRenderer;
+import com.jakewharton.rxrelay2.PublishRelay;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +28,7 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposables;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 24.07.2018.
@@ -50,6 +53,7 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
 
     private OnSaveMapStateListener onSaveStateListener;
     private String mapMode = COUNTRY_MODE;
+    private PublishRelay<Object> onItemsChange = PublishRelay.create();
 
     public CustomClusterManager(Context context, GoogleMap map) {
         super(context, map);
@@ -100,6 +104,7 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
         } finally {
             algorithmLock.writeLock().unlock();
         }
+        onItemsChange.accept(emit);
     }
 
     @Override
@@ -150,9 +155,9 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
         return clusterLoader.getQueryObservable(cameraMoveObservable);
     }
 
-    public Observable<Float> getRadiusZoomObservable() {
+    public Observable<CameraPosition> getCameraPositionObservable() {
         return cameraMoveObservable
-                .map(o -> map.getCameraPosition().zoom)
+                .map(o -> map.getCameraPosition())
                 .distinctUntilChanged()
                 .filter(zoom -> mapMode.equals(RADIUS_MODE));
     }
@@ -175,11 +180,14 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
                         .filter(item -> MapUtils.distanceMiles(map.getCameraPosition().target,
                                 item.getPosition()) < 50)
                         .toList())
-                .doOnNext(list -> {
-                    renderer.selectItems(list);
-                    algorithm.setSelectedItems(list);
-                    cluster();
-                });
+                .doOnNext(this::selectClusters);
+    }
+
+    private void selectClusters(List<LocationClusterItem> clusterItems) {
+        Timber.d("selectClusters: ");
+        renderer.selectItems(clusterItems);
+        algorithm.setSelectedItems(clusterItems);
+        cluster();
     }
 
     private Observable<Object> createCameraMoveObservable() {

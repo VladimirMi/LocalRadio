@@ -77,7 +77,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
 
     @Override
     protected boolean shouldRenderAsCluster(Cluster<LocationClusterItem> cluster) {
-        return cluster.getSize() > 3;
+        return cluster.getSize() > 2;
     }
 
 

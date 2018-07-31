@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.model.CameraPosition;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.CustomClusterManager;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -53,10 +55,11 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
+        Timber.e("onMapReady: ");
         clusterManager = new CustomClusterManager(getContext(), map);
         presenter.onMapReady();
         presenter.loadClusters(clusterManager.getQueryObservable());
-        presenter.radiusZoomChange(clusterManager.getRadiusZoomObservable());
+        presenter.selectRadiusChange(clusterManager.getCameraPositionObservable());
         presenter.selectedItemsChange(clusterManager.getSelectedItemsObservable());
         clusterManager.setOnSaveStateListener(state -> {
             presenter.saveMapState(state);
@@ -115,8 +118,8 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void changeRadius(Float zoom) {
-        radiusView.setZoomLevel(zoom);
+    public void changeRadius(CameraPosition cameraPosition) {
+        radiusView.setCameraPosition(cameraPosition);
     }
 
     @Override
@@ -132,6 +135,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void addClusters(List<LocationClusterItem> clusterItems) {
+        Timber.e("addClusters: ");
         clusterManager.addItems(clusterItems);
     }
 

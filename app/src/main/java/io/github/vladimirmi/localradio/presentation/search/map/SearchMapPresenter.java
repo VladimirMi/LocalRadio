@@ -2,6 +2,8 @@ package io.github.vladimirmi.localradio.presentation.search.map;
 
 import android.arch.persistence.db.SupportSQLiteQuery;
 
+import com.google.android.gms.maps.model.CameraPosition;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -48,7 +50,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                 .subscribe(view::addClusters));
     }
 
-    public void radiusZoomChange(Observable<Float> radiusZoomObservable) {
+    public void selectRadiusChange(Observable<CameraPosition> radiusZoomObservable) {
         viewSubs.add(radiusZoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::changeRadius));

@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
+import com.google.android.gms.maps.model.CameraPosition;
+
 import java.util.List;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
@@ -19,7 +21,7 @@ public interface SearchMapView extends BaseView {
 
     void setCountryMode();
 
-    void changeRadius(Float zoom);
+    void changeRadius(CameraPosition cameraPosition);
 
     void restoreMapState(MapState state);
 

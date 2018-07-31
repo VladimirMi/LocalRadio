@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.google.android.gms.maps.model.CameraPosition;
+
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.utils.UiUtils;
 
@@ -16,11 +18,10 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 
 public class RadiusView extends View {
 
-    // 50 miles in dp
-    // equator 24095 miles but in that case radius smaller than needed
-    private static final double BASE_RADIUS_DP = 50.0 * 256 / 20000;
-    private double baseRadius;
-    private double zoom;
+    // 50 miles in dp at equator
+    // equator 24095 miles
+    private static final double BASE_RADIUS_DP = 50.0 * 256 / 24095;
+    private float radius;
     private Paint paint;
 
     public RadiusView(Context context) {
@@ -39,19 +40,19 @@ public class RadiusView extends View {
     }
 
     private void init() {
-        baseRadius = UiUtils.dpToPx(getContext(), BASE_RADIUS_DP);
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(getResources().getColor(R.color.map_radius));
     }
 
-    public void setZoomLevel(float zoom) {
-        this.zoom = zoom;
+    public void setCameraPosition(CameraPosition position) {
+        double radiusAtLatitude = BASE_RADIUS_DP / Math.cos(Math.toRadians(position.target.latitude))
+                * Math.pow(2, position.zoom);
+        radius = (float) UiUtils.dpToPx(getContext(), radiusAtLatitude);
         invalidate();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        float radius = (float) (baseRadius * Math.pow(2, zoom));
         canvas.drawCircle(getWidth() / 2, canvas.getHeight() / 2, radius, paint);
     }
 }
