@@ -16,6 +16,7 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -23,6 +24,7 @@ import io.reactivex.disposables.CompositeDisposable;
 public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     private final LocationInteractor locationInteractor;
+    private Disposable radiusSub;
 
     @Inject
     public SearchMapPresenter(LocationInteractor locationInteractor) {
@@ -51,9 +53,10 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void selectRadiusChange(Observable<CameraPosition> radiusZoomObservable) {
-        viewSubs.add(radiusZoomObservable
+        if (radiusSub != null) radiusSub.dispose();
+        radiusSub = radiusZoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::changeRadius));
+                .subscribe(view::changeRadius);
     }
 
     public void selectedItemsChange(Observable<Set<LocationClusterItem>> selectedItemsObservable) {

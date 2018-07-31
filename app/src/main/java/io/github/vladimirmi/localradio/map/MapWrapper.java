@@ -71,6 +71,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         return cameraMoveObservable
                 .map(o -> map.getCameraPosition())
                 .distinctUntilChanged()
+                .startWith(map.getCameraPosition())
                 .filter(zoom -> mapMode.equals(RADIUS_MODE));
     }
 
@@ -108,7 +109,6 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     public void setMapMode(String mode) {
         mapMode = mode;
         clusterLoader.setIsCountry(mode.equals(COUNTRY_MODE));
-        clusterManager.selectClusters(Collections.emptySet());
         first = true;
 
         switch (mode) {
@@ -117,6 +117,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 map.setMaxZoomPreference(10f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
                 map.moveCamera(cameraUpdate);
+                clusterManager.selectClusters(Collections.emptySet());
                 break;
             }
             case RADIUS_MODE: {
@@ -124,13 +125,15 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 clusterManager.map.setMaxZoomPreference(9f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
                 map.moveCamera(cameraUpdate);
+                selectClustersInsideRadius();
                 break;
             }
-            default: {
+            case COUNTRY_MODE: {
                 clusterManager.map.setMinZoomPreference(2f);
                 clusterManager.map.setMaxZoomPreference(6f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(5);
                 map.moveCamera(cameraUpdate);
+                clusterManager.selectClusters(Collections.emptySet());
                 break;
             }
         }

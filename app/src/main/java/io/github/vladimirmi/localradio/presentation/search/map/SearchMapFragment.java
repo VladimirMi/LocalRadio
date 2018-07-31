@@ -68,7 +68,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     private void initMap() {
         presenter.onMapReady();
         presenter.loadClusters(mapWrapper.getQueryObservable());
-        presenter.selectRadiusChange(mapWrapper.getRadiusChangeObservable());
         presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
         mapWrapper.setOnSaveStateListener(state -> {
             presenter.saveMapState(state);
@@ -109,7 +108,14 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setMapMode(String mode) {
+        Timber.e("setMapMode: " + mode);
         mapWrapper.setMapMode(mode);
+        if (mode.equals(MapWrapper.RADIUS_MODE)) {
+            radiusView.setVisibility(View.VISIBLE);
+            presenter.selectRadiusChange(mapWrapper.getRadiusChangeObservable());
+        } else {
+            radiusView.setVisibility(View.GONE);
+        }
     }
 
     @Override
