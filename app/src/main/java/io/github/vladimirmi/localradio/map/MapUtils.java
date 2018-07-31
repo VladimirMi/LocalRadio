@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
@@ -81,17 +82,38 @@ public class MapUtils {
         return inside;
     }
 
-    public static SupportSQLiteQuery createQueryFor(Bounds bounds, boolean isCountry) {
-        //noinspection StringBufferReplaceableByString
-        String sb = new StringBuilder()
-                .append("SELECT * FROM locations WHERE ")
-                .append("endpoints ").append(isCountry ? "==" : "!=").append(" 'isCountry'")
-                .append(" AND latitude >= ").append(bounds.bottom)
-                .append(" AND latitude <= ").append(bounds.top)
-                .append(" AND longitude >= ").append(bounds.left)
-                .append(" AND longitude <= ").append(bounds.right)
-                .toString();
+    public static SupportSQLiteQuery createQueryFor(List<Bounds> bounds, boolean isCountry) {
+        StringBuilder sb = new StringBuilder()
+                .append(createQueryHeader(isCountry))
+                .append(" AND (");
 
-        return new SimpleSQLiteQuery(sb);
+        for (int i = 0; i < bounds.size(); i++) {
+            sb.append(createBoundQueryPart(bounds.get(i)));
+            if (i < bounds.size() - 1) sb.append(" OR ");
+        }
+        sb.append(")");
+        return new SimpleSQLiteQuery(sb.toString());
+    }
+
+    public static SupportSQLiteQuery createQueryFor(Bounds bounds, boolean isCountry) {
+        String query = createQueryHeader(isCountry) +
+                " AND " +
+                createBoundQueryPart(bounds);
+
+        return new SimpleSQLiteQuery(query);
+    }
+
+    private static String createQueryHeader(boolean isCountry) {
+        return "SELECT * FROM locations WHERE " +
+                "endpoints " + (isCountry ? "==" : "!=") + " 'isCountry'";
+    }
+
+    private static String createBoundQueryPart(Bounds bounds) {
+        return "(" +
+                "latitude >= " + bounds.bottom +
+                " AND latitude <= " + bounds.top +
+                " AND longitude >= " + bounds.left +
+                " AND longitude <= " + bounds.right +
+                ')';
     }
 }

@@ -19,7 +19,6 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -108,7 +107,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void setMapMode(String mode) {
-        Timber.e("setMapMode: " + mode);
         mapWrapper.setMapMode(mode);
         if (mode.equals(MapWrapper.RADIUS_MODE)) {
             radiusView.setVisibility(View.VISIBLE);
@@ -130,7 +128,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void addClusters(List<LocationClusterItem> clusterItems) {
-        Timber.e("addClusters: ");
         mapWrapper.addClusters(clusterItems);
     }
 

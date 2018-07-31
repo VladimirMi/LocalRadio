@@ -48,10 +48,6 @@ public class ClusterLoader {
                 .observeOn(Schedulers.io());
     }
 
-    public void setMapMode(String mode) {
-
-    }
-
     public void setIsCountry(boolean isCountry) {
         boolean old = this.isCountry;
         this.isCountry = isCountry;
@@ -79,9 +75,9 @@ public class ClusterLoader {
 
         } else {
             removeClustersOutside(newLoadBounds);
-            List<Bounds> load = newLoadBounds.except(loadBounds);
-            for (Bounds bounds : load) {
-                loadQueryRelay.accept(MapUtils.createQueryFor(bounds, isCountry));
+            List<Bounds> loadBoundsList = newLoadBounds.except(loadBounds);
+            if (!loadBoundsList.isEmpty()) {
+                loadQueryRelay.accept(MapUtils.createQueryFor(loadBoundsList, isCountry));
             }
         }
         loadBounds = newLoadBounds;
