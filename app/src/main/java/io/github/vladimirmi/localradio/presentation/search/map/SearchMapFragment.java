@@ -33,6 +33,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @BindView(R.id.radiusView) RadiusView radiusView;
 
     private CustomClusterManager clusterManager;
+    private GoogleMap map;
 
     @Override
     protected int getLayout() {
@@ -55,7 +56,17 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void onMapReady(GoogleMap map) {
-        Timber.e("onMapReady: ");
+        this.map = map;
+        initMap();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (map != null) initMap();
+    }
+
+    private void initMap() {
         clusterManager = new CustomClusterManager(getContext(), map);
         presenter.onMapReady();
         presenter.loadClusters(clusterManager.getQueryObservable());
@@ -65,7 +76,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
             presenter.saveMapState(state);
         });
     }
-
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {

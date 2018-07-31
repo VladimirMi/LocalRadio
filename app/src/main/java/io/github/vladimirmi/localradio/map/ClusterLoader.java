@@ -20,8 +20,8 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class ClusterLoader {
 
-    private static final double LOAD = 0.5;
-    private static final double THRESHOLD = 0.3;
+    private static final double LOAD = 0.3;
+    private static final double THRESHOLD = 0.2;
 
     private final BehaviorRelay<SupportSQLiteQuery> loadQueryRelay = BehaviorRelay.create();
 
