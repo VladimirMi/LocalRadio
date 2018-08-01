@@ -13,7 +13,6 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.jakewharton.rxrelay2.PublishRelay;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +71,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
     private boolean firstAdd = true;
 
-    public void addClusters(List<LocationClusterItem> clusterItems) {
+    public void addClusters(Set<LocationClusterItem> clusterItems) {
         clusterManager.addItems(clusterItems);
         if (firstAdd && RADIUS_MODE.equals(mapMode)) {
             selectClustersInsideRadius();
@@ -122,7 +121,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         map.moveCamera(cameraUpdate);
     }
 
-    private void selectItems(Set<LocationClusterItem> items) {
+    public void selectItems(Set<LocationClusterItem> items) {
         clusterManager.selectClusters(items);
         selection.accept(items);
     }
@@ -158,6 +157,10 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
             }
         }
         firstAdd = true;
+    }
+
+    public String getMapMode() {
+        return mapMode;
     }
 
     private void selectClustersInsideRadius() {

@@ -9,7 +9,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.CameraPosition;
 
-import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
@@ -55,22 +55,23 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void onMapReady(GoogleMap map) {
         mapWrapper = new MapWrapper(getContext(), map);
-        initMap();
+        presenter.onMapReady();
+        mapWrapper.setOnSaveStateListener(state -> {
+            presenter.saveMapState(state);
+        });
+        setupMapObservables();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        if (mapWrapper != null) initMap();
+        if (mapWrapper != null) setupMapObservables();
     }
 
-    private void initMap() {
-        presenter.onMapReady();
+    private void setupMapObservables() {
         presenter.loadClusters(mapWrapper.getQueryObservable());
         presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
-        mapWrapper.setOnSaveStateListener(state -> {
-            presenter.saveMapState(state);
-        });
+        setupRadius(mapWrapper.getMapMode());
     }
 
     @Override
@@ -108,12 +109,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void setMapMode(String mode) {
         mapWrapper.setMapMode(mode);
-        if (mode.equals(MapWrapper.RADIUS_MODE)) {
-            radiusView.setVisibility(View.VISIBLE);
-            presenter.selectRadiusChange(mapWrapper.getRadiusChangeObservable());
-        } else {
-            radiusView.setVisibility(View.GONE);
-        }
+        setupRadius(mode);
     }
 
     @Override
@@ -127,8 +123,15 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void addClusters(List<LocationClusterItem> clusterItems) {
+    public void addClusters(Set<LocationClusterItem> clusterItems) {
         mapWrapper.addClusters(clusterItems);
+    }
+
+    @Override
+    public void selectClusters(Set<LocationClusterItem> clusterItems) {
+        if (!MapWrapper.RADIUS_MODE.equals(mapWrapper.getMapMode())) {
+            mapWrapper.selectItems(clusterItems);
+        }
     }
 
     @Override
@@ -138,4 +141,13 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     //endregion
+
+    private void setupRadius(String mode) {
+        if (MapWrapper.RADIUS_MODE.equals(mode)) {
+            radiusView.setVisibility(View.VISIBLE);
+            presenter.selectRadiusChange(mapWrapper.getRadiusChangeObservable());
+        } else {
+            radiusView.setVisibility(View.GONE);
+        }
+    }
 }

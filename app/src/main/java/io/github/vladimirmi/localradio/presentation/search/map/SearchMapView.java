@@ -2,7 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search.map;
 
 import com.google.android.gms.maps.model.CameraPosition;
 
-import java.util.List;
+import java.util.Set;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.MapState;
@@ -19,9 +19,11 @@ public interface SearchMapView extends BaseView {
 
     void restoreMapState(MapState state);
 
-    void addClusters(List<LocationClusterItem> clusterItems);
+    void addClusters(Set<LocationClusterItem> clusterItems);
 
     void setMapMode(String mode);
 
     void setSelectionResult(int stations);
+
+    void selectClusters(Set<LocationClusterItem> clusterItems);
 }

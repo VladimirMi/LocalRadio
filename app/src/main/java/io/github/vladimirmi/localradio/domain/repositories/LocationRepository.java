@@ -4,6 +4,7 @@ import android.arch.persistence.db.SupportSQLiteQuery;
 import android.util.Pair;
 
 import java.util.List;
+import java.util.Set;
 
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.map.MapState;
@@ -31,7 +32,7 @@ public interface LocationRepository {
 
     Single<List<LocationEntity>> getCities(String isoCode);
 
-    void saveLocations(int... locationId);
+    void saveLocations(Set<String> locationsId);
 
     Single<List<LocationEntity>> getSavedLocations();
 

@@ -13,7 +13,8 @@ public class LocationClusterItem implements ClusterItem {
     private final LatLng position;
     private final String title;
     private final String snippet = null;
-    private int stationsNum;
+    private final int id;
+    private final int stationsNum;
 
     public LocationClusterItem(LocationEntity location) {
         position = new LatLng(location.latitude, location.longitude);
@@ -23,6 +24,7 @@ public class LocationClusterItem implements ClusterItem {
         } else {
             title = String.format("%s, %s", location.name, location.country);
         }
+        id = location.id;
     }
 
     @Override
@@ -40,10 +42,15 @@ public class LocationClusterItem implements ClusterItem {
         return snippet;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public int getStationsNum() {
         return stationsNum;
     }
 
+    // TODO: 8/1/18 change to id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

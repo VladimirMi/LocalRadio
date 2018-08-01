@@ -3,7 +3,10 @@ package io.github.vladimirmi.localradio.domain.interactors;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.support.annotation.Nullable;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -65,8 +68,12 @@ public class LocationInteractor {
         return locationRepository.getCountry(countryCode);
     }
 
-    public void saveLocations(int... locationsId) {
-        locationRepository.saveLocations(locationsId);
+    public void saveLocations(Set<LocationClusterItem> locations) {
+        Set<String> ids = new HashSet<>();
+        for (LocationClusterItem location : locations) {
+            ids.add(String.valueOf(location.getId()));
+        }
+        locationRepository.saveLocations(ids);
     }
 
     public LocationEntity saveCountryLocation(@Nullable LocationEntity location) {
@@ -81,7 +88,7 @@ public class LocationInteractor {
             currentLocation = countryLocation;
             cityLocation = null;
         }
-        saveLocations(currentLocation != null ? currentLocation.id : -1);
+        saveLocation(currentLocation);
         return currentLocation;
     }
 
@@ -94,12 +101,15 @@ public class LocationInteractor {
         } else {
             currentLocation = cityLocation;
         }
-        saveLocations(currentLocation != null ? currentLocation.id : -1);
+        saveLocation(currentLocation);
         return currentLocation;
     }
 
-    public Single<List<LocationEntity>> getSavedLocations() {
-        return locationRepository.getSavedLocations();
+    public Single<Set<LocationClusterItem>> getSavedLocations() {
+        return locationRepository.getSavedLocations()
+                .flattenAsObservable(locationEntities -> locationEntities)
+                .map(LocationClusterItem::new)
+                .collect(HashSet::new, Set::add);
     }
 
     public Single<LocationEntity> getSavedLocation() {
@@ -113,11 +123,11 @@ public class LocationInteractor {
                 });
     }
 
-    public Single<List<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
+    public Single<Set<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
         return locationRepository.loadClusters(query)
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
-                .toList();
+                .collect(HashSet::new, Set::add);
     }
 
     public Completable checkCanSearch() {
@@ -130,5 +140,15 @@ public class LocationInteractor {
 
     public boolean isServicesAvailable() {
         return locationRepository.isServicesAvailable();
+    }
+
+    private void saveLocation(LocationEntity currentLocation) {
+        Set<String> ids;
+        if (currentLocation != null) {
+            ids = Collections.singleton(String.valueOf(currentLocation.id));
+        } else {
+            ids = Collections.emptySet();
+        }
+        locationRepository.saveLocations(ids);
     }
 }

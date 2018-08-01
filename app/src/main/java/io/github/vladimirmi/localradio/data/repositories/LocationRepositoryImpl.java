@@ -3,7 +3,6 @@ package io.github.vladimirmi.localradio.data.repositories;
 import android.arch.persistence.db.SupportSQLiteQuery;
 import android.util.Pair;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -94,12 +93,8 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public void saveLocations(int... locationIds) {
-        Set<String> locations = new HashSet<>();
-        for (int locationId : locationIds) {
-            if (locationId != -1) locations.add(String.valueOf(locationId));
-        }
-        preferences.locations.put(locations);
+    public void saveLocations(Set<String> locationsId) {
+        preferences.locations.put(locationsId);
     }
 
     @Override

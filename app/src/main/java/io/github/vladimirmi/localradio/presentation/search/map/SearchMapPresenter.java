@@ -38,7 +38,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     @Override
     protected void onDetach() {
-        radiusSub.dispose();
+        if (radiusSub != null) radiusSub.dispose();
     }
 
     public void initOptions() {
@@ -48,6 +48,9 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     public void onMapReady() {
         initMapMode();
         view.restoreMapState(locationInteractor.getMapState());
+        viewSubs.add(locationInteractor.getSavedLocations()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(view::selectClusters));
     }
 
     public void loadClusters(Observable<SupportSQLiteQuery> queryObservable) {
@@ -58,7 +61,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void selectRadiusChange(Observable<CameraPosition> radiusZoomObservable) {
-        if (radiusSub != null && !radiusSub.isDisposed()) radiusSub.dispose();
+        if (radiusSub != null) radiusSub.dispose();
         radiusSub = radiusZoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::changeRadius);
@@ -73,6 +76,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                         stations += locationClusterItem.getStationsNum();
                     }
                     view.setSelectionResult(stations);
+                    locationInteractor.saveLocations(locationClusterItems);
                 }));
     }
 
