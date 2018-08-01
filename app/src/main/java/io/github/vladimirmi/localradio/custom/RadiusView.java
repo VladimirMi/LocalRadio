@@ -1,8 +1,10 @@
 package io.github.vladimirmi.localradio.custom;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.annotation.Keep;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -44,11 +46,22 @@ public class RadiusView extends View {
         paint.setColor(getResources().getColor(R.color.map_radius));
     }
 
+    @Keep
+    public void setRadius(float radius) {
+        this.radius = radius;
+        invalidate();
+    }
+
     public void setCameraPosition(CameraPosition position) {
         double radiusAtLatitude = BASE_RADIUS_DP / Math.cos(Math.toRadians(position.target.latitude))
                 * Math.pow(2, position.zoom);
-        radius = (float) UiUtils.dpToPx(getContext(), radiusAtLatitude);
-        invalidate();
+        float newRadius = (float) UiUtils.dpToPx(getContext(), radiusAtLatitude);
+        float delta = Math.abs(radius - newRadius);
+        if (delta < 5) return;
+        long time = (long) delta;
+        ObjectAnimator animator = ObjectAnimator.ofFloat(this, "radius", this.radius, newRadius);
+        animator.setDuration(time);
+        animator.start();
     }
 
     @Override
