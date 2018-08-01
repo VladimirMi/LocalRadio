@@ -100,7 +100,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
     }
 
     @Override
-    public void setStationsNumber(int stations) {
+    public void setSelectionResult(int stations) {
         String s = getResources().getQuantityString(R.plurals.selection_result, stations, stations);
         selectionResultTv.setText(s);
     }

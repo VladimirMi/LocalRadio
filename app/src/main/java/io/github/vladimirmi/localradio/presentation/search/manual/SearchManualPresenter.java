@@ -82,7 +82,7 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
             view.setCity("");
             view.setCountry("");
             setCitySuggestions("");
-            view.setStationsNumber(0);
+            view.setSelectionResult(0);
         } else {
             if (location.isCountry()) {
                 view.setCountry(location.name);
@@ -92,7 +92,7 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
                 setCountry(location.country);
                 view.setCity(location.name);
             }
-            view.setStationsNumber(location.stations);
+            view.setSelectionResult(location.stations);
         }
     }
 
