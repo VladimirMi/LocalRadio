@@ -53,6 +53,7 @@ public class ClusterLoader {
         this.isCountry = isCountry;
         if (old != isCountry) {
             clusterManager.clearItems();
+            clusterManager.cluster();
             loadBounds = null;
             new Handler().postDelayed(this::loadNext, 500);
         }

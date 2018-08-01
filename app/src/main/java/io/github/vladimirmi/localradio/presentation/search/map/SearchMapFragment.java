@@ -131,5 +131,11 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         mapWrapper.addClusters(clusterItems);
     }
 
+    @Override
+    public void setSelectionResult(int stations) {
+        String s = getResources().getQuantityString(R.plurals.selection_result, stations, stations);
+        selectionResultTv.setText(s);
+    }
+
     //endregion
 }

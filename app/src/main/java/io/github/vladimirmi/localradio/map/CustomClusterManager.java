@@ -9,7 +9,6 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.algo.Algorithm;
 import com.google.maps.android.clustering.view.ClusterRenderer;
-import com.jakewharton.rxrelay2.PublishRelay;
 
 import java.util.Collection;
 import java.util.Set;
@@ -17,7 +16,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 24.07.2018.
@@ -31,8 +29,6 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
     public final GoogleMap map;
     private final ReadWriteLock clusterTaskLock = new ReentrantReadWriteLock();
     private ClusterTask clusterTask;
-
-    private PublishRelay<Object> onItemsChange = PublishRelay.create();
 
     public CustomClusterManager(Context context, GoogleMap map) {
         super(context, map);
@@ -112,11 +108,11 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
         }
     }
 
-    public void selectClusters(Set<LocationClusterItem> clusterItems) {
-        Timber.d("selectClusters: ");
+    public Set<LocationClusterItem> selectClusters(Set<LocationClusterItem> clusterItems) {
         renderer.selectItems(clusterItems);
         algorithm.setSelectedItems(clusterItems);
         cluster();
+        return clusterItems;
     }
 
     @SuppressLint("StaticFieldLeak")

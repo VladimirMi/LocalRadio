@@ -63,10 +63,11 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         viewSubs.add(selectedItemsObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(locationClusterItems -> {
-                    int c = 0;
+                    int stations = 0;
                     for (LocationClusterItem locationClusterItem : locationClusterItems) {
-                        c += locationClusterItem.getStationsNum();
+                        stations += locationClusterItem.getStationsNum();
                     }
+                    view.setSelectionResult(stations);
                 }));
     }
 
