@@ -36,6 +36,11 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         initOptions();
     }
 
+    @Override
+    protected void onDetach() {
+        radiusSub.dispose();
+    }
+
     public void initOptions() {
         view.initOptions(locationInteractor.getMapMode());
     }
@@ -53,7 +58,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void selectRadiusChange(Observable<CameraPosition> radiusZoomObservable) {
-        if (radiusSub != null) radiusSub.dispose();
+        if (radiusSub != null && !radiusSub.isDisposed()) radiusSub.dispose();
         radiusSub = radiusZoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::changeRadius);
