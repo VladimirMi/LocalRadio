@@ -29,7 +29,6 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
 
     @Override
     protected void onBeforeClusterItemRendered(LocationClusterItem item, MarkerOptions markerOptions) {
-
         markerOptions
                 .position(item.getPosition())
                 .title(item.getTitle())
@@ -43,17 +42,13 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
 
     @Override
     protected void onBeforeClusterRendered(Cluster<LocationClusterItem> cluster, MarkerOptions markerOptions) {
-        int stations = calculateStations(cluster);
-        boolean isSelected = isClusterSelected(cluster);
-//        Timber.d("onBeforeClusterRendered: %s, %s", stations, isSelected);
-
         markerOptions
                 .position(cluster.getPosition())
                 .anchor(0.5f, 0.5f)
                 .icon(new MarkerIconBuilder(context)
                         .isCluster()
-                        .setSelected(isSelected)
-                        .stations(stations)
+                        .setSelected(isClusterSelected(cluster))
+                        .stations(calculateStations(cluster))
                         .build()
                 );
     }
@@ -80,7 +75,6 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
         return cluster.getSize() > 2;
     }
 
-
     public void selectItems(Set<LocationClusterItem> items) {
         for (LocationClusterItem item : selectedItems) {
             Marker marker = getMarker(item);
@@ -91,7 +85,6 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
                         .build());
             }
         }
-
         selectedItems = items;
 
         for (LocationClusterItem item : selectedItems) {

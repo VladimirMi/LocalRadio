@@ -15,7 +15,6 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 /**
  * Created by Vladimir Mikhalev 20.07.2018.
  */
-// TODO: 7/20/18 write javadocs
 public class MapUtils {
 
     private MapUtils() {

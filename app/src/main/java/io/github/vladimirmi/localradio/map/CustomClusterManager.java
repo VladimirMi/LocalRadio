@@ -26,7 +26,7 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
     private final ReadWriteLock algorithmLock = new ReentrantReadWriteLock();
     private final CustomClusterRenderer renderer;
 
-    public final GoogleMap map;
+    private final GoogleMap map;
     private final ReadWriteLock clusterTaskLock = new ReentrantReadWriteLock();
     private ClusterTask clusterTask;
 
@@ -108,11 +108,10 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
         }
     }
 
-    public Set<LocationClusterItem> selectClusters(Set<LocationClusterItem> clusterItems) {
+    public void selectClusters(Set<LocationClusterItem> clusterItems) {
         renderer.selectItems(clusterItems);
         algorithm.setSelectedItems(clusterItems);
         cluster();
-        return clusterItems;
     }
 
     @SuppressLint("StaticFieldLeak")
