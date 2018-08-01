@@ -12,14 +12,17 @@ public class LocationClusterItem implements ClusterItem {
 
     private final LatLng position;
     private final String title;
-    private final String snippet;
+    private final String snippet = null;
     private int stationsNum;
 
     public LocationClusterItem(LocationEntity location) {
-        this.position = new LatLng(location.latitude, location.longitude);
-        this.title = location.name;
-        this.snippet = String.valueOf(location.id);
-        this.stationsNum = location.stations;
+        position = new LatLng(location.latitude, location.longitude);
+        stationsNum = location.stations;
+        if (location.isCountry()) {
+            title = location.name;
+        } else {
+            title = String.format("%s, %s", location.name, location.country);
+        }
     }
 
     @Override

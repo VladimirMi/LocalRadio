@@ -9,6 +9,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.jakewharton.rxrelay2.PublishRelay;
 
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -35,6 +37,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     private final Observable<Object> cameraMoveObservable;
     private final ClusterLoader clusterLoader;
     private final CustomClusterManager clusterManager;
+    private final Context context;
     private final GoogleMap map;
 
     private OnSaveMapStateListener onSaveStateListener;
@@ -43,6 +46,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
 
     public MapWrapper(Context context, GoogleMap map) {
+        this.context = context;
         this.map = map;
 
         cameraMoveObservable = createCameraMoveObservable();
@@ -170,6 +174,8 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         uiSettings.setMapToolbarEnabled(false);
         uiSettings.setRotateGesturesEnabled(false);
         uiSettings.setTiltGesturesEnabled(false);
+
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style));
     }
 
     private Observable<Object> createCameraMoveObservable() {

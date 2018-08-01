@@ -30,8 +30,6 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
     @Override
     protected void onBeforeClusterItemRendered(LocationClusterItem item, MarkerOptions markerOptions) {
         markerOptions
-                .position(item.getPosition())
-                .title(item.getTitle())
                 .anchor(0.5f, 0.5f)
                 .icon(new MarkerIconBuilder(context)
                         .stations(item.getStationsNum())
@@ -43,7 +41,6 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
     @Override
     protected void onBeforeClusterRendered(Cluster<LocationClusterItem> cluster, MarkerOptions markerOptions) {
         markerOptions
-                .position(cluster.getPosition())
                 .anchor(0.5f, 0.5f)
                 .icon(new MarkerIconBuilder(context)
                         .isCluster()
