@@ -4,11 +4,21 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.transition.Slide;
+import android.support.transition.TransitionManager;
+import android.support.transition.Visibility;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.lang.reflect.Field;
 
@@ -23,7 +33,11 @@ import timber.log.Timber;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 
+    @BindView(R.id.root) CoordinatorLayout root;
     @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.playerControlsFr) View playerControlsFr;
+
+    private BottomSheetBehavior<View> bottomSheetBehavior;
 
     @Override
     protected int getLayout() {
@@ -83,10 +97,13 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     protected void setupView() {
         setSupportActionBar(toolbar);
+        bottomSheetBehavior = BottomSheetBehavior.from(playerControlsFr);
     }
 
     @Override
     public void showStations() {
+        enableToolbarScroll(true);
+        showControls();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentContainer, new StationsPagerFragment())
                 .addToBackStack(null)
@@ -95,13 +112,45 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @Override
     public void showSearch() {
+        enableToolbarScroll(false);
+        hideControls();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentContainer, new SearchFragment())
                 .addToBackStack(null)
                 .commit();
     }
 
+    @Override
+    public void showControls() {
+        Slide slide = createSlideTransition();
+        slide.setMode(Visibility.MODE_IN);
+        //noinspection ConstantConditions
+        TransitionManager.beginDelayedTransition(root, slide);
+        playerControlsFr.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideControls() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        Slide slide = createSlideTransition();
+        slide.setMode(Visibility.MODE_OUT);
+        //noinspection ConstantConditions
+        TransitionManager.beginDelayedTransition(root, slide);
+        playerControlsFr.setVisibility(View.GONE);
+    }
+
+    @NonNull
+    private Slide createSlideTransition() {
+        Slide slide = new Slide();
+        slide.setSlideEdge(Gravity.BOTTOM);
+        slide.setDuration(200);
+        slide.addTarget(playerControlsFr);
+        slide.setInterpolator(new FastOutSlowInInterpolator());
+        return slide;
+    }
+
     private void showAbout() {
+        hideControls();
         Intent showAbout = new Intent(this, AboutActivity.class);
         startActivity(showAbout);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
@@ -110,5 +159,12 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     private void exit() {
         presenter.exit();
         finish();
+    }
+
+    private void enableToolbarScroll(boolean enable) {
+        AppBarLayout.LayoutParams params =
+                (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(enable ? AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS : 0);
     }
 }
