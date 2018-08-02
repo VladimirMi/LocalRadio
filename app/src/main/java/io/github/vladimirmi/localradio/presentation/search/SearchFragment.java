@@ -5,6 +5,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
@@ -20,6 +21,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.viewPager) ViewPager viewPager;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
     @BindView(R.id.searchBt) FloatingActionButton searchBt;
+    @BindView(R.id.resultTv) TextView resultTv;
 
     @Override
     protected int getLayout() {
@@ -44,6 +46,8 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
                 presenter.setSearchMode(position);
             }
         });
+
+        searchBt.setOnClickListener((v) -> presenter.search());
     }
 
     //region =============== SearchView ==============
@@ -51,6 +55,17 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @Override
     public void setSearchMode(int mode) {
         viewPager.setCurrentItem(mode);
+    }
+
+    @Override
+    public void showLoading(boolean show) {
+        if (show) loadingPb.setVisibility(View.VISIBLE);
+        else loadingPb.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void setSearchResult(int stations) {
+        resultTv.setText(String.valueOf(stations));
     }
 
     //endregion

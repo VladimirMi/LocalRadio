@@ -9,4 +9,7 @@ public interface SearchView extends BaseView {
 
     void setSearchMode(int mode);
 
+    void showLoading(boolean show);
+
+    void setSearchResult(int stations);
 }

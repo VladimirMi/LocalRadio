@@ -3,8 +3,12 @@ package io.github.vladimirmi.localradio.presentation.search;
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
+import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.utils.RxUtils;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 01.07.2018.
@@ -27,7 +31,37 @@ public class SearchPresenter extends BasePresenter<SearchView> {
         view.setSearchMode(searchInteractor.getSearchMode());
     }
 
+    @Override
+    protected void onAttach(SearchView view) {
+        viewSubs.add(searchInteractor.getSearchResultObs()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {
+                    @Override
+                    public void onNext(SearchResult result) {
+                        handleSearchResult(result);
+                    }
+                }));
+    }
+
     public void setSearchMode(int mode) {
         searchInteractor.saveSearchMode(mode);
+    }
+
+    public void search() {
+        dataSubs.add(searchInteractor.searchStations()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));
+    }
+
+    private void handleSearchResult(SearchResult result) {
+        if (result.state == SearchResult.State.LOADING) {
+            view.showLoading(true);
+        } else if (result.state == SearchResult.State.DONE) {
+            view.showLoading(false);
+            view.setSearchResult(result.result);
+        } else {
+            view.showLoading(false);
+            Timber.e("handleSearchResult: not done");
+        }
     }
 }

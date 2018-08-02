@@ -14,7 +14,6 @@ import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.map.MapState;
-import io.reactivex.Completable;
 import io.reactivex.Single;
 
 /**
@@ -128,14 +127,6 @@ public class LocationInteractor {
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
                 .collect(HashSet::new, Set::add);
-    }
-
-    public Completable checkCanSearch() {
-//        if (getCountryName().isEmpty() && getCity().isEmpty()) {
-//            return Completable.error(new MessageException(R.string.error_specify_location));
-//        } else {
-        return Completable.complete();
-//        }
     }
 
     public boolean isServicesAvailable() {

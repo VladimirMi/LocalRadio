@@ -1,7 +1,5 @@
 package io.github.vladimirmi.localradio.data.repositories;
 
-import android.util.Pair;
-
 import com.jakewharton.rxrelay2.BehaviorRelay;
 
 import java.util.ArrayList;
@@ -9,11 +7,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.ResourceManager;
 import io.github.vladimirmi.localradio.data.models.StationRes;
 import io.github.vladimirmi.localradio.data.models.StationsResult;
-import io.github.vladimirmi.localradio.data.net.NetworkChecker;
 import io.github.vladimirmi.localradio.data.net.RestService;
 import io.github.vladimirmi.localradio.data.net.RxRetryTransformer;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
@@ -21,9 +16,11 @@ import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
+import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 28.05.2018.
@@ -32,9 +29,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     private final RestService restService;
     private final CacheSource cacheSource;
-    private final NetworkChecker networkChecker;
     private final Preferences preferences;
-    private final ResourceManager resourceManager;
     private boolean skipCache;
 
     private final BehaviorRelay<SearchResult> searchResult = BehaviorRelay.create();
@@ -43,19 +38,16 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Inject
     public SearchRepositoryImpl(RestService restService,
                                 CacheSource cacheSource,
-                                NetworkChecker networkChecker,
-                                Preferences preferences,
-                                ResourceManager resourceManager) {
+                                Preferences preferences) {
         this.restService = restService;
         this.cacheSource = cacheSource;
-        this.networkChecker = networkChecker;
         this.preferences = preferences;
-        this.resourceManager = resourceManager;
+
 
         if (!preferences.isSearchDone.get()) {
             searchResult.accept(SearchResult.notDone());
         } else {
-            searchResult.accept(SearchResult.done());
+            searchResult.accept(SearchResult.done(0));
         }
     }
 
@@ -76,65 +68,40 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Single<List<Station>> searchStationsManual(String countryCode, String city) {
-        return searchManual(countryCode, city)
-                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneManual(stations.size(),
-                        getResultMessage(stations, R.plurals.search_result))));
-    }
+    public Single<List<Station>> searchStationsByCoordinates(MapState state) {
+        Timber.e("searchStationsByCoordinates: ");
+        resolveCache(String.valueOf(state.latitude), String.valueOf(state.longitude));
 
-    @Override
-    public Single<List<Station>> searchStationsAutoManual(String countryCode, String city) {
-        return searchManual(countryCode, city)
-                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
-                        getResultMessage(stations, R.plurals.search_result))));
-    }
-
-    private Single<List<Station>> searchManual(String countryCode, String city) {
-        resolveCache(countryCode, city);
-        Single<StationsResult> search;
-        if (city.isEmpty()) {
-            search = restService.getStationsByLocation(countryCode, 1);
-        } else {
-            search = restService.getStationsByLocation(countryCode, city, 1);
-        }
-
-        return search
-                .doOnError(e -> cacheSource.cleanCache(countryCode, city))
+        return restService.getStationsByCoordinates(state.latitude, state.longitude)
+                .doOnError(e -> cacheSource.cleanCache(String.valueOf(state.latitude),
+                        String.valueOf(state.longitude)))
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
                 .subscribeOn(Schedulers.io());
     }
 
-
     @Override
-    public Single<List<Station>> searchStationsByCoordinates(Pair<Float, Float> coordinates) {
-        resolveCache(coordinates.first.toString(), coordinates.second.toString());
-
-        return restService.getStationsByCoordinates(coordinates.first, coordinates.second)
-                .doOnError(e -> cacheSource.cleanCache(coordinates.first.toString(),
-                        coordinates.second.toString()))
+    public Single<List<Station>> searchStationsByCountry(String country) {
+        Timber.e("searchStationsByCountry: %s", country);
+        resolveCache(country);
+        return restService.getStationsByLocation(country, 1)
+                .doOnError(e -> cacheSource.cleanCache(country))
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
-                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
-                        getResultMessage(stations, R.plurals.search_result_radius))))
                 .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Single<List<Station>> searchStationsByIp() {
-        return Single.fromCallable(networkChecker::getIp)
-                .flatMap(ip -> {
-                    resolveCache(ip);
-                    return restService.getStationsByIp(ip)
-                            .doOnError(e -> cacheSource.cleanCache(ip))
-                            .compose(new RxRetryTransformer<>());
-                })
+    public Single<List<Station>> searchStationsByCity(String country, String city) {
+        Timber.e("searchStationsByCity: %s, %s", country, city);
+        resolveCache(country, city);
+        return restService.getStationsByLocation(country, city, 1)
+                .doOnError(e -> cacheSource.cleanCache(country, city))
+                .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
-                .doAfterSuccess(stations -> setSearchResult(SearchResult.doneAuto(stations.size(),
-                        getResultMessage(stations, R.plurals.search_result))))
                 .subscribeOn(Schedulers.io());
     }
 
@@ -151,10 +118,6 @@ public class SearchRepositoryImpl implements SearchRepository {
             stations.add(new Station(res));
         }
         return stations;
-    }
-
-    private String getResultMessage(List<Station> stations, int pluralsId) {
-        return resourceManager.getFormatQuantityString(pluralsId, stations.size(), stations.size());
     }
 
     @Override

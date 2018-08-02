@@ -25,7 +25,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @BindView(R.id.toolbar) Toolbar toolbar;
 
-
     @Override
     protected int getLayout() {
         return R.layout.activity_main;
@@ -46,8 +45,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
             }
         }
         super.onCreate(savedInstanceState);
-//        showStations();
-        showSearch();
+        showStations();
     }
 
     @Override
