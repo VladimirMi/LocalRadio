@@ -80,6 +80,11 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     }
 
     @Override
+    public boolean handleBackPress() {
+        return false;
+    }
+
+    @Override
     public Observable<Boolean> resolvePermissions(String... permissions) {
         //noinspection unchecked,ConstantConditions
         return ((BaseActivity) getActivity()).resolvePermissions(permissions);

@@ -11,6 +11,7 @@ import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
+import io.github.vladimirmi.localradio.presentation.main.MainView;
 
 /**
  * Created by Vladimir Mikhalev 01.07.2018.
@@ -48,6 +49,13 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         });
 
         searchBt.setOnClickListener((v) -> presenter.search());
+    }
+
+    @Override
+    public boolean handleBackPress() {
+        //noinspection ConstantConditions
+        ((MainView) getActivity()).showStations();
+        return true;
     }
 
     //region =============== SearchView ==============

@@ -106,7 +106,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         showControls();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentContainer, new StationsPagerFragment())
-                .addToBackStack(null)
                 .commit();
     }
 
@@ -116,7 +115,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         hideControls();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentContainer, new SearchFragment())
-                .addToBackStack(null)
                 .commit();
     }
 
