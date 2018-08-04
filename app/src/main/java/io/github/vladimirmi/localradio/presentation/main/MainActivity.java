@@ -90,6 +90,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         } else if (item.getItemId() == R.id.action_exit) {
             exit();
             return true;
+
+        } else if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -2,6 +2,8 @@ package io.github.vladimirmi.localradio.presentation.stations;
 
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import butterknife.BindView;
@@ -30,8 +32,12 @@ public class StationsPagerFragment extends BaseFragment<StationsPagerPresenter> 
         return Scopes.getAppScope().getInstance(StationsPagerPresenter.class);
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     protected void setupView(View view) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(false);
+
         StationsPagerAdapter pagerAdapter = new StationsPagerAdapter(getChildFragmentManager());
 
         viewPager.setAdapter(pagerAdapter);
