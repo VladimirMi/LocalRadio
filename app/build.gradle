@@ -55,7 +55,7 @@ private String generateVersionName() {
 }
 
 ext {
-    SUPPORT_LIBRARY_VERSION = "28.0.0-alpha3"
+    SUPPORT_LIBRARY_VERSION = "28.0.0-beta01"
     PLAY_SERVICES_VERSION = "15.0.1"
     ROOM_VERSION = "1.1.1"
 }

@@ -56,8 +56,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <TextView
-        android:id="@+id/resultTv"
+    <android.support.design.button.MaterialButton
+        android:id="@+id/resultBt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
@@ -66,6 +66,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewPager"
         tools:text="Extums tolerare in avenio!"
+        app:backgroundTint="@color/selected_marker"
+        app:cornerRadius="16dp"
         />
 
 </android.support.constraint.ConstraintLayout>
