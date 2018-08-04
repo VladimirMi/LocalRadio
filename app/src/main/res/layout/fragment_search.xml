@@ -38,11 +38,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:indeterminate="true"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/searchBt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/searchBt"
+        android:visibility="gone"
         />
 
     <android.support.design.widget.FloatingActionButton

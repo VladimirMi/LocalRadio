@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
+import android.graphics.PorterDuff;
+import android.os.Handler;
 import android.support.design.button.MaterialButton;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -12,7 +14,6 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.presentation.main.MainView;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 01.07.2018.
@@ -52,6 +53,9 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
         searchBt.setOnClickListener((v) -> presenter.search());
 
         resultBt.setOnClickListener((v) -> handleBackPress());
+
+        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
+                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
     @Override
@@ -70,13 +74,14 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public void showLoading(boolean show) {
-        Timber.e("showLoading: " + show);
         if (show) {
             resultBt.setVisibility(View.GONE);
             loadingPb.setVisibility(View.VISIBLE);
         } else {
-            resultBt.setVisibility(View.VISIBLE);
-            loadingPb.setVisibility(View.GONE);
+            new Handler().postDelayed(() -> {
+                resultBt.setVisibility(View.VISIBLE);
+                loadingPb.setVisibility(View.GONE);
+            }, 1000);
         }
     }
 
