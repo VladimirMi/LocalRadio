@@ -1,9 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.manual;
 
-import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import java.util.List;
@@ -16,6 +14,7 @@ import io.github.vladimirmi.localradio.custom.TextViewValidator;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 03.04.2018.
@@ -50,9 +49,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
         cityEt.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 cityEt.dismissDropDown();
-                InputMethodManager imm = (InputMethodManager) getContext()
-                        .getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(cityEt.getWindowToken(), 0);
+                UiUtils.hideSoftKeyBoard(getContext(), cityEt.getWindowToken());
             }
             return true;
         });
@@ -64,9 +61,6 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 //            String city = cityEt.getText().toString();
 //            presenter.search(countryName, city);
 //        });
-
-//        loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
-//                .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
     }
 
     @Override

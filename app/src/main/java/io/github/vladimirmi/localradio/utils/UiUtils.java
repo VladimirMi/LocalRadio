@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.utils;
 
 import android.content.Context;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
@@ -8,6 +9,7 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.URLSpan;
 import android.util.DisplayMetrics;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -80,5 +82,12 @@ public class UiUtils {
     public static double dpToPx(Context context, double dp) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         return displayMetrics.density * dp;
+    }
+
+    public static void hideSoftKeyBoard(Context context, IBinder windowToken) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(windowToken, 0);
+        }
     }
 }

@@ -19,6 +19,7 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -77,7 +78,11 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (getView() != null && isVisibleToUser) presenter.initOptions();
+        if (getView() != null && isVisibleToUser) {
+            presenter.initOptions();
+            //noinspection ConstantConditions
+            UiUtils.hideSoftKeyBoard(getContext(), selectionRg.getWindowToken());
+        }
     }
 
     //region =============== SearchMapView ==============
