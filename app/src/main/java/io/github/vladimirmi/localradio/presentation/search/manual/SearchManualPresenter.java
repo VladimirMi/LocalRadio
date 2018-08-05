@@ -62,6 +62,7 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     }
 
     private void setLocation(LocationEntity location) {
+        if (!hasView()) return;
         if (location == null) {
             view.setCity("");
             view.setCountry("");

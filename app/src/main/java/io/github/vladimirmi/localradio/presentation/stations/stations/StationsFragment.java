@@ -12,6 +12,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsFragment;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -57,6 +58,15 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
         ImageView v = searchView.findViewById(android.support.v7.appcompat.R.id.search_button);
         v.setImageResource(R.drawable.ic_filter);
         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isVisibleToUser && getView() != null) {
+            //noinspection ConstantConditions
+            UiUtils.hideSoftKeyBoard(getContext(), getView().getWindowToken());
+        }
     }
 
     private boolean isFirst = true;
