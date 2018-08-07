@@ -1,7 +1,9 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
 import android.graphics.PorterDuff;
+import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.button.MaterialButton;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -47,10 +49,14 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    protected void setupView(View view) {
-        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        supportActionBar.setDisplayHomeAsUpEnabled(true);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+    }
 
+    @Override
+    protected void setupView(View view) {
         String[] pagerTitles = getResources().getStringArray(R.array.search_pager);
         SearchPagerAdapter adapter = new SearchPagerAdapter(getChildFragmentManager(), pagerTitles);
         viewPager.setAdapter(adapter);

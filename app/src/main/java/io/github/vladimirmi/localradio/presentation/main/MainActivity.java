@@ -108,7 +108,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     public void showStations() {
         enableToolbarScroll(true);
         showControls();
+        toolbar.setTitle(R.string.app_name);
         getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.contentContainer, new StationsPagerFragment())
                 .commit();
     }
@@ -117,7 +119,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     public void showSearch() {
         enableToolbarScroll(false);
         hideControls();
+        toolbar.setTitle(R.string.search);
         getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.contentContainer, new SearchFragment())
                 .commit();
     }
@@ -155,7 +159,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         hideControls();
         Intent showAbout = new Intent(this, AboutActivity.class);
         startActivity(showAbout);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     private void exit() {
