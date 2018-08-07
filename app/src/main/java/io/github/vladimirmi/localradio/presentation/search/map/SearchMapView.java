@@ -23,7 +23,5 @@ public interface SearchMapView extends BaseView {
 
     void setMapMode(String mode);
 
-    void setSelectionResult(int stations);
-
     void selectClusters(Set<LocationClusterItem> clusterItems);
 }

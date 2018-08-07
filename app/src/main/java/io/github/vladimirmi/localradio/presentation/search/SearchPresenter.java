@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
@@ -20,10 +21,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     public static final int MANUAL_MODE = 1;
 
     private final SearchInteractor searchInteractor;
+    private final LocationInteractor locationInteractor;
 
     @Inject
-    public SearchPresenter(SearchInteractor searchInteractor) {
+    public SearchPresenter(SearchInteractor searchInteractor, LocationInteractor locationInteractor) {
         this.searchInteractor = searchInteractor;
+        this.locationInteractor = locationInteractor;
     }
 
     @Override
@@ -34,6 +37,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     @Override
     protected void onAttach(SearchView view) {
         viewSubs.add(searchInteractor.getSearchResultObs()
+                .skip(1)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorObserver<SearchResult>(view) {
                     @Override
@@ -48,6 +52,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void search() {
+        if (searchInteractor.getSearchMode() == MAP_MODE) {
+            locationInteractor.saveMapSelection();
+        } else {
+            locationInteractor.saveManualSelection();
+        }
+
         dataSubs.add(searchInteractor.searchStations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));

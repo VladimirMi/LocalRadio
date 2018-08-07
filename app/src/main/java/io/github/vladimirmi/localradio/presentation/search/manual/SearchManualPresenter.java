@@ -19,6 +19,8 @@ import io.reactivex.disposables.CompositeDisposable;
 public class SearchManualPresenter extends BasePresenter<SearchManualView> {
 
     private final LocationInteractor locationInteractor;
+    private LocationEntity cityLocation;
+    private LocationEntity countryLocation;
 
     @Inject
     SearchManualPresenter(LocationInteractor locationInteractor) {
@@ -49,33 +51,38 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     }
 
     public void selectCountry(LocationEntity location) {
-        if (location == null) {
-            setCitySuggestions("");
+        if (!(location != null && cityLocation != null && location.country.equals(cityLocation.country)) &&
+                (location != null || cityLocation == null)) {
+
+            cityLocation = null;
+            setLocation(location);
         }
-        LocationEntity savedLocation = locationInteractor.saveCountryLocation(location);
-        setLocation(savedLocation);
     }
 
     public void selectCity(LocationEntity location) {
-        LocationEntity savedLocation = locationInteractor.saveCityLocation(location);
-        setLocation(savedLocation);
+        setLocation(location == null ? countryLocation : location);
     }
 
     private void setLocation(LocationEntity location) {
+        locationInteractor.setSelectedManualLocation(location);
         if (!hasView()) return;
         if (location == null) {
             view.setCity("");
             view.setCountry("");
             setCitySuggestions("");
             view.setSelectionResult(0);
+            countryLocation = null;
+            cityLocation = null;
         } else {
+            setCitySuggestions(location.country);
             if (location.isCountry()) {
                 view.setCountry(location.name);
                 view.setCity("");
-                setCitySuggestions(location.country);
+                countryLocation = location;
             } else {
                 setCountry(location.country);
                 view.setCity(location.name);
+                cityLocation = location;
             }
             view.setSelectionResult(location.stations);
         }
@@ -109,6 +116,7 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
                 .subscribeWith(new RxUtils.ErrorSingleObserver<LocationEntity>(view) {
                     @Override
                     public void onSuccess(LocationEntity location) {
+                        countryLocation = location;
                         view.setCountry(location.name);
                     }
                 }));

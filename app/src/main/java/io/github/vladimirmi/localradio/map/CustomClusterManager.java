@@ -111,7 +111,6 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
     public void selectClusters(Set<LocationClusterItem> clusterItems) {
         renderer.selectItems(clusterItems);
         algorithm.setSelectedItems(clusterItems);
-        cluster();
     }
 
     @SuppressLint("StaticFieldLeak")

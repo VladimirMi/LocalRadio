@@ -68,6 +68,7 @@
         tools:text="Extums tolerare in avenio!"
         app:backgroundTint="@color/selected_marker"
         app:cornerRadius="16dp"
+        android:visibility="gone"
         />
 
 </android.support.constraint.ConstraintLayout>

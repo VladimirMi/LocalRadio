@@ -58,7 +58,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         mapWrapper = new MapWrapper(getContext(), map);
         presenter.onMapReady();
         mapWrapper.setOnSaveStateListener(state -> {
-            presenter.saveMapState(state);
+            presenter.setMapState(state);
         });
         setupMapObservables();
     }
@@ -102,11 +102,11 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         }
         selectionRg.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == R.id.countryRBtn) {
-                presenter.selectCountry();
+                presenter.setMapMode(MapWrapper.COUNTRY_MODE);
             } else if (checkedId == R.id.radiusRBtn) {
-                presenter.selectRadius();
+                presenter.setMapMode(MapWrapper.RADIUS_MODE);
             } else {
-                presenter.selectExact();
+                presenter.setMapMode(MapWrapper.EXACT_MODE);
             }
         });
     }
@@ -134,18 +134,20 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     public void selectClusters(Set<LocationClusterItem> clusterItems) {
-        if (!MapWrapper.RADIUS_MODE.equals(mapWrapper.getMapMode())) {
-            mapWrapper.selectItems(clusterItems);
+        int stations = 0;
+        for (LocationClusterItem locationClusterItem : clusterItems) {
+            stations += locationClusterItem.getStationsNum();
         }
-    }
-
-    @Override
-    public void setSelectionResult(int stations) {
-        String s = getResources().getQuantityString(R.plurals.selection_result, stations, stations);
-        selectionResultTv.setText(s);
+        setSelectionResult(stations);
+        mapWrapper.selectClusters(clusterItems);
     }
 
     //endregion
+
+    private void setSelectionResult(int stations) {
+        String s = getResources().getQuantityString(R.plurals.selection_result, stations, stations);
+        selectionResultTv.setText(s);
+    }
 
     private void setupRadius(String mode) {
         if (MapWrapper.RADIUS_MODE.equals(mode)) {

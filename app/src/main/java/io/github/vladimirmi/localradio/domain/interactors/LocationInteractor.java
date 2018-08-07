@@ -1,7 +1,6 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
 import android.arch.persistence.db.SupportSQLiteQuery;
-import android.support.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,37 +21,33 @@ import io.reactivex.Single;
 public class LocationInteractor {
 
     private final LocationRepository locationRepository;
-    @Nullable private LocationEntity countryLocation;
-    @Nullable private LocationEntity cityLocation;
+    private Set<LocationClusterItem> selectedMapLocations;
+    private LocationEntity selectedManualLocation;
+    private MapState mapState;
+    private String mapMode;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
     public LocationInteractor(LocationRepository locationRepository) {
         this.locationRepository = locationRepository;
+        mapMode = locationRepository.getMapMode();
+        mapState = locationRepository.getMapState();
     }
 
     public String getMapMode() {
-        return locationRepository.getMapMode();
+        return mapMode;
     }
 
-    public void saveMapMode(String mode) {
-        locationRepository.saveMapMode(mode);
+    public void setMapMode(String mode) {
+        mapMode = mode;
     }
 
     public MapState getMapState() {
-        return locationRepository.getMapState();
+        return mapState;
     }
 
-    public void saveMapState(MapState mapState) {
-        locationRepository.saveMapState(mapState);
-    }
-
-    public void saveAutodetect(boolean enabled) {
-        locationRepository.saveAutodetect(enabled);
-    }
-
-    public boolean isAutodetect() {
-        return locationRepository.isAutodetect();
+    public void setMapState(MapState mapState) {
+        this.mapState = mapState;
     }
 
     public Single<List<LocationEntity>> getCountries() {
@@ -67,41 +62,36 @@ public class LocationInteractor {
         return locationRepository.getCountry(countryCode);
     }
 
-    public void saveLocations(Set<LocationClusterItem> locations) {
+    public void setSelectedMapLocations(Set<LocationClusterItem> selectedMapLocations) {
+        this.selectedMapLocations = selectedMapLocations;
+    }
+
+    public void setSelectedManualLocation(LocationEntity selectedManualLocation) {
+        this.selectedManualLocation = selectedManualLocation;
+    }
+
+    public void saveMapSelection() {
+        locationRepository.saveMapMode(mapMode);
+        locationRepository.saveMapState(mapState);
+
         Set<String> ids = new HashSet<>();
-        for (LocationClusterItem location : locations) {
+        for (LocationClusterItem location : selectedMapLocations) {
             ids.add(String.valueOf(location.getId()));
         }
         locationRepository.saveLocations(ids);
     }
 
-    public LocationEntity saveCountryLocation(@Nullable LocationEntity location) {
-        countryLocation = location;
-        LocationEntity currentLocation;
-        if ((countryLocation != null && cityLocation != null
-                && countryLocation.country.equals(cityLocation.country)) ||
-                (countryLocation == null && cityLocation != null)) {
+    public void saveManualSelection() {
+        locationRepository.saveMapMode(mapMode);
+        locationRepository.saveMapState(mapState);
 
-            currentLocation = cityLocation;
+        Set<String> ids;
+        if (selectedManualLocation != null) {
+            ids = Collections.singleton(String.valueOf(selectedManualLocation.id));
         } else {
-            currentLocation = countryLocation;
-            cityLocation = null;
+            ids = Collections.emptySet();
         }
-        saveLocation(currentLocation);
-        return currentLocation;
-    }
-
-    public LocationEntity saveCityLocation(@Nullable LocationEntity location) {
-        cityLocation = location;
-        LocationEntity currentLocation;
-        if (cityLocation == null && countryLocation != null) {
-
-            currentLocation = countryLocation;
-        } else {
-            currentLocation = cityLocation;
-        }
-        saveLocation(currentLocation);
-        return currentLocation;
+        locationRepository.saveLocations(ids);
     }
 
     public Single<Set<LocationClusterItem>> getSavedLocations() {
@@ -115,11 +105,7 @@ public class LocationInteractor {
         return locationRepository.getSavedLocations()
                 .filter(locationEntities -> !locationEntities.isEmpty())
                 .toSingle()
-                .map(locationEntities -> locationEntities.get(0))
-                .doOnSuccess(location -> {
-                    if (location.isCountry()) countryLocation = location;
-                    else cityLocation = location;
-                });
+                .map(locationEntities -> locationEntities.get(0));
     }
 
     public Single<Set<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
@@ -131,15 +117,5 @@ public class LocationInteractor {
 
     public boolean isServicesAvailable() {
         return locationRepository.isServicesAvailable();
-    }
-
-    private void saveLocation(LocationEntity currentLocation) {
-        Set<String> ids;
-        if (currentLocation != null) {
-            ids = Collections.singleton(String.valueOf(currentLocation.id));
-        } else {
-            ids = Collections.emptySet();
-        }
-        locationRepository.saveLocations(ids);
     }
 }

@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.MapState;
-import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -46,7 +45,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void onMapReady() {
-        initMapMode();
+        view.setMapMode(locationInteractor.getMapMode());
         view.restoreMapState(locationInteractor.getMapState());
         viewSubs.add(locationInteractor.getSavedLocations()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -71,35 +70,17 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         viewSubs.add(selectedItemsObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(locationClusterItems -> {
-                    int stations = 0;
-                    for (LocationClusterItem locationClusterItem : locationClusterItems) {
-                        stations += locationClusterItem.getStationsNum();
-                    }
-                    view.setSelectionResult(stations);
-                    locationInteractor.saveLocations(locationClusterItems);
+                    view.selectClusters(locationClusterItems);
+                    locationInteractor.setSelectedMapLocations(locationClusterItems);
                 }));
     }
 
-    public void selectCountry() {
-        locationInteractor.saveMapMode(MapWrapper.COUNTRY_MODE);
-        initMapMode();
+    public void setMapMode(String mode) {
+        locationInteractor.setMapMode(mode);
+        view.setMapMode(mode);
     }
 
-    public void selectRadius() {
-        locationInteractor.saveMapMode(MapWrapper.RADIUS_MODE);
-        initMapMode();
-    }
-
-    public void selectExact() {
-        locationInteractor.saveMapMode(MapWrapper.EXACT_MODE);
-        initMapMode();
-    }
-
-    private void initMapMode() {
-        view.setMapMode(locationInteractor.getMapMode());
-    }
-
-    public void saveMapState(MapState state) {
-        locationInteractor.saveMapState(state);
+    public void setMapState(MapState state) {
+        locationInteractor.setMapState(state);
     }
 }

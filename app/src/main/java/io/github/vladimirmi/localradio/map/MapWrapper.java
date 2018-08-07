@@ -41,6 +41,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
     private OnSaveMapStateListener onSaveStateListener;
     private String mapMode = COUNTRY_MODE;
+    private String previousMapMode = COUNTRY_MODE;
     private PublishRelay<Set<LocationClusterItem>> selection = PublishRelay.create();
 
 
@@ -56,10 +57,9 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(clusterManager);
 
-
         clusterManager.setOnClusterItemClickListener(locationClusterItem -> {
             if (!mapMode.equals(RADIUS_MODE)) {
-                selectItems(Collections.singleton(locationClusterItem));
+                selection.accept(Collections.singleton(locationClusterItem));
             }
             return false;
         });
@@ -69,13 +69,11 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         return map;
     }
 
-    private boolean firstAdd = true;
 
     public void addClusters(Set<LocationClusterItem> clusterItems) {
         clusterManager.addItems(clusterItems);
-        if (firstAdd && RADIUS_MODE.equals(mapMode)) {
-            selectClustersInsideRadius();
-            firstAdd = false;
+        if (previousMapMode.equals(COUNTRY_MODE) && mapMode.equals(RADIUS_MODE)) {
+            selectInsideRadius();
         } else {
             clusterManager.cluster();
         }
@@ -89,15 +87,15 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         return cameraMoveObservable
                 .map(o -> map.getCameraPosition())
                 .distinctUntilChanged()
-                .startWith(map.getCameraPosition())
                 .filter(zoom -> mapMode.equals(RADIUS_MODE));
     }
 
     public Observable<Set<LocationClusterItem>> getSelectedItemsObservable() {
         Observable<Set<LocationClusterItem>> radiusSelection = cameraMoveObservable
                 .filter(o -> mapMode.equals(RADIUS_MODE))
-                .doOnNext(o -> selectClustersInsideRadius())
-                .ignoreElements().toObservable();
+                .distinctUntilChanged(o -> map.getCameraPosition().target)
+                .map(o -> MapUtils.insideRadiusMiles(clusterManager.getAlgorithm().getItems(),
+                        map.getCameraPosition().target, 50));
 
         return Observable.merge(selection, radiusSelection);
     }
@@ -121,18 +119,19 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         map.moveCamera(cameraUpdate);
     }
 
-    public void selectItems(Set<LocationClusterItem> items) {
+    public void selectClusters(Set<LocationClusterItem> items) {
         clusterManager.selectClusters(items);
-        selection.accept(items);
+        if (!mapMode.equals(COUNTRY_MODE)) clusterManager.cluster();
     }
 
     public void setMapMode(String mode) {
+        previousMapMode = mapMode;
         mapMode = mode;
         clusterLoader.setIsCountry(mode.equals(COUNTRY_MODE));
 
         switch (mode) {
             case EXACT_MODE: {
-                selectItems(emptyLocations);
+                selection.accept(emptyLocations);
                 map.setMinZoomPreference(6f);
                 map.setMaxZoomPreference(10f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
@@ -140,7 +139,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 break;
             }
             case RADIUS_MODE: {
-                if (firstAdd) selectClustersInsideRadius();
+                if (previousMapMode.equals(EXACT_MODE)) selectInsideRadius();
                 map.setMinZoomPreference(6f);
                 map.setMaxZoomPreference(9f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
@@ -148,7 +147,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 break;
             }
             case COUNTRY_MODE: {
-                selectItems(emptyLocations);
+                selection.accept(emptyLocations);
                 map.setMinZoomPreference(2f);
                 map.setMaxZoomPreference(6f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(5);
@@ -156,17 +155,15 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 break;
             }
         }
-        firstAdd = true;
     }
 
     public String getMapMode() {
         return mapMode;
     }
 
-    private void selectClustersInsideRadius() {
-        Set<LocationClusterItem> items = MapUtils.insideRadiusMiles(clusterManager.getAlgorithm().getItems(),
-                map.getCameraPosition().target, 50);
-        selectItems(items);
+    private void selectInsideRadius() {
+        selection.accept(MapUtils.insideRadiusMiles(clusterManager.getAlgorithm().getItems(),
+                map.getCameraPosition().target, 50));
     }
 
     private void configureMap() {
@@ -187,6 +184,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 if (!emitter.isDisposed()) emitter.onNext(emit);
             };
             map.setOnCameraMoveListener(cameraMoveListener);
+            emitter.onNext(emit);
 
             emitter.setDisposable(Disposables.fromRunnable(() -> map.setOnCameraMoveListener(null)));
         }).sample(500, TimeUnit.MILLISECONDS, AndroidSchedulers.mainThread(), true)
