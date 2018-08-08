@@ -4,6 +4,7 @@ import android.graphics.PorterDuff;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ public abstract class BaseStationsFragment<P extends BasePresenter> extends Base
     protected @BindView(R.id.stationList) RecyclerView stationList;
     protected @BindView(R.id.placeholder) TextView placeholder;
     protected @BindView(R.id.loadingPb) ProgressBar loadingPb;
+    protected @BindView(R.id.goToSearchBt) Button goToSearchBt;
 
     protected StationsAdapter stationsAdapter;
     protected LinearLayoutManager layoutManager;
@@ -80,6 +82,7 @@ public abstract class BaseStationsFragment<P extends BasePresenter> extends Base
     @Override
     public void hidePlaceholder() {
         placeholder.setVisibility(View.GONE);
+        goToSearchBt.setVisibility(View.GONE);
     }
 
     @Override

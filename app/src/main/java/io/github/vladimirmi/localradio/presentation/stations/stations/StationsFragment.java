@@ -11,6 +11,7 @@ import java.util.List;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.presentation.main.MainView;
 import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsFragment;
 import io.github.vladimirmi.localradio.utils.UiUtils;
 
@@ -51,6 +52,9 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     @Override
     protected void setupView(View view) {
         super.setupView(view);
+        goToSearchBt.setVisibility(View.VISIBLE);
+        //noinspection ConstantConditions
+        goToSearchBt.setOnClickListener((v) -> ((MainView) getActivity()).showSearch());
     }
 
     @Override

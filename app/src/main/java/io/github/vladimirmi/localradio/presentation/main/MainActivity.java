@@ -106,7 +106,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @Override
     public void showStations() {
-        enableToolbarScroll(true);
+//        enableToolbarScroll(true);
         showControls();
         toolbar.setTitle(R.string.app_name);
         getSupportFragmentManager().beginTransaction()
@@ -117,7 +117,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @Override
     public void showSearch() {
-        enableToolbarScroll(false);
+//        enableToolbarScroll(false);
         hideControls();
         toolbar.setTitle(R.string.search);
         //noinspection ConstantConditions
@@ -173,6 +173,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         AppBarLayout.LayoutParams params =
                 (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
         params.setScrollFlags(enable ? AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
-                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS : 0);
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP : 0);
     }
 }
