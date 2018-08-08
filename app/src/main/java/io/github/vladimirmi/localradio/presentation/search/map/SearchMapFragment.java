@@ -41,7 +41,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     protected SearchMapPresenter providePresenter() {
-        return Scopes.getAppScope().getInstance(SearchMapPresenter.class);
+        return Scopes.getLocationsScope().getInstance(SearchMapPresenter.class);
     }
 
     @Override

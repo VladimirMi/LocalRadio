@@ -120,6 +120,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         enableToolbarScroll(false);
         hideControls();
         toolbar.setTitle(R.string.search);
+        //noinspection ConstantConditions
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportFragmentManager().beginTransaction()
                 .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.contentContainer, new SearchFragment())

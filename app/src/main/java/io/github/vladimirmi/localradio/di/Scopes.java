@@ -12,12 +12,17 @@ import toothpick.Toothpick;
 public class Scopes {
 
     public static final String APP_SCOPE = "APP_SCOPE";
+    public static final String LOCATIONS_SCOPE = "LOCATIONS_SCOPE";
 
     private Scopes() {
     }
 
     public static Scope getAppScope() {
         return Toothpick.openScope(APP_SCOPE);
+    }
+
+    public static Scope getLocationsScope() {
+        return Toothpick.openScopes(APP_SCOPE, LOCATIONS_SCOPE);
     }
 
     public static Context appContext() {

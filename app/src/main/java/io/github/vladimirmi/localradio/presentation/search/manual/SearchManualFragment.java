@@ -33,7 +33,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
 
     @Override
     protected SearchManualPresenter providePresenter() {
-        return Scopes.getAppScope().getInstance(SearchManualPresenter.class);
+        return Scopes.getLocationsScope().getInstance(SearchManualPresenter.class);
     }
 
     @SuppressWarnings("ConstantConditions")

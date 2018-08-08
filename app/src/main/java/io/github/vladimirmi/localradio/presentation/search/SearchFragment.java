@@ -1,15 +1,11 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
 import android.graphics.PorterDuff;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.button.MaterialButton;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -17,9 +13,12 @@ import android.widget.ProgressBar;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.di.LocationsModule;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
 import io.github.vladimirmi.localradio.presentation.main.MainView;
+import toothpick.Scope;
+import toothpick.Toothpick;
 
 /**
  * Created by Vladimir Mikhalev 01.07.2018.
@@ -39,20 +38,14 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     protected SearchPresenter providePresenter() {
-        return Scopes.getAppScope().getInstance(SearchPresenter.class);
+        Scope scope = Scopes.getLocationsScope();
+        scope.installModules(new LocationsModule());
+        return scope.getInstance(SearchPresenter.class);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_search, menu);
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -79,6 +72,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public boolean handleBackPress() {
+        Toothpick.closeScope(Scopes.LOCATIONS_SCOPE);
         //noinspection ConstantConditions
         ((MainView) getActivity()).showStations();
         return true;
