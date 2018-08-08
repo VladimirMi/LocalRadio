@@ -23,8 +23,9 @@ public class RadiusView extends View {
     // 50 miles in dp at equator
     // equator 24095 miles
     private static final double BASE_RADIUS_DP = 50.0 * 256 / 24095;
+    private final Paint circlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint borderPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private float radius;
-    private Paint paint;
 
     public RadiusView(Context context) {
         super(context);
@@ -42,8 +43,11 @@ public class RadiusView extends View {
     }
 
     private void init() {
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(getResources().getColor(R.color.map_radius));
+        circlePaint.setColor(getResources().getColor(R.color.map_radius));
+
+        borderPaint.setColor(getResources().getColor(R.color.colorPrimaryDark));
+        borderPaint.setStrokeWidth(5);
+        borderPaint.setStyle(Paint.Style.STROKE);
     }
 
     @Keep
@@ -66,6 +70,7 @@ public class RadiusView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawCircle(getWidth() / 2, canvas.getHeight() / 2, radius, paint);
+        canvas.drawCircle(getWidth() / 2, canvas.getHeight() / 2, radius, circlePaint);
+        canvas.drawCircle(getWidth() / 2, canvas.getHeight() / 2, radius, borderPaint);
     }
 }

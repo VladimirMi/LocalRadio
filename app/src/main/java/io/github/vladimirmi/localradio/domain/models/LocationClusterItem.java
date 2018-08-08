@@ -50,7 +50,6 @@ public class LocationClusterItem implements ClusterItem {
         return stationsNum;
     }
 
-    // TODO: 8/1/18 change to id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,11 +57,11 @@ public class LocationClusterItem implements ClusterItem {
 
         LocationClusterItem that = (LocationClusterItem) o;
 
-        return position.equals(that.position);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return position.hashCode();
+        return id;
     }
 }

@@ -12,7 +12,7 @@
     <color name="selected_station">#bdbdbd</color>
     <color name="playing_station">#c5e1a5</color>
 
-    <color name="map_radius">#a09e9e9e</color>
+    <color name="map_radius">#64bdbdbd</color>
     <color name="selected_marker">#4caf50</color>
 
     <color name="grey_50">#fafafa</color>
