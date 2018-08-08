@@ -100,7 +100,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public void setSearchResult(int stations) {
-        resultBt.setVisibility(View.VISIBLE);
         String s = getResources().getQuantityString(R.plurals.search_result, stations, stations);
         resultBt.setText(s);
     }

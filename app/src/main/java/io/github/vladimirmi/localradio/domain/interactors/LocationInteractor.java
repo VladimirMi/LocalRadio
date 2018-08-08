@@ -98,14 +98,16 @@ public class LocationInteractor {
         return locationRepository.getSavedLocations()
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
-                .collect(HashSet::new, Set::add);
+                .<Set<LocationClusterItem>>collect(HashSet::new, Set::add)
+                .doOnSuccess(locations -> selectedMapLocations = locations);
     }
 
     public Single<LocationEntity> getSavedLocation() {
         return locationRepository.getSavedLocations()
                 .filter(locationEntities -> !locationEntities.isEmpty())
                 .toSingle()
-                .map(locationEntities -> locationEntities.get(0));
+                .map(locationEntities -> locationEntities.get(0))
+                .doOnSuccess(location -> selectedManualLocation = location);
     }
 
     public Single<Set<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
