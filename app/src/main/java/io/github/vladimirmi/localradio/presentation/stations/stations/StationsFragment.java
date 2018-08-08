@@ -61,6 +61,16 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     }
 
     @Override
+    public boolean handleBackPress() {
+        if (!searchView.isIconified()) {
+            searchView.setIconified(true);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (!isVisibleToUser && getView() != null) {

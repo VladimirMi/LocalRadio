@@ -73,13 +73,12 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
 
     @Override
     public boolean handleBackPress() {
-        boolean handled = false;
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-            if (fragment instanceof BaseView) {
-                handled = ((BaseView) fragment).handleBackPress();
+            if (fragment instanceof BaseView && ((BaseView) fragment).handleBackPress()) {
+                return true;
             }
         }
-        return handled;
+        return false;
     }
 
     @Override
