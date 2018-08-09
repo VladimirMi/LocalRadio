@@ -30,10 +30,10 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     @Override
-    protected void onFirstAttach(MainView view, CompositeDisposable disposables) {
+    protected void onFirstAttach(MainView view, CompositeDisposable dataSubs) {
         controlInteractor.connect();
 
-        disposables.add(mainInteractor.initApp()
+        dataSubs.add(mainInteractor.initApp()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
@@ -48,7 +48,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
                     public void onNext(Boolean isNull) {
-                        handleIsNullStation(isNull);
+                        if (isNull) view.hideControls();
                     }
                 }));
     }
@@ -60,15 +60,5 @@ public class MainPresenter extends BasePresenter<MainView> {
 
     public void exit() {
         controlInteractor.stop();
-    }
-
-    private void handleIsNullStation(boolean isNull) {
-        if (view == null) return;
-        // TODO: 7/8/18 refactor
-//        if (isNull) {
-//            view.hideControls(false);
-//        } else if (!mainInteractor.isSearchPage()) {
-//            view.showControls(false);
-//        }
     }
 }

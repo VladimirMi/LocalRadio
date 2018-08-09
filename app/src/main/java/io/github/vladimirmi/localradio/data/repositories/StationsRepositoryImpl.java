@@ -11,6 +11,7 @@ import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -21,7 +22,7 @@ public class StationsRepositoryImpl implements StationsRepository {
     private final Preferences preferences;
 
     private final BehaviorRelay<List<Station>> stations = BehaviorRelay.createDefault(Collections.emptyList());
-    private final BehaviorRelay<Station> currentStation = BehaviorRelay.create();
+    private final BehaviorRelay<Station> currentStation = BehaviorRelay.createDefault(Station.nullObject());
 
     @Inject
     public StationsRepositoryImpl(Preferences preferences) {
@@ -39,7 +40,7 @@ public class StationsRepositoryImpl implements StationsRepository {
     @Override
     public void setSearchResult(List<Station> stations) {
         this.stations.accept(stations);
-        updateCurrentStationFromPreferences(stations);
+        setCurrentStationFromPreferences(stations);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class StationsRepositoryImpl implements StationsRepository {
         return currentStation;
     }
 
-    private void updateCurrentStationFromPreferences(List<Station> stations) {
+    private void setCurrentStationFromPreferences(List<Station> stations) {
         if (preferences.currentStationIsFavorite.get()) return;
 
         Station newCurrentStation = Station.nullObject();
@@ -87,6 +88,7 @@ public class StationsRepositoryImpl implements StationsRepository {
         if (newCurrentStation.isNullObject && !stations.isEmpty()) {
             newCurrentStation = stations.get(0);
         }
+        Timber.e("setCurrentStationFromPreferences: " + newCurrentStation);
         setCurrentStation(newCurrentStation);
     }
 }
