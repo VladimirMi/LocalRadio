@@ -49,6 +49,7 @@ public class MainPresenter extends BasePresenter<MainView> {
                     @Override
                     public void onNext(Boolean isNull) {
                         if (isNull) view.hideControls();
+                        else view.showControls();
                     }
                 }));
     }

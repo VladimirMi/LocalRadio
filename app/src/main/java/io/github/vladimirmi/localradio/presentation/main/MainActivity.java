@@ -38,6 +38,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @BindView(R.id.playerControlsFr) View playerControlsFr;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
+    private boolean forbidShowControls = true;
 
     @Override
     protected int getLayout() {
@@ -107,6 +108,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     public void showStations() {
 //        enableToolbarScroll(true);
+        forbidShowControls = false;
         showControls();
         toolbar.setTitle(R.string.app_name);
         getSupportFragmentManager().beginTransaction()
@@ -118,6 +120,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     public void showSearch() {
 //        enableToolbarScroll(false);
+        forbidShowControls = true;
         hideControls();
         toolbar.setTitle(R.string.search);
         //noinspection ConstantConditions
@@ -130,6 +133,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
 
     @Override
     public void showControls() {
+        if (forbidShowControls) return;
         Slide slide = createSlideTransition();
         slide.setMode(Visibility.MODE_IN);
         //noinspection ConstantConditions
