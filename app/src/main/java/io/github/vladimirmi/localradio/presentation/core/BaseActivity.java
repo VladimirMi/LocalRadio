@@ -14,6 +14,7 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.03.2018.
@@ -57,6 +58,7 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
 
     @Override
     protected void onDestroy() {
+        Timber.e("onDestroy: " + isFinishing());
         if (isFinishing()) {
             presenter.destroy();
             presenter = null;

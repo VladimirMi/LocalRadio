@@ -1,8 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.main;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -53,12 +51,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
-        if (getResources().getBoolean(R.bool.portrait_only)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                recreate();
-            }
-        }
         super.onCreate(savedInstanceState);
         showStations();
     }
