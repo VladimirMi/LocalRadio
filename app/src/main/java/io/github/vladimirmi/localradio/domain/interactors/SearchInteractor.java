@@ -65,20 +65,21 @@ public class SearchInteractor {
     }
 
     public Completable searchStations() {
-        return search(false);
+        return checkCanSearch().andThen(search(false)).toCompletable();
     }
 
     public Completable refreshStations() {
-        return search(true);
+        return checkCanSearch().andThen(search(true)).toCompletable();
     }
 
-    private Completable search(boolean skipCache) {
+    private Single<List<Station>> search(boolean skipCache) {
         searchRepository.setSkipCache(skipCache);
         stationsRepository.resetStations();
 
-        Single<List<Station>> search = locationRepository.getSavedLocations()
-                .filter(locations -> !locations.isEmpty())
+        return locationRepository.getSavedLocations()
+                .filter(locationEntities -> !locationEntities.isEmpty())
                 .toSingle()
+                .onErrorResumeNext(Single.error(new MessageException(R.string.error_specify_location)))
                 .flatMap(locations -> {
                     if (locationRepository.getMapMode().equals(MapWrapper.RADIUS_MODE) &&
                             allIsUS(locations)) {
@@ -86,17 +87,13 @@ public class SearchInteractor {
                     } else {
                         return searchStationsByLocations(locations);
                     }
-                });
-
-        return checkCanSearch()
-                .doOnComplete(() -> searchRepository.setSearchResult(SearchResult.loading()))
-                .andThen(search)
+                })
+                .doOnSubscribe(disposable -> searchRepository.setSearchResult(SearchResult.loading()))
                 .doOnSuccess(stations -> {
                     searchRepository.setSearchResult(SearchResult.done(stations.size()));
                     stationsRepository.setSearchResult(stations);
                 })
-                .doOnError(throwable -> searchRepository.setSearchResult(SearchResult.notDone()))
-                .toCompletable();
+                .doOnError(throwable -> searchRepository.setSearchResult(SearchResult.notDone()));
     }
 
     private boolean allIsUS(List<LocationEntity> locations) {

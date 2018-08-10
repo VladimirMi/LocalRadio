@@ -24,7 +24,6 @@ import java.util.Set;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.utils.UiUtils;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 12.07.2018.
@@ -108,7 +107,6 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
             }
         }
         if (bucket == 0) bucket = BUCKETS[BUCKETS.length - 1];
-        Timber.e("getBucket: %s, %s", size, bucket);
         return isClusterSelected(cluster) ? -bucket : bucket;
     }
 

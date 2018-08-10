@@ -92,7 +92,6 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             loadingPb.setVisibility(View.VISIBLE);
         } else {
             new Handler().postDelayed(() -> {
-                resultBt.setVisibility(View.VISIBLE);
                 loadingPb.setVisibility(View.GONE);
             }, 1000);
         }
@@ -101,7 +100,10 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @Override
     public void setSearchResult(int stations) {
         String s = getResources().getQuantityString(R.plurals.search_result, stations, stations);
-        resultBt.setText(s);
+        new Handler().postDelayed(() -> {
+            resultBt.setVisibility(View.VISIBLE);
+            resultBt.setText(s);
+        }, 1000);
     }
 
     //endregion

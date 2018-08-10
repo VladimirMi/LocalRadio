@@ -33,7 +33,7 @@ public class UiUtils {
     }
 
     public static void handleError(@Nullable Object errorHandler, Throwable e) {
-        int messageId = R.string.error_unexpected;
+        int messageId = 0;
         if (e instanceof MessageException) {
             messageId = ((MessageException) e).getMessageId();
 
@@ -44,19 +44,22 @@ public class UiUtils {
             ResolvableApiException resolvable = (ResolvableApiException) e;
             ((BaseView) errorHandler).resolveApiException(resolvable);
 
-        } else //noinspection StatementWithEmptyBody
-            if (e instanceof HttpException) {
+        } else if (e instanceof HttpException) {
             // TODO: 5/11/18 handle fail codes (500...)
+            messageId = R.string.error_unexpected;
+        } else {
+            messageId = R.string.error_unexpected;
         }
 
-        if (errorHandler != null) {
+        if (errorHandler != null && messageId != 0) {
             if (errorHandler instanceof BaseView) {
                 ((BaseView) errorHandler).showMessage(messageId);
             } else if (errorHandler instanceof Context) {
                 Toast.makeText((Context) errorHandler, messageId, Toast.LENGTH_SHORT).show();
             }
+        } else {
+            Timber.e(e);
         }
-        Timber.e(e);
     }
 
     public static void setLinkStyle(TextView textView) {
