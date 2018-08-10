@@ -131,6 +131,9 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         //noinspection ConstantConditions
         TransitionManager.beginDelayedTransition(root, slide);
         playerControlsFr.setVisibility(View.VISIBLE);
+        playerControlsFr.postDelayed(() -> {
+            playerControlsFr.setPadding(0, 0, 0, 0);
+        }, 300);
     }
 
     @Override
@@ -147,7 +150,7 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     private Slide createSlideTransition() {
         Slide slide = new Slide();
         slide.setSlideEdge(Gravity.BOTTOM);
-        slide.setDuration(200);
+        slide.setDuration(300);
         slide.addTarget(playerControlsFr);
         slide.setInterpolator(new FastOutSlowInInterpolator());
         return slide;
