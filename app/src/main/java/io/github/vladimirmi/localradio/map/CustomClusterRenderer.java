@@ -44,6 +44,7 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
     private final int markerSize;
 
 
+    @SuppressWarnings("ConstantConditions")
     public CustomClusterRenderer(Context context, GoogleMap map, ClusterManager<LocationClusterItem> clusterManager) {
         super(context, map, clusterManager);
         this.context = context;
@@ -56,6 +57,8 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
         marker = ContextCompat.getDrawable(context, R.drawable.ic_location);
         selectedMarker = ContextCompat.getDrawable(context, R.drawable.ic_location_selected);
         markerSize = UiUtils.dpToPx(context, MARKER_SIZE_DP);
+        marker.setBounds(0, 0, markerSize, markerSize);
+        selectedMarker.setBounds(0, 0, markerSize, markerSize);
     }
 
     public void selectItems(Set<LocationClusterItem> items) {
@@ -150,7 +153,6 @@ public class CustomClusterRenderer extends DefaultClusterRenderer<LocationCluste
         Canvas canvas = new Canvas(image);
 
         Drawable drawable = selectedItems.contains(item) ? selectedMarker : marker;
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         canvas.drawText(text, half, baseLine, textPaint);
 
