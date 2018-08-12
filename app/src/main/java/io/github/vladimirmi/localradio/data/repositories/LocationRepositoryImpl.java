@@ -120,7 +120,6 @@ public class LocationRepositoryImpl implements LocationRepository {
         return locationSource.isServicesAvailable();
     }
 
-
     @Override
     public Completable checkCanGetLocation() {
         return locationSource.checkCanGetLocation();

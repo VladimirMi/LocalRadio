@@ -2,6 +2,7 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
@@ -52,12 +53,16 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void search() {
+        boolean saved;
         if (searchInteractor.getSearchMode() == MAP_MODE) {
-            locationInteractor.saveMapSelection();
+            saved = locationInteractor.saveMapSelection();
         } else {
-            locationInteractor.saveManualSelection();
+            saved = locationInteractor.saveManualSelection();
         }
-
+        if (!saved) {
+            view.showMessage(R.string.error_specify_location);
+            return;
+        }
         dataSubs.add(searchInteractor.searchStations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));

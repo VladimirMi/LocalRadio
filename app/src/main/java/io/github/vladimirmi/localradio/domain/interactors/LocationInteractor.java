@@ -70,28 +70,30 @@ public class LocationInteractor {
         this.selectedManualLocation = selectedManualLocation;
     }
 
-    public void saveMapSelection() {
-        locationRepository.saveMapMode(mapMode);
-        locationRepository.saveMapState(mapState);
-
+    public boolean saveMapSelection() {
         Set<String> ids = new HashSet<>();
         for (LocationClusterItem location : selectedMapLocations) {
             ids.add(String.valueOf(location.getId()));
         }
+        if (ids.isEmpty()) return false;
         locationRepository.saveLocations(ids);
-    }
-
-    public void saveManualSelection() {
         locationRepository.saveMapMode(mapMode);
         locationRepository.saveMapState(mapState);
+        return true;
+    }
 
+    public boolean saveManualSelection() {
         Set<String> ids;
         if (selectedManualLocation != null) {
             ids = Collections.singleton(String.valueOf(selectedManualLocation.id));
         } else {
             ids = Collections.emptySet();
         }
+        if (ids.isEmpty()) return false;
         locationRepository.saveLocations(ids);
+        locationRepository.saveMapMode(mapMode);
+        locationRepository.saveMapState(mapState);
+        return true;
     }
 
     public Single<Set<LocationClusterItem>> getSavedLocations() {

@@ -65,21 +65,17 @@ public class SearchInteractor {
     }
 
     public Completable searchStations() {
-        return checkCanSearch().andThen(search(false)).toCompletable();
+        return checkInternet()
+                .andThen(search(false)).toCompletable();
     }
 
     public Completable refreshStations() {
-        return checkCanSearch().andThen(search(true)).toCompletable();
+        return checkInternet()
+                .andThen(search(true)).toCompletable();
     }
 
     private Single<List<Station>> search(boolean skipCache) {
-        searchRepository.setSkipCache(skipCache);
-        stationsRepository.resetStations();
-
         return locationRepository.getSavedLocations()
-                .filter(locationEntities -> !locationEntities.isEmpty())
-                .toSingle()
-                .onErrorResumeNext(Single.error(new MessageException(R.string.error_specify_location)))
                 .flatMap(locations -> {
                     if (locationRepository.getMapMode().equals(MapWrapper.RADIUS_MODE) &&
                             allIsUS(locations)) {
@@ -88,7 +84,11 @@ public class SearchInteractor {
                         return searchStationsByLocations(locations);
                     }
                 })
-                .doOnSubscribe(disposable -> searchRepository.setSearchResult(SearchResult.loading()))
+                .doOnSubscribe(disposable -> {
+                    searchRepository.setSkipCache(skipCache);
+                    searchRepository.setSearchResult(SearchResult.loading());
+                    stationsRepository.resetStations();
+                })
                 .doOnSuccess(stations -> {
                     searchRepository.setSearchResult(SearchResult.done(stations.size()));
                     stationsRepository.setSearchResult(stations);
@@ -125,11 +125,12 @@ public class SearchInteractor {
                 .collect(ArrayList::new, List::addAll);
     }
 
-    private Completable checkCanSearch() {
-        if (!networkChecker.isAvailableNet()) {
-            return Completable.error(new MessageException(R.string.error_network));
-        } else {
-            return Completable.complete();
-        }
+    private Completable checkInternet() {
+        return Completable.fromCallable(() -> {
+            if (!networkChecker.isAvailableNet()) {
+                throw new MessageException(R.string.error_network);
+            }
+            return null;
+        });
     }
 }
