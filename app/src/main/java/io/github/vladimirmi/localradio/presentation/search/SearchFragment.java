@@ -72,9 +72,11 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public boolean handleBackPress() {
-        Toothpick.closeScope(Scopes.LOCATIONS_SCOPE);
-        //noinspection ConstantConditions
-        ((MainView) getActivity()).showStations();
+        if (!super.handleBackPress()) {
+            Toothpick.closeScope(Scopes.LOCATIONS_SCOPE);
+            //noinspection ConstantConditions
+            ((MainView) getActivity()).showStations();
+        }
         return true;
     }
 

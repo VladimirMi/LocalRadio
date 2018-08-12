@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.manual;
 
+import android.support.annotation.NonNull;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -30,7 +32,6 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     @Override
     protected void onFirstAttach(SearchManualView view, CompositeDisposable dataSubs) {
         setCountrySuggestions();
-        setCitySuggestions("");
         dataSubs.add(locationInteractor.getSavedLocation()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorSingleObserver<LocationEntity>(view) {
@@ -51,40 +52,34 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     }
 
     public void selectCountry(LocationEntity location) {
-        if (!(location != null && cityLocation != null && location.country.equals(cityLocation.country)) &&
-                (location != null || cityLocation == null)) {
+        if (location == null) {
+            if (cityLocation == null) emptyState();
 
-            cityLocation = null;
-            setLocation(location);
+        } else if (cityLocation == null || !location.country.equals(cityLocation.country)) {
+            countryState(location);
         }
     }
 
     public void selectCity(LocationEntity location) {
-        setLocation(location == null ? countryLocation : location);
+        if (location == null) {
+            if (countryLocation == null) emptyState();
+            else countryState(countryLocation);
+        } else {
+            if (cityLocation != null && cityLocation.id == location.id) return;
+            cityState(location);
+        }
     }
 
     private void setLocation(LocationEntity location) {
-        locationInteractor.setSelectedManualLocation(location);
         if (!hasView()) return;
         if (location == null) {
-            view.setCity("");
-            view.setCountry("");
-            setCitySuggestions("");
-            view.setSelectionResult(0);
-            countryLocation = null;
-            cityLocation = null;
+            emptyState();
         } else {
-            setCitySuggestions(location.country);
             if (location.isCountry()) {
-                view.setCountry(location.name);
-                view.setCity("");
-                countryLocation = location;
+                countryState(location);
             } else {
-                setCountry(location.country);
-                view.setCity(location.name);
-                cityLocation = location;
+                cityState(location);
             }
-            view.setSelectionResult(location.stations);
         }
     }
 
@@ -120,6 +115,34 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
                         view.setCountry(location.name);
                     }
                 }));
+    }
+
+    private void emptyState() {
+        if (!hasView()) return;
+        setCitySuggestions("");
+        view.setSelectionResult(0);
+        locationInteractor.setSelectedManualLocation(null);
+    }
+
+    private void countryState(@NonNull LocationEntity location) {
+        if (!hasView()) return;
+        view.setCountry(location.name);
+        view.setCity("");
+        countryLocation = location;
+        cityLocation = null;
+        setCitySuggestions(location.country);
+        view.setSelectionResult(location.stations);
+        locationInteractor.setSelectedManualLocation(location);
+    }
+
+    private void cityState(@NonNull LocationEntity location) {
+        if (!hasView()) return;
+        setCountry(location.country);
+        view.setCity(location.name);
+        cityLocation = location;
+        setCitySuggestions(location.country);
+        view.setSelectionResult(location.stations);
+        locationInteractor.setSelectedManualLocation(location);
     }
 
 //    public void enableAutodetect(boolean autodetect) {

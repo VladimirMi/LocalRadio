@@ -53,15 +53,9 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
             }
             return true;
         });
-
-//        searchBt.setOnClickListener(v -> {
-//            countryEt.performValidation();
-//            cityEt.performValidation();
-//            String countryName = countryEt.getText().toString();
-//            String city = cityEt.getText().toString();
-//            presenter.search(countryName, city);
-//        });
     }
+
+
 
     @Override
     public void setCountrySuggestions(List<LocationEntity> countries) {

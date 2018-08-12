@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 05.04.2018.
@@ -56,6 +57,7 @@ public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
                 setText("", false);
                 performValidation();
                 performClick();
+                UiUtils.showSoftKeyBoard(this);
                 return true;
             }
             return false;
