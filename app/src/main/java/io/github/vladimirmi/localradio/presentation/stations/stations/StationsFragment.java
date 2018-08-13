@@ -4,10 +4,12 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.util.List;
 
+import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
@@ -22,6 +24,7 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 public class StationsFragment extends BaseStationsFragment<StationsPresenter>
         implements SearchView.OnQueryTextListener {
 
+    @BindView(R.id.goToSearchBt) Button goToSearchBt;
     private SearchView searchView;
 
     @Override
@@ -52,7 +55,6 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     @Override
     protected void setupView(View view) {
         super.setupView(view);
-        goToSearchBt.setVisibility(View.VISIBLE);
         //noinspection ConstantConditions
         goToSearchBt.setOnClickListener((v) -> ((MainView) getActivity()).showSearch());
     }
@@ -109,6 +111,18 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     public boolean onQueryTextChange(String newText) {
         presenter.filterStations(newText);
         return true;
+    }
+
+    @Override
+    public void showPlaceholder() {
+        super.showPlaceholder();
+        goToSearchBt.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hidePlaceholder() {
+        super.hidePlaceholder();
+        goToSearchBt.setVisibility(View.GONE);
     }
 }
 
