@@ -20,6 +20,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     public static final int MAP_MODE = 0;
     public static final int MANUAL_MODE = 1;
+    private int searchMode;
 
     private final SearchInteractor searchInteractor;
     private final LocationInteractor locationInteractor;
@@ -32,7 +33,8 @@ public class SearchPresenter extends BasePresenter<SearchView> {
 
     @Override
     protected void onFirstAttach(SearchView view, CompositeDisposable disposables) {
-        view.setSearchMode(searchInteractor.getSearchMode());
+        searchMode = searchInteractor.getSearchMode();
+        view.setSearchMode(searchMode);
     }
 
     @Override
@@ -49,12 +51,12 @@ public class SearchPresenter extends BasePresenter<SearchView> {
     }
 
     public void setSearchMode(int mode) {
-        searchInteractor.saveSearchMode(mode);
+        searchMode = mode;
     }
 
     public void search() {
         boolean saved;
-        if (searchInteractor.getSearchMode() == MAP_MODE) {
+        if (searchMode == MAP_MODE) {
             saved = locationInteractor.saveMapSelection();
         } else {
             saved = locationInteractor.saveManualSelection();
@@ -63,6 +65,7 @@ public class SearchPresenter extends BasePresenter<SearchView> {
             view.showMessage(R.string.error_specify_location);
             return;
         }
+        searchInteractor.saveSearchMode(searchMode);
         dataSubs.add(searchInteractor.searchStations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(getView())));

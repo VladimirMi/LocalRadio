@@ -67,7 +67,7 @@ public class Preferences {
         currentStationId = new Preference<>(prefs, KEY_CURRENT_STATION_ID, 0);
         currentStationIsFavorite = new Preference<>(prefs, KEY_CURRENT_STATION_IS_FAVORITE, false);
         pagePosition = new Preference<>(prefs, KEY_PAGE, StationsPagerFragment.PAGE_STATIONS);
-        searchMode = new Preference<>(prefs, KEY_SEARCH_MODE, SearchPresenter.MAP_MODE);
+        searchMode = new Preference<>(prefs, KEY_SEARCH_MODE, SearchPresenter.MANUAL_MODE);
         mapMode = new Preference<>(prefs, KEY_MAP_MODE, MapWrapper.COUNTRY_MODE);
         mapLat = new Preference<>(prefs, KEY_MAP_LAT, 0f);
         mapLong = new Preference<>(prefs, KEY_MAP_LONG, 0f);

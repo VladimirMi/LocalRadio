@@ -12,7 +12,9 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
+import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
 import io.reactivex.Single;
 
 /**
@@ -21,6 +23,7 @@ import io.reactivex.Single;
 public class LocationInteractor {
 
     private final LocationRepository locationRepository;
+    private final SearchRepository searchRepository;
     private Set<LocationClusterItem> selectedMapLocations;
     private LocationEntity selectedManualLocation;
     private MapState mapState;
@@ -28,10 +31,12 @@ public class LocationInteractor {
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public LocationInteractor(LocationRepository locationRepository) {
+    public LocationInteractor(LocationRepository locationRepository,
+                              SearchRepository searchRepository) {
         this.locationRepository = locationRepository;
         mapMode = locationRepository.getMapMode();
         mapState = locationRepository.getMapState();
+        this.searchRepository = searchRepository;
     }
 
     public String getMapMode() {
@@ -91,22 +96,22 @@ public class LocationInteractor {
         }
         if (ids.isEmpty()) return false;
         locationRepository.saveLocations(ids);
-        locationRepository.saveMapMode(mapMode);
-        locationRepository.saveMapState(mapState);
         return true;
     }
 
-    public Single<Set<LocationClusterItem>> getSavedLocations() {
+    public Single<Set<LocationClusterItem>> getMapLocations() {
         return locationRepository.getSavedLocations()
+                .filter(locationEntities -> searchRepository.getSearchMode() == SearchPresenter.MANUAL_MODE)
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
                 .<Set<LocationClusterItem>>collect(HashSet::new, Set::add)
                 .doOnSuccess(locations -> selectedMapLocations = locations);
     }
 
-    public Single<LocationEntity> getSavedLocation() {
+    public Single<LocationEntity> getManualLocation() {
         return locationRepository.getSavedLocations()
-                .filter(locationEntities -> !locationEntities.isEmpty())
+                .filter(locationEntities -> !locationEntities.isEmpty()
+                        && searchRepository.getSearchMode() == SearchPresenter.MANUAL_MODE)
                 .toSingle()
                 .map(locationEntities -> locationEntities.get(0))
                 .doOnSuccess(location -> selectedManualLocation = location);

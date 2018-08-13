@@ -47,7 +47,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     public void onMapReady() {
         view.setMapMode(locationInteractor.getMapMode());
         view.restoreMapState(locationInteractor.getMapState());
-        viewSubs.add(locationInteractor.getSavedLocations()
+        viewSubs.add(locationInteractor.getMapLocations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::selectClusters));
     }

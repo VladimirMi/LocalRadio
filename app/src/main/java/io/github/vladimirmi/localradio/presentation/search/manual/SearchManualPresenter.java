@@ -32,7 +32,7 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
     @Override
     protected void onFirstAttach(SearchManualView view, CompositeDisposable dataSubs) {
         setCountrySuggestions();
-        dataSubs.add(locationInteractor.getSavedLocation()
+        dataSubs.add(locationInteractor.getManualLocation()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorSingleObserver<LocationEntity>(view) {
                     @Override
