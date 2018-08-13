@@ -27,7 +27,7 @@ public class CacheSource implements Interceptor {
 
     private static final String PREFIX = "cache";
     private static final String EXTENSION = "json";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;  // 24 hours
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 3;  // 3 days
     private final File cacheDir;
 
     public CacheSource(Context context) {
@@ -69,10 +69,9 @@ public class CacheSource implements Interceptor {
                 .build();
     }
 
-    public void cleanCache(String... queries) {
-        String query = buildQuery(queries);
-        // TODO: 6/6/18 query part of the file name equals query
-        File[] files = cacheDir.listFiles((dir, name) -> name.contains(query));
+    public void cleanCache(String... parts) {
+        String partName = buildFileName(parts);
+        File[] files = cacheDir.listFiles((dir, name) -> name.contains(partName));
         for (File file : files) {
             deleteFile(file);
         }
@@ -100,21 +99,23 @@ public class CacheSource implements Interceptor {
             values[i] = url.queryParameter(name);
             i++;
         }
-        String query = buildQuery(values);
-        File[] files = cacheDir.listFiles((dir, name) -> name.contains(query));
+        String partName = buildFileName(values);
+        File[] files = cacheDir.listFiles((dir, name) -> name.contains(partName));
         if (files.length > 0) {
             return files[0];
         }
 
-        String fileName = String.format("%s_%s_%s.%s", PREFIX, query, System.currentTimeMillis(), EXTENSION);
+        String fileName = String.format("%s_%s_%s.%s", PREFIX, partName, System.currentTimeMillis(), EXTENSION);
         return new File(cacheDir, fileName);
     }
 
-    private String buildQuery(String... queries) {
+    private String buildFileName(String... parts) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < queries.length; i++) {
-            builder.append(queries[i]);
-            if (i != queries.length - 1) builder.append('_');
+        for (int i = 0; i < parts.length; i++) {
+
+            String part = parts[i].replaceAll("([ \\\\/])", "");
+            builder.append(part);
+            if (i != parts.length - 1) builder.append('_');
         }
         return builder.toString();
     }
