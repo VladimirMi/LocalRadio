@@ -12,7 +12,7 @@ ext {
 }
 
 ext.versionMajor = 1
-ext.versionMinor = 1
+ext.versionMinor = 2
 ext.versionPatch = 0
 
 android {
