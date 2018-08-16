@@ -101,7 +101,7 @@ public class LocationInteractor {
 
     public Single<Set<LocationClusterItem>> getMapLocations() {
         return locationRepository.getSavedLocations()
-                .filter(locationEntities -> searchRepository.getSearchMode() == SearchPresenter.MANUAL_MODE)
+                .filter(locationEntities -> searchRepository.getSearchMode() == SearchPresenter.MAP_MODE)
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
                 .<Set<LocationClusterItem>>collect(HashSet::new, Set::add)
