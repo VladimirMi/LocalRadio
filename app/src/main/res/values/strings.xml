@@ -38,6 +38,14 @@
     <string name="error_renderer">Not supported audio stream</string>
     <string name="error_unexpected">Unexpected error</string>
 
+    <string name="search_map">Map</string>
+    <string name="search_manual">Manual search</string>
+
+    <string name="selection">Selection</string>
+    <string name="selection_radius">50 miles radius</string>
+    <string name="selection_result_one">Selected %d station</string>
+    <string name="selection_result_other">Selected %d stations</string>
+
     <string name="search_result_one">%d station found</string>
     <string name="search_result_other">%d stations found</string>
     <string name="search_result_radius_one">%d stations found within 50 mile radius</string>
@@ -66,5 +74,13 @@
         <item quantity="one">@string/search_result_radius_one</item>
         <item quantity="other">@string/search_result_radius_other</item>
     </plurals>
+    <plurals name="selection_result">
+        <item quantity="one">@string/selection_result_one</item>
+        <item quantity="other">@string/selection_result_other</item>
+    </plurals>
+    <string-array name="search_pager">
+        <item>@string/search_map</item>
+        <item>@string/search_manual</item>
+    </string-array>
 
 </resources>

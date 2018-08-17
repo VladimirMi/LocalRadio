@@ -1,17 +1,15 @@
 package io.github.vladimirmi.localradio.presentation.main;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.TabLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.transition.Slide;
 import android.support.transition.TransitionManager;
 import android.support.transition.Visibility;
-import android.support.v4.view.ViewPager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.Toolbar;
@@ -19,30 +17,26 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.lang.reflect.Field;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.about.AboutActivity;
 import io.github.vladimirmi.localradio.presentation.core.BaseActivity;
+import io.github.vladimirmi.localradio.presentation.search.SearchFragment;
+import io.github.vladimirmi.localradio.presentation.stations.StationsPagerFragment;
 import timber.log.Timber;
 
 public class MainActivity extends BaseActivity<MainPresenter> implements MainView {
 
-    public static final int PAGE_FAVORITE = 0;
-    public static final int PAGE_STATIONS = 1;
-    public static final int PAGE_SEARCH = 2;
-
+    @BindView(R.id.root) CoordinatorLayout root;
     @BindView(R.id.toolbar) Toolbar toolbar;
-    @BindView(R.id.tabs) TabLayout tabs;
-    @BindView(R.id.viewPager) ViewPager viewPager;
     @BindView(R.id.playerControlsFr) View playerControlsFr;
 
     private BottomSheetBehavior<View> bottomSheetBehavior;
+    private boolean forbidShowControls = true;
 
     @Override
     protected int getLayout() {
@@ -57,13 +51,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
-        if (getResources().getBoolean(R.bool.portrait_only)) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                recreate();
-            }
-        }
         super.onCreate(savedInstanceState);
+        showStations();
     }
 
     @Override
@@ -87,8 +76,16 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
             showAbout();
             return true;
 
+        } else if (item.getItemId() == R.id.action_search) {
+            showSearch();
+            return true;
+
         } else if (item.getItemId() == R.id.action_exit) {
             exit();
+            return true;
+
+        } else if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -97,41 +94,73 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     protected void setupView() {
         setSupportActionBar(toolbar);
-
-        SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        viewPager.setOffscreenPageLimit(2);
-        viewPager.setAdapter(pagerAdapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
-        tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                presenter.selectPage(tab.getPosition());
-            }
-        });
-
         bottomSheetBehavior = BottomSheetBehavior.from(playerControlsFr);
     }
 
     @Override
-    public void showFavorite() {
-        viewPager.setCurrentItem(PAGE_FAVORITE);
-    }
-
-    @Override
     public void showStations() {
-        viewPager.setCurrentItem(PAGE_STATIONS);
+//        enableToolbarScroll(true);
+        forbidShowControls = false;
+        showControls();
+        toolbar.setTitle(R.string.app_name);
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.contentContainer, new StationsPagerFragment())
+                .commit();
     }
 
     @Override
     public void showSearch() {
-        viewPager.setCurrentItem(PAGE_SEARCH);
+//        enableToolbarScroll(false);
+        forbidShowControls = true;
+        hideControls();
+        toolbar.setTitle(R.string.search);
+        //noinspection ConstantConditions
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.contentContainer, new SearchFragment())
+                .commit();
+    }
+
+    @Override
+    public void showControls() {
+        if (forbidShowControls) return;
+        Slide slide = createSlideTransition();
+        slide.setMode(Visibility.MODE_IN);
+        //noinspection ConstantConditions
+        TransitionManager.beginDelayedTransition(root, slide);
+        playerControlsFr.setVisibility(View.VISIBLE);
+        playerControlsFr.postDelayed(() -> {
+            playerControlsFr.setPadding(0, 0, 0, 0);
+        }, 300);
+    }
+
+    @Override
+    public void hideControls() {
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        Slide slide = createSlideTransition();
+        slide.setMode(Visibility.MODE_OUT);
+        //noinspection ConstantConditions
+        TransitionManager.beginDelayedTransition(root, slide);
+        playerControlsFr.setVisibility(View.GONE);
+    }
+
+    @NonNull
+    private Slide createSlideTransition() {
+        Slide slide = new Slide();
+        slide.setSlideEdge(Gravity.BOTTOM);
+        slide.setDuration(300);
+        slide.addTarget(playerControlsFr);
+        slide.setInterpolator(new FastOutSlowInInterpolator());
+        return slide;
     }
 
     private void showAbout() {
+        hideControls();
         Intent showAbout = new Intent(this, AboutActivity.class);
         startActivity(showAbout);
-        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     private void exit() {
@@ -139,30 +168,10 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         finish();
     }
 
-    @Override
-    public void showControls(boolean horizontal) {
-        Slide slide = createSlideTransition(horizontal);
-        slide.setMode(Visibility.MODE_IN);
-        TransitionManager.beginDelayedTransition(((ViewGroup) contentView), slide);
-        playerControlsFr.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideControls(boolean horizontal) {
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-        Slide slide = createSlideTransition(horizontal);
-        slide.setMode(Visibility.MODE_OUT);
-        TransitionManager.beginDelayedTransition(((ViewGroup) contentView), slide);
-        playerControlsFr.setVisibility(View.GONE);
-    }
-
-    @NonNull
-    private Slide createSlideTransition(boolean horizontal) {
-        Slide slide = new Slide();
-        slide.setSlideEdge(horizontal ? Gravity.START : Gravity.BOTTOM);
-        slide.setDuration(NonSwipeableViewPager.ANIMATION_DURATION);
-        slide.addTarget(playerControlsFr);
-        slide.setInterpolator(new FastOutSlowInInterpolator());
-        return slide;
+    private void enableToolbarScroll(boolean enable) {
+        AppBarLayout.LayoutParams params =
+                (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(enable ? AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL
+                | AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS | AppBarLayout.LayoutParams.SCROLL_FLAG_SNAP : 0);
     }
 }

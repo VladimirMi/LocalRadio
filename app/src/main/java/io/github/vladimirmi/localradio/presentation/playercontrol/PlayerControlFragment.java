@@ -6,14 +6,13 @@ import android.support.transition.ChangeBounds;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.custom.NonSwipeableViewPager;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
@@ -32,11 +31,11 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     @BindView(R.id.root) ConstraintLayout root;
     @BindView(R.id.iconIv) ImageView iconIv;
-    @BindView(R.id.previousBt) Button previousBt;
+    @BindView(R.id.previousBt) ImageButton previousBt;
     @BindView(R.id.playPauseBt) PlayerButton playPauseBt;
+    @BindView(R.id.nextBt) ImageButton nextBt;
+    @BindView(R.id.favoriteBt) ImageButton favoriteBt;
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
-    @BindView(R.id.nextBt) Button nextBt;
-    @BindView(R.id.favoriteBt) Button favoriteBt;
     @BindView(R.id.metadataTv) TextView metadataTv;
     @BindView(R.id.titleTv) TextView titleTv;
     @BindView(R.id.bandTv) TextView bandTv;
@@ -135,7 +134,8 @@ public class PlayerControlFragment extends BaseFragment<PlayerControlPresenter> 
 
     private void animateStationInfoLayout() {
         ChangeBounds transition = new ChangeBounds();
-        transition.setDuration(NonSwipeableViewPager.ANIMATION_DURATION);
+        // TODO: 6/30/18 check duration
+        transition.setDuration(200);
         transition.addTarget(root);
         transition.setInterpolator(new FastOutSlowInInterpolator());
         TransitionManager.beginDelayedTransition(root, transition);

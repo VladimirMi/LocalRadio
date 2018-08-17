@@ -1,64 +1,91 @@
 package io.github.vladimirmi.localradio.custom;
 
 import android.content.Context;
-import android.os.Build;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.AppCompatAutoCompleteTextView;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
-import android.widget.ListPopupWindow;
+import android.view.MotionEvent;
 
-import java.lang.reflect.Field;
-import java.util.List;
+import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.utils.UiUtils;
 
 /**
  * Created by Vladimir Mikhalev 05.04.2018.
  */
 
-public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
+public class CustomAutoCompleteView<T> extends AppCompatAutoCompleteTextView {
 
+    private Drawable clearButtonImage;
     private boolean isPopupDismissed = true;
-    private OnCompletionListener listener;
-    private EditTextLabelView label;
+    private OnCompletionListener<T> listener;
 
     public CustomAutoCompleteView(Context context) {
-        this(context, null);
+        super(context);
+        init();
     }
 
     public CustomAutoCompleteView(Context context, AttributeSet attrs) {
-        this(context, attrs, android.support.v7.appcompat.R.attr.autoCompleteTextViewStyle);
+        super(context, attrs);
+        init();
     }
 
     public CustomAutoCompleteView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init();
+    }
 
+    private void init() {
         setOnClickListener(v -> {
             if (isPopupDismissed) showPopup();
         });
 
-        setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) showPopup();
-            if (label != null) label.setFocused(hasFocus);
+        setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
+
+        clearButtonImage = ResourcesCompat.getDrawable(getResources(),
+                R.drawable.ic_clear, null);
+
+        addTextChangedListener(new TextWatcherAdapter() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int count, int after) {
+                if (!s.toString().isEmpty()) showClearButton();
+            }
         });
 
-        trySetOnDismissListener();
+        setOnTouchListener((view, motionEvent) -> {
+            if ((getCompoundDrawables()[2] != null) && isClearButtonClicked(motionEvent)) {
+                setText("", false);
+                performValidation();
+                performClick();
+                UiUtils.showSoftKeyBoard(this);
+                return true;
+            }
+            return false;
+        });
     }
 
-    private void trySetOnDismissListener() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            try {
-                Class<?> parent = AutoCompleteTextView.class;
-                //noinspection JavaReflectionMemberAccess
-                Field popupField = parent.getDeclaredField("mPopup");
-                popupField.setAccessible(true);
-                ListPopupWindow popup = (ListPopupWindow) popupField.get(this);
-                popup.setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
+    public void setOnCompletionListener(OnCompletionListener<T> listener) {
+        this.listener = listener;
+        //noinspection unchecked
+        setOnItemClickListener((parent, v, position, id) ->
+                listener.onCompletion((T) parent.getItemAtPosition(position)));
+    }
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+    @Override
+    public boolean enoughToFilter() {
+        return true;
+    }
+
+    @Override
+    public void performValidation() {
+        super.performValidation();
+        if (getText().toString().isEmpty()) {
+            listener.onCompletion(null);
+            hideClearButton();
         } else {
-            setOnDismissListener(() -> postDelayed(() -> isPopupDismissed = true, 100));
+            //noinspection unchecked
+            T item = (T) ((CustomArrayAdapter) getAdapter()).findItem(getText().toString());
+            listener.onCompletion(item);
         }
     }
 
@@ -67,94 +94,30 @@ public class CustomAutoCompleteView extends AppCompatAutoCompleteTextView {
         isPopupDismissed = false;
     }
 
-    @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-        label = findLabel();
+    private void showClearButton() {
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, clearButtonImage, null);
     }
 
-    @Override
-    public boolean enoughToFilter() {
-        return true;
+    private void hideClearButton() {
+        setCompoundDrawablesRelativeWithIntrinsicBounds(null, null, null, null);
     }
 
-    public void setOnCompletionListener(OnCompletionListener listener) {
-        this.listener = listener;
-        setOnItemClickListener((parent, v, position, id) ->
-                listener.onCompletion((String) parent.getItemAtPosition(position)));
-    }
-
-    @Override
-    public void performValidation() {
-        if (getText().toString().isEmpty()) setText(" ");
-        super.performValidation();
-        listener.onCompletion(getText().toString());
-    }
-
-    public interface OnCompletionListener {
-
-        void onCompletion(String text);
-    }
-
-    public static class CustomValidator<T> implements Validator {
-
-        private final List<T> list;
-
-        public CustomValidator(List<T> list) {
-            this.list = list;
+    private boolean isClearButtonClicked(MotionEvent motionEvent) {
+        boolean isInBounds;
+        if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) {
+            float clearButtonEnd = clearButtonImage.getIntrinsicWidth() + getPaddingStart();
+            isInBounds = motionEvent.getX() < clearButtonEnd;
+        } else {
+            float clearButtonStart = (getWidth() - getPaddingEnd()
+                    - clearButtonImage.getIntrinsicWidth());
+            isInBounds = motionEvent.getX() > clearButtonStart;
         }
-
-        @Override
-        public boolean isValid(CharSequence text) {
-            if (text.toString().equals(" ")) return false;
-            for (T element : list) {
-                if (element.toString().equals(text.toString())) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public CharSequence fixText(CharSequence invalidText) {
-            if (invalidText.toString().trim().isEmpty()) return "";
-            int maxCharEquals = 0;
-            int elementIndex = 0;
-
-            for (int idx = 0; idx < list.size(); idx++) {
-                String element = list.get(idx).toString();
-                int charEquals = 0;
-
-                int minLength = Math.min(element.length(), invalidText.length());
-                for (int i = 0; i < minLength; i++) {
-                    char actual = invalidText.charAt(i);
-                    char expected = element.charAt(i);
-
-                    if (actual == expected) {
-                        charEquals++;
-                        if (charEquals == minLength) {
-                            return element;
-                        }
-                    }
-                    if (charEquals > maxCharEquals) {
-                        maxCharEquals = charEquals;
-                        elementIndex = idx;
-                    }
-                }
-            }
-
-            return list.isEmpty() ? "" : list.get(elementIndex).toString();
-        }
+        return isInBounds && motionEvent.getAction() == MotionEvent.ACTION_UP;
     }
 
-    private EditTextLabelView findLabel() {
-        ViewGroup parent = (ViewGroup) getParent();
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            if (Build.VERSION.SDK_INT >= 17 && parent.getChildAt(i).getLabelFor() == getId()
-                    || Build.VERSION.SDK_INT < 17 && parent.getChildAt(i) instanceof EditTextLabelView) {
-                return (EditTextLabelView) parent.getChildAt(i);
-            }
-        }
-        return null;
+    public interface OnCompletionListener<T> {
+
+        void onCompletion(T item);
     }
+
 }

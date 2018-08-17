@@ -7,9 +7,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.data.db.AppDatabase;
-import io.github.vladimirmi.localradio.data.db.StationEntity;
-import io.github.vladimirmi.localradio.data.db.StationsDao;
+import io.github.vladimirmi.localradio.data.db.favorite.AppDatabase;
+import io.github.vladimirmi.localradio.data.db.favorite.StationEntity;
+import io.github.vladimirmi.localradio.data.db.favorite.StationsDao;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.FavoriteRepository;

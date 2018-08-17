@@ -1,131 +1,130 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
-import java.util.ArrayList;
+import android.arch.persistence.db.SupportSQLiteQuery;
+
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.inject.Inject;
 
-import io.github.vladimirmi.localradio.R;
-import io.github.vladimirmi.localradio.data.models.Country;
-import io.github.vladimirmi.localradio.di.Scopes;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
+import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
-import io.github.vladimirmi.localradio.utils.MessageException;
-import io.reactivex.Completable;
+import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
+import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
+import io.reactivex.Single;
 
 /**
  * Created by Vladimir Mikhalev 24.04.2018.
  */
 public class LocationInteractor {
 
-    private static final String UNLISTED_CITY = "{unlisted}";
-
     private final LocationRepository locationRepository;
-
-    // TODO: 5/2/18 Create resource manager
-    private String unlistedCity = Scopes.appContext().getString(R.string.unlisted_city);
+    private final SearchRepository searchRepository;
+    private Set<LocationClusterItem> selectedMapLocations;
+    private LocationEntity selectedManualLocation;
+    private MapState mapState;
+    private String mapMode;
 
     @SuppressWarnings("WeakerAccess")
     @Inject
-    public LocationInteractor(LocationRepository locationRepository) {
+    public LocationInteractor(LocationRepository locationRepository,
+                              SearchRepository searchRepository) {
         this.locationRepository = locationRepository;
+        mapMode = locationRepository.getMapMode();
+        mapState = locationRepository.getMapState();
+        this.searchRepository = searchRepository;
     }
 
-    public List<String> getCountriesName() {
-        List<Country> countries = locationRepository.getCountries();
-        List<String> countriesName = new ArrayList<>(countries.size());
+    public String getMapMode() {
+        return mapMode;
+    }
 
-        for (Country country : countries) {
-            countriesName.add(country.getName());
+    public void setMapMode(String mode) {
+        mapMode = mode;
+    }
+
+    public MapState getMapState() {
+        return mapState;
+    }
+
+    public void setMapState(MapState mapState) {
+        this.mapState = mapState;
+    }
+
+    public Single<List<LocationEntity>> getCountries() {
+        return locationRepository.getCountries();
+    }
+
+    public Single<List<LocationEntity>> getCities(String countryCode) {
+        return locationRepository.getCities(countryCode);
+    }
+
+    public Single<LocationEntity> getCountry(String countryCode) {
+        return locationRepository.getCountry(countryCode);
+    }
+
+    public void setSelectedMapLocations(Set<LocationClusterItem> selectedMapLocations) {
+        this.selectedMapLocations = selectedMapLocations;
+    }
+
+    public void setSelectedManualLocation(LocationEntity selectedManualLocation) {
+        this.selectedManualLocation = selectedManualLocation;
+    }
+
+    public boolean saveMapSelection() {
+        Set<String> ids = new HashSet<>();
+        for (LocationClusterItem location : selectedMapLocations) {
+            ids.add(String.valueOf(location.getId()));
         }
-        return countriesName;
+        if (ids.isEmpty()) return false;
+        locationRepository.saveLocations(ids);
+        locationRepository.saveMapMode(mapMode);
+        locationRepository.saveMapState(mapState);
+        return true;
     }
 
-    public void saveAutodetect(boolean enabled) {
-        locationRepository.saveAutodetect(enabled);
-    }
-
-    public boolean isAutodetect() {
-        return locationRepository.isAutodetect();
-    }
-
-    public String getCountryName() {
-        String countryCode = locationRepository.getCountryCode();
-        if (countryCode.isEmpty()) {
-            return countryCode;
-        }
-        return new Locale("", countryCode).getDisplayCountry();
-    }
-
-    public String getCity() {
-        String city = locationRepository.getCity();
-        if (city.equals(UNLISTED_CITY)) return unlistedCity;
-        return city;
-    }
-
-    public void saveCountryNameCity(String countryName, String cityName) {
-        String countryCode = "";
-        if (!countryName.isEmpty()) {
-            for (Country country : locationRepository.getCountries()) {
-                if (country.getName().equals(countryName)) {
-                    countryCode = country.getIsoCode();
-                    break;
-                }
-            }
-        }
-        if (cityName.equals(unlistedCity)) cityName = UNLISTED_CITY;
-        locationRepository.saveCountryCodeCity(countryCode, cityName);
-    }
-
-    public String findCountryName(String city) {
-        if (city.isEmpty() || city.equals(unlistedCity)) return "";
-
-        for (Country country : locationRepository.getCountries()) {
-            if (country.getCities().contains(city)) {
-                return country.getName();
-            }
-        }
-        throw new IllegalStateException();
-    }
-
-    public List<String> findCities(String countryName) {
-        Set<String> cities = new TreeSet<>();
-        for (Country country : findCountries(countryName)) {
-            cities.addAll(country.getCities());
-        }
-        boolean hasUnlistedCity = cities.remove(UNLISTED_CITY);
-
-        ArrayList<String> cityList = new ArrayList<>(cities.size() + (hasUnlistedCity ? 1 : 0));
-        if (hasUnlistedCity) cityList.add(unlistedCity);
-        cityList.addAll(cities);
-        return cityList;
-    }
-
-    public Completable checkCanSearch() {
-        if (getCountryName().isEmpty() && getCity().isEmpty()) {
-            return Completable.error(new MessageException(R.string.error_specify_location));
+    public boolean saveManualSelection() {
+        Set<String> ids;
+        if (selectedManualLocation != null) {
+            ids = Collections.singleton(String.valueOf(selectedManualLocation.id));
         } else {
-            return Completable.complete();
+            ids = Collections.emptySet();
         }
+        if (ids.isEmpty()) return false;
+        locationRepository.saveLocations(ids);
+        return true;
+    }
+
+    public Single<Set<LocationClusterItem>> getMapLocations() {
+        return locationRepository.getSavedLocations()
+                .filter(locationEntities -> searchRepository.getSearchMode() == SearchPresenter.MAP_MODE)
+                .flattenAsObservable(locationEntities -> locationEntities)
+                .map(LocationClusterItem::new)
+                .<Set<LocationClusterItem>>collect(HashSet::new, Set::add)
+                .doOnSuccess(locations -> selectedMapLocations = locations);
+    }
+
+    public Single<LocationEntity> getManualLocation() {
+        return locationRepository.getSavedLocations()
+                .filter(locationEntities -> !locationEntities.isEmpty()
+                        && searchRepository.getSearchMode() == SearchPresenter.MANUAL_MODE)
+                .toSingle()
+                .map(locationEntities -> locationEntities.get(0))
+                .doOnSuccess(location -> selectedManualLocation = location);
+    }
+
+    public Single<Set<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
+        return locationRepository.loadClusters(query)
+                .flattenAsObservable(locationEntities -> locationEntities)
+                .map(LocationClusterItem::new)
+                .collect(HashSet::new, Set::add);
     }
 
     public boolean isServicesAvailable() {
         return locationRepository.isServicesAvailable();
-    }
-
-    private List<Country> findCountries(String countryName) {
-        if (countryName.isEmpty()) {
-            return locationRepository.getCountries();
-        } else {
-            for (Country country : locationRepository.getCountries()) {
-                if (country.getName().equals(countryName)) {
-                    return Collections.singletonList(country);
-                }
-            }
-        }
-        return Collections.emptyList();
     }
 }

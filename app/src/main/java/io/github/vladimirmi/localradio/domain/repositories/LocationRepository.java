@@ -1,11 +1,13 @@
 package io.github.vladimirmi.localradio.domain.repositories;
 
-import android.support.annotation.Nullable;
+import android.arch.persistence.db.SupportSQLiteQuery;
 import android.util.Pair;
 
 import java.util.List;
+import java.util.Set;
 
-import io.github.vladimirmi.localradio.data.models.Country;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
+import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
@@ -14,24 +16,33 @@ import io.reactivex.Single;
  */
 public interface LocationRepository {
 
-    List<Country> getCountries();
+    void saveMapMode(String mode);
+
+    String getMapMode();
+
+    void saveMapState(MapState mapState);
+
+    MapState getMapState();
+
+    Single<List<LocationEntity>> loadClusters(SupportSQLiteQuery query);
+
+    Single<List<LocationEntity>> getCountries();
+
+    Single<LocationEntity> getCountry(String isoCode);
+
+    Single<List<LocationEntity>> getCities(String isoCode);
+
+    void saveLocations(Set<String> locationsId);
+
+    Single<List<LocationEntity>> getSavedLocations();
 
     void saveAutodetect(boolean enabled);
 
     boolean isAutodetect();
 
-    String getCountryCode();
-
-    String getCity();
-
-    void saveCountryCodeCity(String countryCode, String city);
-
     boolean isServicesAvailable();
 
     Completable checkCanGetLocation();
 
-    Single<Pair<Float, Float>> getCoordinates();
-
-    @Nullable
-    Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates);
+    Single<Pair<Float, Float>> getCurrentLocation();
 }

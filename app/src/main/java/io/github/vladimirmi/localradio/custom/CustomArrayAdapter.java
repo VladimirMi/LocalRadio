@@ -52,6 +52,13 @@ public class CustomArrayAdapter<T> extends ArrayAdapter<T> {
         notifyDataSetChanged();
     }
 
+    public T findItem(String text) {
+        for (T t : data) {
+            if (t.toString().equals(text)) return t;
+        }
+        return null;
+    }
+
     public interface OnFilteringListener<T> {
 
         void onFiltering(List<T> filteredData);

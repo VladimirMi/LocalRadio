@@ -1,15 +1,15 @@
 package io.github.vladimirmi.localradio.domain.repositories;
 
-import android.util.Pair;
-
 import java.util.List;
 
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
+ * null
  * Created by Vladimir Mikhalev 28.05.2018.
  */
 public interface SearchRepository {
@@ -20,11 +20,13 @@ public interface SearchRepository {
 
     void setSkipCache(boolean skipCache);
 
-    Single<List<Station>> searchStationsManual(String countryCode, String city);
+    void saveSearchMode(int mode);
 
-    Single<List<Station>> searchStationsAutoManual(String countryCode, String city);
+    int getSearchMode();
 
-    Single<List<Station>> searchStationsByCoordinates(Pair<Float, Float> coordinates);
+    Single<List<Station>> searchStationsByCoordinates(MapState state);
 
-    Single<List<Station>> searchStationsByIp();
+    Single<List<Station>> searchStationsByCountry(String country);
+
+    Single<List<Station>> searchStationsByCity(String country, String city);
 }

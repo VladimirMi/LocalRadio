@@ -4,6 +4,7 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -61,6 +62,23 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
             presenter = null;
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!handleBackPress()) {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
+    public boolean handleBackPress() {
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragment instanceof BaseView && ((BaseView) fragment).handleBackPress()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

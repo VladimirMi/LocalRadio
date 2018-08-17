@@ -17,4 +17,6 @@ public interface BaseView {
     void showMessage(int messageId);
 
     void resolveApiException(ResolvableApiException resolvable);
+
+    boolean handleBackPress();
 }

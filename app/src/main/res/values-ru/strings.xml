@@ -45,4 +45,10 @@
     <string name="search_result_other">%d станций найдено</string>
     <string name="search_result_radius_one">%d станция найдена в радиусе 80 километров</string>
     <string name="search_result_radius_other">%d станций найдено в радиусе 80 километров</string>
+    <string name="search_manual">Ручной поиск</string>
+    <string name="search_map">Карта</string>
+    <string name="selection">Выбор</string>
+    <string name="selection_result_one">Выбрана %d станция</string>
+    <string name="selection_result_other">Выбраны %d станции</string>
+    <string name="selection_radius">Радиус 80 км</string>
 </resources>

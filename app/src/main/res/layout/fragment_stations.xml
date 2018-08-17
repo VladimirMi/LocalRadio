@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/grey_200"
     >
 
@@ -14,9 +15,21 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:paddingBottom="@dimen/player_controls_height"
+        android:layout_marginBottom="16dp"
         android:text="@string/placeholder_search_result"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         android:textColor="@color/colorPrimary"
+        android:visibility="gone"
+        />
+
+    <android.support.design.button.MaterialButton
+        android:id="@+id/goToSearchBt"
+        style="@style/Widget.MaterialComponents.Button.IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:icon="@drawable/ic_search_white"
+        android:text="@string/search"
         android:visibility="gone"
         />
 

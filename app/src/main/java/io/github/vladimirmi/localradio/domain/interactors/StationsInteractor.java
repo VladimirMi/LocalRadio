@@ -24,10 +24,6 @@ public class StationsInteractor {
         this.stationsRepository = stationsRepository;
     }
 
-    public Observable<List<Station>> getStationsObs() {
-        return stationsRepository.getStationsObs();
-    }
-
     public Observable<List<Station>> getFilteredStationsObs() {
         return stationsRepository.getStationsObs()
                 .map(this::filter);

@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.utils;
 
 import io.reactivex.observers.DisposableCompletableObserver;
+import io.reactivex.observers.DisposableMaybeObserver;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.observers.DisposableSingleObserver;
 
@@ -59,6 +60,28 @@ public class RxUtils {
 
         @Override
         public void onNext(T t) {
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            UiUtils.handleError(errorHandler, e);
+        }
+
+        @Override
+        public void onComplete() {
+        }
+    }
+
+    public static class ErrorMaybeObserver<T> extends DisposableMaybeObserver<T> {
+
+        private final Object errorHandler;
+
+        public ErrorMaybeObserver(Object errorHandler) {
+            this.errorHandler = errorHandler;
+        }
+
+        @Override
+        public void onSuccess(T t) {
         }
 
         @Override

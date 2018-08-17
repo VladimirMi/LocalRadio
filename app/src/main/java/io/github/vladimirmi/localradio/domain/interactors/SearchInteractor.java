@@ -1,19 +1,21 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
-import android.util.Pair;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import io.github.vladimirmi.localradio.R;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.data.net.NetworkChecker;
-import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
+import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
@@ -41,6 +43,14 @@ public class SearchInteractor {
         this.searchRepository = searchRepository;
     }
 
+    public void saveSearchMode(int mode) {
+        searchRepository.saveSearchMode(mode);
+    }
+
+    public int getSearchMode() {
+        return searchRepository.getSearchMode();
+    }
+
     public Observable<SearchResult> getSearchResultObs() {
         return searchRepository.searchResult();
     }
@@ -55,79 +65,72 @@ public class SearchInteractor {
     }
 
     public Completable searchStations() {
-        return search(false);
+        return checkInternet()
+                .andThen(search(false)).toCompletable();
     }
 
     public Completable refreshStations() {
-        return search(true);
+        return checkInternet()
+                .andThen(search(true)).toCompletable();
     }
 
-    private Completable search(boolean skipCache) {
-        searchRepository.setSkipCache(skipCache);
-        stationsRepository.resetStations();
-
-        Single<List<Station>> search;
-
-        if (locationRepository.isAutodetect()) {
-            search = locationRepository.checkCanGetLocation()
-                    .andThen(searchStationsAuto());
-        } else {
-            search = searchStationsManual();
-        }
-        return checkCanSearch()
-                .doOnComplete(() -> searchRepository.setSearchResult(SearchResult.loading()))
-                .andThen(search)
-                .doOnSuccess(stationsRepository::setSearchResult)
-                .doOnError(throwable -> searchRepository.setSearchResult(SearchResult.notDone()))
-                .toCompletable();
-    }
-
-    private Single<List<Station>> searchStationsAuto() {
-        return locationRepository.getCoordinates()
-                .flatMap(coordinates -> {
-                    Pair<String, String> countryCodeCity =
-                            locationRepository.getCountryCodeCity(coordinates);
-
-                    if (countryCodeCity == null) {
-                        return searchStationsByIp();
-                    }
-                    locationRepository.saveCountryCodeCity(countryCodeCity.first,
-                            countryCodeCity.second);
-
-                    if (countryCodeCity.first.equals("US")) {
-                        return searchRepository.searchStationsByCoordinates(coordinates);
+    private Single<List<Station>> search(boolean skipCache) {
+        return locationRepository.getSavedLocations()
+                .flatMap(locations -> {
+                    if (locationRepository.getMapMode().equals(MapWrapper.RADIUS_MODE) &&
+                            allIsUS(locations)) {
+                        return searchStationsByCoordinates();
                     } else {
-                        return searchRepository.searchStationsAutoManual(countryCodeCity.first,
-                                countryCodeCity.second);
+                        return searchStationsByLocations(locations);
                     }
-                }).onErrorResumeNext(throwable -> {
-                    if (throwable instanceof LocationSource.LocationTimeoutException) {
-                        return searchStationsByIp();
-                    } else {
-                        return Single.error(throwable);
-                    }
-                });
-    }
-
-    private Single<List<Station>> searchStationsManual() {
-        return searchRepository.searchStationsManual(locationRepository.getCountryCode(),
-                locationRepository.getCity());
-    }
-
-    private Single<List<Station>> searchStationsByIp() {
-        return searchRepository.searchStationsByIp()
+                })
+                .doOnSubscribe(disposable -> {
+                    searchRepository.setSkipCache(skipCache);
+                    searchRepository.setSearchResult(SearchResult.loading());
+                    stationsRepository.resetStations();
+                })
                 .doOnSuccess(stations -> {
-                    if (!stations.isEmpty()) {
-                        locationRepository.saveCountryCodeCity(stations.get(0).countryCode, "");
-                    }
-                });
+                    searchRepository.setSearchResult(SearchResult.done(stations.size()));
+                    stationsRepository.setSearchResult(stations);
+                })
+                .doOnError(throwable -> searchRepository.setSearchResult(SearchResult.notDone()));
     }
 
-    private Completable checkCanSearch() {
-        if (!networkChecker.isAvailableNet()) {
-            return Completable.error(new MessageException(R.string.error_network));
-        } else {
-            return Completable.complete();
+    private boolean allIsUS(List<LocationEntity> locations) {
+        for (LocationEntity location : locations) {
+            if (!location.country.equals("US")) return false;
         }
+        return true;
+    }
+
+    private Single<List<Station>> searchStationsByCoordinates() {
+        MapState mapState = locationRepository.getMapState();
+        return searchRepository.searchStationsByCoordinates(mapState);
+    }
+
+
+    private Single<List<Station>> searchStationsByLocations(List<LocationEntity> locations) {
+        return Observable.fromIterable(locations)
+                .flatMapSingle(location -> {
+                    if (location.isCountry()) {
+                        return searchRepository.searchStationsByCountry(location.country);
+                    } else {
+                        return Observable.fromIterable(Arrays.asList(location.endpoints.split(",")))
+                                .flatMapSingle(city -> {
+                                    return searchRepository.searchStationsByCity(location.country, city.trim());
+                                })
+                                .<List<Station>>collect(ArrayList::new, List::addAll);
+                    }
+                })
+                .collect(ArrayList::new, List::addAll);
+    }
+
+    private Completable checkInternet() {
+        return Completable.fromCallable(() -> {
+            if (!networkChecker.isAvailableNet()) {
+                throw new MessageException(R.string.error_network);
+            }
+            return null;
+        });
     }
 }

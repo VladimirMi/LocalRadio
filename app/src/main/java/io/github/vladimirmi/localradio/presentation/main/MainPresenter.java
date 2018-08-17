@@ -30,11 +30,10 @@ public class MainPresenter extends BasePresenter<MainView> {
     }
 
     @Override
-    protected void onFirstAttach(MainView view, CompositeDisposable disposables) {
+    protected void onFirstAttach(MainView view, CompositeDisposable dataSubs) {
         controlInteractor.connect();
 
-        initPage(mainInteractor.getPagePosition());
-        disposables.add(mainInteractor.initApp()
+        dataSubs.add(mainInteractor.initApp()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
@@ -49,10 +48,10 @@ public class MainPresenter extends BasePresenter<MainView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Boolean>(view) {
                     @Override
                     public void onNext(Boolean isNull) {
-                        handleIsNullStation(isNull);
+                        if (isNull) view.hideControls();
+                        else view.showControls();
                     }
                 }));
-
     }
 
     @Override
@@ -60,42 +59,7 @@ public class MainPresenter extends BasePresenter<MainView> {
         controlInteractor.disconnect();
     }
 
-    public void selectPage(int position) {
-        mainInteractor.savePagePosition(position);
-        if (hasView()) initPage(position);
-    }
-
     public void exit() {
         controlInteractor.stop();
-    }
-
-    private void handleIsNullStation(boolean isNull) {
-        if (view == null) return;
-        if (isNull) {
-            view.hideControls(false);
-        } else if (!mainInteractor.isSearchPage()) {
-            view.showControls(false);
-        }
-    }
-
-    private void initPage(int position) {
-        switch (position) {
-            case MainActivity.PAGE_FAVORITE:
-                view.showFavorite();
-                if (!stationsInteractor.getCurrentStation().isNullObject) {
-                    view.showControls(true);
-                }
-                break;
-            case MainActivity.PAGE_STATIONS:
-                view.showStations();
-                if (!stationsInteractor.getCurrentStation().isNullObject) {
-                    view.showControls(true);
-                }
-                break;
-            case MainActivity.PAGE_SEARCH:
-                view.showSearch();
-                view.hideControls(true);
-                break;
-        }
     }
 }

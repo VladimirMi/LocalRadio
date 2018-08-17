@@ -1,34 +1,15 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
-import java.util.List;
-
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**
- * Created by Vladimir Mikhalev 03.04.2018.
+ * Created by Vladimir Mikhalev 01.07.2018.
  */
-
 public interface SearchView extends BaseView {
 
-    void setCountrySuggestions(List<String> countries);
+    void setSearchMode(int mode);
 
-    void setCitySuggestions(List<String> cities);
+    void showLoading(boolean show);
 
-    void setCountryName(String name);
-
-    void setCity(String city);
-
-    void setAutodetect(boolean enabled);
-
-    void setSearchDone(boolean done);
-
-    void showSearchBtn(boolean visible);
-
-    void setSearchResult(String result);
-
-    void resetSearchResult();
-
-    void setSearching(boolean enabled);
-
-    void enableAutodetect(boolean enabled);
+    void setSearchResult(int stations);
 }
