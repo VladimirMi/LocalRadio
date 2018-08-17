@@ -48,8 +48,6 @@
     <string name="search_manual">Ручной поиск</string>
     <string name="search_map">Карта</string>
     <string name="selection">Выбор</string>
-    <string name="selection_city">Гоород</string>
-    <string name="selection_country">Страна</string>
     <string name="selection_result_one">Выбрана %d станция</string>
     <string name="selection_result_other">Выбраны %d станции</string>
     <string name="selection_radius">Радиус 80 км</string>
