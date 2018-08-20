@@ -46,7 +46,6 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     private boolean playAgainOnHeadset = false;
     private SimpleExoPlayer player = null;
 
-
     @SuppressWarnings("WeakerAccess")
     public Playback(PlayerService service, PlayerCallback callback) {
         this.service = service;
@@ -59,10 +58,9 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     }
 
     public void play(Uri uri) {
-        holdResources();
         if (player == null) createPlayer();
         preparePlayer(uri);
-        resume();
+        if (holdResources()) resume();
     }
 
     public void resume() {
@@ -127,10 +125,11 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         player.prepare(mediaSource);
     }
 
-    private void holdResources() {
-        audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+    private boolean holdResources() {
         registerAudioNoisyReceiver();
         if (!wifiLock.isHeld()) wifiLock.acquire();
+        return audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN)
+                == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
     private void releaseResources() {
