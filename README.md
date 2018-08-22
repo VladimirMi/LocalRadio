@@ -1,17 +1,13 @@
-# LocalRadio
+# Description
 
-The capstone project for "Android developer nanodegree" (google developer scholarship)
-
-## Description
-
-Local Radio is an open source app for searching and listening to radio broadcasts over the internet. It can search stations by country and city and also automatically detect the location and perform a search based on this.
+Local Radio is an open source app for searching and listening to radio broadcasts over the internet. 
+It can search stations by country, city and within a certain area.
 
 ## Features
 
  -  Search from the UberStations directory with more than 50000 live radio stations across the world.
  -  Search broadcasts based on country and/or city.
- -  Automatic search based on a current location.
- -  Automatic search by coordinates shows FM station within 50 miles, and AM within a 100 mile radius (works only for US locations).
+ -  Search for stations in a specific area on the map.
  -  Display information about the broadcast and the current playing track if the stream provides such information.
  -  Add a radio station to your favorites list to quickly find in future.
  -  Control playback and navigation using the headset, widget or notification on the lock screen or the notification panel.
