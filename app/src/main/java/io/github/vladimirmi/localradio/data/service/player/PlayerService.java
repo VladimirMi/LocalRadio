@@ -62,7 +62,6 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private int currentStationId;
     private int playingStationId;
     private CompositeDisposable subs = new CompositeDisposable();
-    private final Timer stopTimer = new Timer();
     private TimerTask stopTask;
 
 
@@ -294,7 +293,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                 onStopCommand();
             }
         };
-        stopTimer.schedule(stopTask, stopDelay);
+        new Timer().schedule(stopTask, stopDelay);
     }
 
     private void handleIntent(Intent intent) {
