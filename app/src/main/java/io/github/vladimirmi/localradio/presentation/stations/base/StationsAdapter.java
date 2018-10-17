@@ -37,7 +37,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
     private static final String PAYLOAD_SELECTED_CHANGE = "PAYLOAD_SELECTED_CHANGE";
     private static final String PAYLOAD_BACKGROUND_CHANGE = "PAYLOAD_BACKGROUND_CHANGE";
 
-    private final onStationListener listener;
+    private final OnStationListener listener;
     private List<Station> stations = Collections.emptyList();
     private Station selectedStation = Station.nullObject();
     private int selectedPosition;
@@ -51,7 +51,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
             Build.VERSION.SDK_INT >= 21 ? new FixedOutlineProvider() : null;
 
     @SuppressWarnings("WeakerAccess")
-    public StationsAdapter(onStationListener listener) {
+    public StationsAdapter(OnStationListener listener) {
         this.listener = listener;
     }
 
@@ -244,7 +244,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         }
     }
 
-    public interface onStationListener {
+    public interface OnStationListener {
 
         void onStationClick(Station station);
 

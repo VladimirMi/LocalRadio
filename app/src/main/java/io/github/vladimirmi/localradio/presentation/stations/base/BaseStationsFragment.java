@@ -20,7 +20,7 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
  * Created by Vladimir Mikhalev 26.05.2018.
  */
 public abstract class BaseStationsFragment<P extends BasePresenter> extends BaseFragment<P>
-        implements StationsView, StationsAdapter.onStationListener {
+        implements StationsView, StationsAdapter.OnStationListener {
 
     protected @BindView(R.id.stationList) RecyclerView stationList;
     protected @BindView(R.id.placeholder) TextView placeholder;
