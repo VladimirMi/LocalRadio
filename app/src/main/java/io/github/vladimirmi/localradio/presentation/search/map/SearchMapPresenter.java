@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.google.android.gms.maps.model.CameraPosition;
 

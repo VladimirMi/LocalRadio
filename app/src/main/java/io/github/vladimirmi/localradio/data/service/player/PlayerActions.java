@@ -3,7 +3,7 @@ package io.github.vladimirmi.localradio.data.service.player;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.media.session.MediaButtonReceiver;
+import androidx.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import io.github.vladimirmi.localradio.presentation.main.MainActivity;

@@ -2,12 +2,12 @@ package io.github.vladimirmi.playerbutton;
 
 import android.content.Context;
 import android.graphics.drawable.Animatable;
-import android.support.annotation.Nullable;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
+import androidx.annotation.Nullable;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import android.util.AttributeSet;
 
 
-public class PlayerButton extends android.support.v7.widget.AppCompatImageButton {
+public class PlayerButton extends androidx.appcompat.widget.AppCompatImageButton {
 
     private boolean isPlaying = false;
     private boolean isManualMode = false;

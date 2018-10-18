@@ -1,10 +1,10 @@
 package io.github.vladimirmi.localradio.presentation.playercontrol;
 
 import android.graphics.PorterDuff;
-import android.support.constraint.ConstraintLayout;
-import android.support.transition.ChangeBounds;
-import android.support.transition.TransitionManager;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.transition.ChangeBounds;
+import androidx.transition.TransitionManager;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;

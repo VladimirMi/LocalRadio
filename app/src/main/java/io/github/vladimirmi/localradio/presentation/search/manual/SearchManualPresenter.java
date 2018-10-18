@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.search.manual;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 import java.util.NoSuchElementException;

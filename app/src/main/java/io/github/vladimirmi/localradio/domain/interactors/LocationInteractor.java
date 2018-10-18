@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import java.util.Collections;
 import java.util.HashSet;

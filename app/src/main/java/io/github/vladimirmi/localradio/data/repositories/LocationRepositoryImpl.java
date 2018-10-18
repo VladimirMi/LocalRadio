@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.data.repositories;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 import android.util.Pair;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package io.github.vladimirmi.localradio.map;
 
-import android.arch.persistence.db.SimpleSQLiteQuery;
-import android.arch.persistence.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SimpleSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 
 import com.google.android.gms.maps.model.LatLng;
 

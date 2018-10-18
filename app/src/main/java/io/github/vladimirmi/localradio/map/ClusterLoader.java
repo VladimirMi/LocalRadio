@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.map;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 import android.os.Handler;
 
 import com.google.android.gms.maps.GoogleMap;

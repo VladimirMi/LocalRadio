@@ -1,9 +1,9 @@
 package io.github.vladimirmi.localradio.data.db.location;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Query;
-import android.arch.persistence.room.RawQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
+import androidx.room.Dao;
+import androidx.room.Query;
+import androidx.room.RawQuery;
 
 import java.util.List;
 

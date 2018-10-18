@@ -2,7 +2,7 @@ package io.github.vladimirmi.localradio.data.net;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.support.annotation.WorkerThread;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
