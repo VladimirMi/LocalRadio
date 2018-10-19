@@ -1,21 +1,25 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
+import android.Manifest;
 
 import com.google.android.gms.maps.model.CameraPosition;
+import com.tbruyelle.rxpermissions2.Permission;
 
 import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
+import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -82,5 +86,15 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     public void setMapState(MapState state) {
         locationInteractor.setMapState(state);
+    }
+
+    public void enableAutodetect(boolean checked) {
+        dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+                .subscribeWith(new RxUtils.ErrorObserver<Permission>(view) {
+                    @Override
+                    public void onNext(Permission permission) {
+                        Timber.e("onNext: %s", permission.granted);
+                    }
+                }));
     }
 }

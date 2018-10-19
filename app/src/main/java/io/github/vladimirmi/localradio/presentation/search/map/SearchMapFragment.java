@@ -46,6 +46,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     protected void setupView(View view) {
+        autodetectCb.setOnClickListener((v) -> presenter.enableAutodetect(((CheckedTextView) v).isChecked()));
     }
 
     @Override

@@ -2,15 +2,16 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import android.graphics.PorterDuff;
 import android.os.Handler;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.tabs.TabLayout;
-import androidx.viewpager.widget.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.LocationsModule;
@@ -30,6 +31,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
     @BindView(R.id.searchBt) FloatingActionButton searchBt;
     @BindView(R.id.resultBt) MaterialButton resultBt;
+
 
     @Override
     protected int getLayout() {
@@ -93,9 +95,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             resultBt.setVisibility(View.GONE);
             loadingPb.setVisibility(View.VISIBLE);
         } else {
-            new Handler().postDelayed(() -> {
-                loadingPb.setVisibility(View.GONE);
-            }, 1000);
+            new Handler().postDelayed(() -> loadingPb.setVisibility(View.GONE), 1000);
         }
     }
 

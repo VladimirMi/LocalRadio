@@ -1,16 +1,18 @@
 package io.github.vladimirmi.localradio.presentation.core;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.material.snackbar.Snackbar;
+import com.tbruyelle.rxpermissions2.Permission;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
@@ -90,26 +92,22 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     }
 
     @Override
-    public Observable<Boolean> resolvePermissions(String... permissions) {
-        //noinspection unchecked,ConstantConditions
-        return ((BaseActivity) getActivity()).resolvePermissions(permissions);
+    public Observable<Permission> resolvePermissions(String... permissions) {
+        return new RxPermissions(this).requestEachCombined(permissions);
     }
 
     @Override
     public void showMessage(String message) {
-        //noinspection ConstantConditions
         Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void showMessage(int messageId) {
-        //noinspection ConstantConditions
         Snackbar.make(getView(), messageId, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void resolveApiException(ResolvableApiException resolvable) {
-        //noinspection ConstantConditions
         ((BaseActivity) getActivity()).resolveApiException(resolvable);
     }
 }

@@ -2,15 +2,16 @@ package io.github.vladimirmi.localradio.presentation.core;
 
 import android.content.IntentSender;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.material.snackbar.Snackbar;
+import com.tbruyelle.rxpermissions2.Permission;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
@@ -82,8 +83,8 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
     }
 
     @Override
-    public Observable<Boolean> resolvePermissions(String... permissions) {
-        return new RxPermissions(this).request(permissions);
+    public Observable<Permission> resolvePermissions(String... permissions) {
+        return new RxPermissions(this).requestEachCombined(permissions);
     }
 
     @Override

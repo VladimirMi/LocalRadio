@@ -11,7 +11,7 @@
         android:id="@+id/mapView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/selectionTv"
+        app:layout_constraintBottom_toTopOf="@id/autodetectCb"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginBottom="16dp"
         />
@@ -20,9 +20,9 @@
         android:id="@+id/radiusView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/selectionTv"
+        app:layout_constraintBottom_toTopOf="@id/autodetectCb"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         />
 
     <CheckedTextView
@@ -40,7 +40,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/selectionTv"
-        android:visibility="gone"
         />
 
     <TextView
