@@ -143,6 +143,16 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         mapWrapper.selectClusters(clusterItems);
     }
 
+    @Override
+    public void showAutodetect(boolean available) {
+        autodetectCb.setVisibility(available ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void setAutodetect(boolean enabled) {
+        autodetectCb.setChecked(enabled);
+    }
+
     //endregion
 
     private void setSelectionResult(int stations) {

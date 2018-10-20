@@ -1,7 +1,5 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +7,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
@@ -88,15 +87,13 @@ public class LocationInteractor {
     }
 
     public boolean saveManualSelection() {
-        Set<String> ids;
         if (selectedManualLocation != null) {
-            ids = Collections.singleton(String.valueOf(selectedManualLocation.id));
+            Set<String> ids = Collections.singleton(String.valueOf(selectedManualLocation.id));
+            locationRepository.saveLocations(ids);
+            return true;
         } else {
-            ids = Collections.emptySet();
+            return false;
         }
-        if (ids.isEmpty()) return false;
-        locationRepository.saveLocations(ids);
-        return true;
     }
 
     public Single<Set<LocationClusterItem>> getMapLocations() {
@@ -122,6 +119,14 @@ public class LocationInteractor {
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
                 .collect(HashSet::new, Set::add);
+    }
+
+    public void saveAutodetect(boolean enabled) {
+        locationRepository.saveAutodetect(enabled);
+    }
+
+    public boolean isAutodetect() {
+        return locationRepository.isAutodetect();
     }
 
     public boolean isServicesAvailable() {

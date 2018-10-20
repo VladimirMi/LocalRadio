@@ -6,7 +6,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Looper;
-import androidx.annotation.Nullable;
 import android.util.Pair;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -26,12 +25,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.Nullable;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
@@ -144,10 +143,11 @@ public class LocationSource {
 
             emitter.setDisposable(Disposables.fromRunnable(() -> fusedLocationProviderClient
                     .removeLocationUpdates(locationCallback)));
+        });
+//        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new LocationTimeoutException()));
 
-        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new LocationTimeoutException()));
-
-        return lastLocation.onErrorResumeNext(updateLocation);
+//        return lastLocation.onErrorResumeNext(updateLocation);
+        return updateLocation.onErrorResumeNext(lastLocation);
     }
 
 

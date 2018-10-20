@@ -37,6 +37,8 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     @Override
     protected void onFirstAttach(SearchMapView view, CompositeDisposable disposables) {
         initOptions();
+        view.showAutodetect(locationInteractor.isServicesAvailable());
+        view.setAutodetect(locationInteractor.isAutodetect());
     }
 
     @Override
@@ -93,7 +95,17 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                 .subscribeWith(new RxUtils.ErrorObserver<Permission>(view) {
                     @Override
                     public void onNext(Permission permission) {
-                        Timber.e("onNext: %s", permission.granted);
+                        if (permission.granted) {
+                            locationInteractor.saveAutodetect(checked);
+                            view.setAutodetect(checked);
+                        } else {
+                            if (!permission.shouldShowRequestPermissionRationale) {
+                                // TODO: 20.10.18 goto settings
+                            }
+                            locationInteractor.saveAutodetect(false);
+                            view.setAutodetect(false);
+                        }
+                        Timber.e("onNext: granted %s, never ask %s", permission.granted, !permission.shouldShowRequestPermissionRationale);
                     }
                 }));
     }
