@@ -1,11 +1,11 @@
 package io.github.vladimirmi.localradio.domain.repositories;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
 import android.util.Pair;
 
 import java.util.List;
 import java.util.Set;
 
+import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.map.MapState;
 import io.reactivex.Completable;
@@ -35,10 +35,6 @@ public interface LocationRepository {
     void saveLocations(Set<String> locationsId);
 
     Single<List<LocationEntity>> getSavedLocations();
-
-    void saveAutodetect(boolean enabled);
-
-    boolean isAutodetect();
 
     boolean isServicesAvailable();
 

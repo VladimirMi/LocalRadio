@@ -121,14 +121,6 @@ public class LocationInteractor {
                 .collect(HashSet::new, Set::add);
     }
 
-    public void saveAutodetect(boolean enabled) {
-        locationRepository.saveAutodetect(enabled);
-    }
-
-    public boolean isAutodetect() {
-        return locationRepository.isAutodetect();
-    }
-
     public boolean isServicesAvailable() {
         return locationRepository.isServicesAvailable();
     }

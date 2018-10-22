@@ -19,7 +19,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -28,6 +27,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     private final LocationInteractor locationInteractor;
     private Disposable radiusSub;
+    boolean animateMyLocation = false;
 
     @Inject
     public SearchMapPresenter(LocationInteractor locationInteractor) {
@@ -37,8 +37,6 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     @Override
     protected void onFirstAttach(SearchMapView view, CompositeDisposable disposables) {
         initOptions();
-        view.showAutodetect(locationInteractor.isServicesAvailable());
-        view.setAutodetect(locationInteractor.isAutodetect());
     }
 
     @Override
@@ -56,6 +54,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         viewSubs.add(locationInteractor.getMapLocations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::selectClusters));
+        askLocationPermission();
     }
 
     public void loadClusters(Observable<SupportSQLiteQuery> queryObservable) {
@@ -86,26 +85,20 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         view.setMapMode(mode);
     }
 
-    public void setMapState(MapState state) {
+    public void setMapState(MapState state) { // calls on map idle
+        if (animateMyLocation) {
+            view.setMapMode(locationInteractor.getMapMode());
+            animateMyLocation = false;
+        }
         locationInteractor.setMapState(state);
     }
 
-    public void enableAutodetect(boolean checked) {
+    private void askLocationPermission() {
         dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribeWith(new RxUtils.ErrorObserver<Permission>(view) {
                     @Override
                     public void onNext(Permission permission) {
-                        if (permission.granted) {
-                            locationInteractor.saveAutodetect(checked);
-                            view.setAutodetect(checked);
-                        } else {
-                            if (!permission.shouldShowRequestPermissionRationale) {
-                                // TODO: 20.10.18 goto settings
-                            }
-                            locationInteractor.saveAutodetect(false);
-                            view.setAutodetect(false);
-                        }
-                        Timber.e("onNext: granted %s, never ask %s", permission.granted, !permission.shouldShowRequestPermissionRationale);
+                        view.enableLocationData(permission.granted);
                     }
                 }));
     }

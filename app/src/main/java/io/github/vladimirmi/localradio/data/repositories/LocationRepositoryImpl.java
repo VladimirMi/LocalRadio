@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.data.repositories;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
 import android.util.Pair;
 
 import java.util.List;
@@ -8,6 +7,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.data.db.location.LocationDatabase;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.data.db.location.LocationsDao;
@@ -103,16 +103,6 @@ public class LocationRepositoryImpl implements LocationRepository {
                 .flatMapSingle(id -> locationsDao.getLocation(Integer.valueOf(id)))
                 .toList()
                 .subscribeOn(Schedulers.io());
-    }
-
-    @Override
-    public void saveAutodetect(boolean enabled) {
-        preferences.autodetect.put(enabled);
-    }
-
-    @Override
-    public boolean isAutodetect() {
-        return preferences.autodetect.get();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
+import android.annotation.SuppressLint;
 import android.view.View;
-import android.widget.CheckedTextView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -27,7 +27,6 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> implements SearchMapView {
 
     @BindView(R.id.mapView) MapView mapView;
-    @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.selectionRg) RadioGroup selectionRg;
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     @BindView(R.id.radiusView) RadiusView radiusView;
@@ -46,7 +45,6 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
 
     @Override
     protected void setupView(View view) {
-        autodetectCb.setOnClickListener((v) -> presenter.enableAutodetect(((CheckedTextView) v).isChecked()));
     }
 
     @Override
@@ -143,14 +141,15 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         mapWrapper.selectClusters(clusterItems);
     }
 
+    @SuppressLint("MissingPermission")
     @Override
-    public void showAutodetect(boolean available) {
-        autodetectCb.setVisibility(available ? View.VISIBLE : View.GONE);
-    }
-
-    @Override
-    public void setAutodetect(boolean enabled) {
-        autodetectCb.setChecked(enabled);
+    public void enableLocationData(boolean enabled) {
+        GoogleMap map = mapWrapper.getMap();
+        map.setMyLocationEnabled(enabled);
+        map.setOnMyLocationButtonClickListener(() -> {
+            presenter.animateMyLocation = true;
+            return false;
+        });
     }
 
     //endregion

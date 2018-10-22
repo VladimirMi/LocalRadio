@@ -25,7 +25,5 @@ public interface SearchMapView extends BaseView {
 
     void selectClusters(Set<LocationClusterItem> clusterItems);
 
-    void showAutodetect(boolean available);
-
-    void setAutodetect(boolean enabled);
+    void enableLocationData(boolean enabled);
 }

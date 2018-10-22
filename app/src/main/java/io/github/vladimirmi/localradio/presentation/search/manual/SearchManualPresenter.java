@@ -1,12 +1,11 @@
 package io.github.vladimirmi.localradio.presentation.search.manual;
 
-import androidx.annotation.NonNull;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
@@ -153,7 +152,7 @@ public class SearchManualPresenter extends BasePresenter<SearchManualView> {
 //            dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_FINE_LOCATION)
 //                    .doOnNext(enabled -> {
 //                        // TODO: 4/27/18 add action that opens settings to the snackbar
-//                        setAutodetect(enabled);
+//                        enableLocationData(enabled);
 //                        if (!enabled) view.showMessage(R.string.need_permission);
 //                    })
 //                    .filter(enabled -> enabled)
