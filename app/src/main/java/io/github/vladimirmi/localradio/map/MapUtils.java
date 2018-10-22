@@ -1,8 +1,5 @@
 package io.github.vladimirmi.localradio.map;
 
-import androidx.sqlite.db.SimpleSQLiteQuery;
-import androidx.sqlite.db.SupportSQLiteQuery;
-
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Collection;
@@ -10,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import androidx.sqlite.db.SimpleSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 
 /**
@@ -87,7 +86,7 @@ public class MapUtils {
                 .append(" AND (");
 
         for (int i = 0; i < bounds.size(); i++) {
-            sb.append(createBoundQueryPart(bounds.get(i)));
+            sb.append(createBoundsQueryPart(bounds.get(i)));
             if (i < bounds.size() - 1) sb.append(" OR ");
         }
         sb.append(")");
@@ -97,9 +96,15 @@ public class MapUtils {
     public static SupportSQLiteQuery createQueryFor(Bounds bounds, boolean isCountry) {
         String query = createQueryHeader(isCountry) +
                 " AND " +
-                createBoundQueryPart(bounds);
+                createBoundsQueryPart(bounds);
 
         return new SimpleSQLiteQuery(query);
+    }
+
+    public static SupportSQLiteQuery createQueryFor(MapPosition center, int paddingMiles) {
+        // TODO: 22.10.18 implement
+        Bounds bounds = new Bounds(0, 0, 0, 0);
+        return createQueryFor(bounds, false);
     }
 
     private static String createQueryHeader(boolean isCountry) {
@@ -107,7 +112,7 @@ public class MapUtils {
                 "endpoints " + (isCountry ? "==" : "!=") + " 'isCountry'";
     }
 
-    private static String createBoundQueryPart(Bounds bounds) {
+    private static String createBoundsQueryPart(Bounds bounds) {
         return "(" +
                 "latitude >= " + bounds.bottom +
                 " AND latitude <= " + bounds.top +

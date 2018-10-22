@@ -16,7 +16,7 @@ import io.github.vladimirmi.localradio.data.source.CacheSource;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
@@ -68,7 +68,7 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Single<List<Station>> searchStationsByCoordinates(MapState state) {
+    public Single<List<Station>> searchStationsByCoordinates(MapPosition state) {
         Timber.e("searchStationsByCoordinates: ");
         resolveCache(String.valueOf(state.latitude), String.valueOf(state.longitude));
 

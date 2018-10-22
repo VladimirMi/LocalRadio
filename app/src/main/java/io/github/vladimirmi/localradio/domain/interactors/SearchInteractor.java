@@ -14,7 +14,7 @@ import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
@@ -104,7 +104,7 @@ public class SearchInteractor {
     }
 
     private Single<List<Station>> searchStationsByCoordinates() {
-        MapState mapState = locationRepository.getMapState();
+        MapPosition mapState = locationRepository.getMapPosition();
         return searchRepository.searchStationsByCoordinates(mapState);
     }
 

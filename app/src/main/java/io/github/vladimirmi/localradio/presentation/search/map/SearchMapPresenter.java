@@ -5,6 +5,7 @@ import android.Manifest;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.tbruyelle.rxpermissions2.Permission;
 
+import java.util.Collections;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -12,7 +13,7 @@ import javax.inject.Inject;
 import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.Observable;
@@ -50,7 +51,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     public void onMapReady() {
         view.setMapMode(locationInteractor.getMapMode());
-        view.restoreMapState(locationInteractor.getMapState());
+        view.restoreMapPosition(locationInteractor.getPosition());
         viewSubs.add(locationInteractor.getMapLocations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::selectClusters));
@@ -85,12 +86,21 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         view.setMapMode(mode);
     }
 
-    public void setMapState(MapState state) { // calls on map idle
+    public void setMapPosition(MapPosition position) { // calls on map idle
         if (animateMyLocation) {
-            view.setMapMode(locationInteractor.getMapMode());
-            animateMyLocation = false;
+            setupMyLocation(position);
         }
-        locationInteractor.setMapState(state);
+        locationInteractor.setMapPosition(position);
+    }
+
+    private void setupMyLocation(MapPosition state) {
+        view.setMapMode(locationInteractor.getMapMode());
+        viewSubs.add(locationInteractor.setMyLocation(state)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(locationClusterItem -> {
+                    view.selectClusters(Collections.singleton(locationClusterItem));
+                }));
+        animateMyLocation = false;
     }
 
     private void askLocationPermission() {

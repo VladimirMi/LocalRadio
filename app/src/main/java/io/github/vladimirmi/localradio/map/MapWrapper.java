@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.map;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
 import android.content.Context;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -16,6 +15,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
@@ -39,7 +39,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     private final Context context;
     private final GoogleMap map;
 
-    private OnSaveMapStateListener onSaveStateListener;
+    private OnSaveMapPositionListener onSaveStateListener;
     private String mapMode = COUNTRY_MODE;
     private String previousMapMode = COUNTRY_MODE;
     private PublishRelay<Set<LocationClusterItem>> selection = PublishRelay.create();
@@ -105,15 +105,15 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
         if (onSaveStateListener != null) {
             float zoom = map.getCameraPosition().zoom;
             LatLng target = map.getCameraPosition().target;
-            onSaveStateListener.onSaveMapState(new MapState(target, zoom));
+            onSaveStateListener.onSaveMapPosition(new MapPosition(target, zoom));
         }
     }
 
-    public void setOnSaveStateListener(OnSaveMapStateListener listener) {
+    public void setOnSaveMapPositionListener(OnSaveMapPositionListener listener) {
         onSaveStateListener = listener;
     }
 
-    public void restoreMapState(MapState state) {
+    public void restoreMapPosition(MapPosition state) {
         LatLng position = new LatLng(state.latitude, state.longitude);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, state.zoom);
         map.moveCamera(cameraUpdate);
@@ -192,8 +192,8 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 .share();
     }
 
-    public interface OnSaveMapStateListener {
+    public interface OnSaveMapPositionListener {
 
-        void onSaveMapState(MapState state);
+        void onSaveMapPosition(MapPosition position);
     }
 }

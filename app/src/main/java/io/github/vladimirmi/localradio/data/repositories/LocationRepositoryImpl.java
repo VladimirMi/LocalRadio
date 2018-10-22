@@ -14,7 +14,7 @@ import io.github.vladimirmi.localradio.data.db.location.LocationsDao;
 import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import io.github.vladimirmi.localradio.data.source.LocationSource;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -51,15 +51,15 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public void saveMapState(MapState mapState) {
-        preferences.mapLat.put(mapState.latitude);
-        preferences.mapLong.put(mapState.longitude);
-        preferences.mapZoom.put(mapState.zoom);
+    public void saveMapPosition(MapPosition state) {
+        preferences.mapLat.put(state.latitude);
+        preferences.mapLong.put(state.longitude);
+        preferences.mapZoom.put(state.zoom);
     }
 
     @Override
-    public MapState getMapState() {
-        return new MapState(
+    public MapPosition getMapPosition() {
+        return new MapPosition(
                 preferences.mapLat.get(),
                 preferences.mapLong.get(),
                 preferences.mapZoom.get()
@@ -118,5 +118,10 @@ public class LocationRepositoryImpl implements LocationRepository {
     @Override
     public Single<Pair<Float, Float>> getCurrentLocation() {
         return locationSource.getCoordinates();
+    }
+
+    @Override
+    public Pair<String, String> getCountryCodeCity(MapPosition state) {
+        return locationSource.getCountryCodeCity(state);
     }
 }

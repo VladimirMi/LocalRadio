@@ -7,7 +7,7 @@ import java.util.Set;
 
 import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 
@@ -20,9 +20,9 @@ public interface LocationRepository {
 
     String getMapMode();
 
-    void saveMapState(MapState mapState);
+    void saveMapPosition(MapPosition mapState);
 
-    MapState getMapState();
+    MapPosition getMapPosition();
 
     Single<List<LocationEntity>> loadClusters(SupportSQLiteQuery query);
 
@@ -41,4 +41,6 @@ public interface LocationRepository {
     Completable checkCanGetLocation();
 
     Single<Pair<Float, Float>> getCurrentLocation();
+
+    Pair<String, String> getCountryCodeCity(MapPosition coordinates);
 }

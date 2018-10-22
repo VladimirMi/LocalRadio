@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import androidx.annotation.Nullable;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
@@ -93,19 +94,19 @@ public class LocationSource {
     }
 
     @Nullable
-    public Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates) {
+    public Pair<String, String> getCountryCodeCity(MapPosition position) {
         List<Address> addresses = null;
         try {
-            addresses = geocoder.getFromLocation(coordinates.first, coordinates.second, 1);
+            addresses = geocoder.getFromLocation(position.latitude, position.longitude, 1);
         } catch (IOException e) {
-            Timber.w("Service not available");
+            Timber.w(e, "Service not available");
         } catch (IllegalArgumentException e) {
-            Timber.w("Invalid latitude or longitude values (%s, %s)", coordinates.first, coordinates.second);
+            Timber.w(e, "Invalid latitude or longitude values (%s, %s)", position.latitude, position.longitude);
         }
         if (addresses != null && !addresses.isEmpty()) {
             return getCountryCodeCity(addresses.get(0));
         } else {
-            Timber.w("Can not find address (%s, %s)", coordinates.first, coordinates.second);
+            Timber.w("Can not find address (%s, %s)", position.latitude, position.longitude);
             return null;
         }
     }

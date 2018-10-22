@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import java.util.Set;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 
 /**
@@ -17,7 +17,7 @@ public interface SearchMapView extends BaseView {
 
     void changeRadius(CameraPosition cameraPosition);
 
-    void restoreMapState(MapState state);
+    void restoreMapPosition(MapPosition state);
 
     void addClusters(Set<LocationClusterItem> clusterItems);
 

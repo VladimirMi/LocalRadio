@@ -1,5 +1,7 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
+import android.util.Pair;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +14,11 @@ import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
+import io.github.vladimirmi.localradio.map.MapUtils;
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 
 /**
@@ -25,7 +30,7 @@ public class LocationInteractor {
     private final SearchRepository searchRepository;
     private Set<LocationClusterItem> selectedMapLocations;
     private LocationEntity selectedManualLocation;
-    private MapState mapState;
+    private MapPosition position;
     private String mapMode;
 
     @SuppressWarnings("WeakerAccess")
@@ -34,7 +39,7 @@ public class LocationInteractor {
                               SearchRepository searchRepository) {
         this.locationRepository = locationRepository;
         mapMode = locationRepository.getMapMode();
-        mapState = locationRepository.getMapState();
+        position = locationRepository.getMapPosition();
         this.searchRepository = searchRepository;
     }
 
@@ -46,12 +51,12 @@ public class LocationInteractor {
         mapMode = mode;
     }
 
-    public MapState getMapState() {
-        return mapState;
+    public MapPosition getPosition() {
+        return position;
     }
 
-    public void setMapState(MapState mapState) {
-        this.mapState = mapState;
+    public void setMapPosition(MapPosition position) {
+        this.position = position;
     }
 
     public Single<List<LocationEntity>> getCountries() {
@@ -82,7 +87,7 @@ public class LocationInteractor {
         if (ids.isEmpty()) return false;
         locationRepository.saveLocations(ids);
         locationRepository.saveMapMode(mapMode);
-        locationRepository.saveMapState(mapState);
+        locationRepository.saveMapPosition(position);
         return true;
     }
 
@@ -119,6 +124,24 @@ public class LocationInteractor {
                 .flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
                 .collect(HashSet::new, Set::add);
+    }
+
+    public Observable<LocationClusterItem> setMyLocation(MapPosition position) {
+        if (mapMode.equals(MapWrapper.RADIUS_MODE)) {
+            return Observable.empty();
+        }
+        // TODO: 22.10.18 refactor to different methods
+        Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(position);
+        if (mapMode.equals(MapWrapper.COUNTRY_MODE)) {
+            return getCountry(countryCodeCity.first)
+                    .map(LocationClusterItem::new)
+                    .toObservable();
+        } else {
+            return loadClusters(MapUtils.createQueryFor(position, 5))
+                    // TODO: 22.10.18 choose closest item from set
+                    .map(locationClusterItems -> locationClusterItems.iterator().next())
+                    .toObservable();
+        }
     }
 
     public boolean isServicesAvailable() {

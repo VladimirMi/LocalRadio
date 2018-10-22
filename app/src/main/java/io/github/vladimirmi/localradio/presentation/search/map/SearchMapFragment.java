@@ -16,7 +16,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 import io.github.vladimirmi.localradio.utils.UiUtils;
@@ -56,9 +56,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void onMapReady(GoogleMap map) {
         mapWrapper = new MapWrapper(getContext(), map);
         presenter.onMapReady();
-        mapWrapper.setOnSaveStateListener(state -> {
-            presenter.setMapState(state);
-        });
+        mapWrapper.setOnSaveMapPositionListener(position -> presenter.setMapPosition(position));
         setupMapObservables();
     }
 
@@ -122,8 +120,8 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void restoreMapState(MapState state) {
-        mapWrapper.restoreMapState(state);
+    public void restoreMapPosition(MapPosition position) {
+        mapWrapper.restoreMapPosition(position);
     }
 
     @Override
