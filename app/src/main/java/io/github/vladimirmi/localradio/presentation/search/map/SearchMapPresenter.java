@@ -20,6 +20,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -96,6 +97,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     private void setupMyLocation(MapPosition state) {
         view.setMapMode(locationInteractor.getMapMode());
         viewSubs.add(locationInteractor.setMyLocation(state)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(locationClusterItem -> {
                     view.selectClusters(Collections.singleton(locationClusterItem));

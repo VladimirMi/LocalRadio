@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.map;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
 import android.os.Handler;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -11,6 +10,7 @@ import com.jakewharton.rxrelay2.BehaviorRelay;
 import java.util.Collection;
 import java.util.List;
 
+import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
@@ -68,7 +68,7 @@ public class ClusterLoader {
 
     private void loadNext() {
         calculateBounds();
-        Bounds newLoadBounds = visibleBounds.multiplyBy(LOAD);
+        Bounds newLoadBounds = visibleBounds.increaseByASideMultipliedBy(LOAD);
         if (newLoadBounds.equals(loadBounds)) return;
 
         if (loadBounds == null) {

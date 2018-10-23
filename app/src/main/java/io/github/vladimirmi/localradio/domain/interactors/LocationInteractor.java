@@ -14,6 +14,7 @@ import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
+import io.github.vladimirmi.localradio.map.Bounds;
 import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.map.MapUtils;
 import io.github.vladimirmi.localradio.map.MapWrapper;
@@ -127,24 +128,34 @@ public class LocationInteractor {
     }
 
     public Observable<LocationClusterItem> setMyLocation(MapPosition position) {
-        if (mapMode.equals(MapWrapper.RADIUS_MODE)) {
-            return Observable.empty();
-        }
-        // TODO: 22.10.18 refactor to different methods
-        Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(position);
-        if (mapMode.equals(MapWrapper.COUNTRY_MODE)) {
-            return getCountry(countryCodeCity.first)
-                    .map(LocationClusterItem::new)
-                    .toObservable();
-        } else {
-            return loadClusters(MapUtils.createQueryFor(position, 5))
-                    // TODO: 22.10.18 choose closest item from set
-                    .map(locationClusterItems -> locationClusterItems.iterator().next())
-                    .toObservable();
+        switch (mapMode) {
+            case MapWrapper.RADIUS_MODE:
+                return Observable.empty();
+            case MapWrapper.COUNTRY_MODE:
+                return getCountryFromLocation(position);
+            default:
+                return getCityFromLocation(position);
         }
     }
 
     public boolean isServicesAvailable() {
         return locationRepository.isServicesAvailable();
+    }
+
+    private Observable<LocationClusterItem> getCountryFromLocation(MapPosition position) {
+        Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(position);
+        return getCountry(countryCodeCity.first)
+                .map(LocationClusterItem::new)
+                .toObservable();
+    }
+
+    private Observable<LocationClusterItem> getCityFromLocation(MapPosition position) {
+        Bounds bounds = Bounds.fromCenter(position.getLatLng(), 5);
+        return loadClusters(MapUtils.createQueryFor(bounds, false))
+                .flatMapObservable(locationClusterItems -> {
+                    LocationClusterItem closest = MapUtils.closestToCenter(position.getLatLng(),
+                            locationClusterItems);
+                    return closest == null ? Observable.empty() : Observable.just(closest);
+                });
     }
 }

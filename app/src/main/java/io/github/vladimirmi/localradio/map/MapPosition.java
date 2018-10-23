@@ -22,4 +22,8 @@ public class MapPosition {
         longitude = (float) center.longitude;
         this.zoom = zoom;
     }
+
+    public LatLng getLatLng() {
+        return new LatLng(latitude, longitude);
+    }
 }

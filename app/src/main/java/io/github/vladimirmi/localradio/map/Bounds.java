@@ -41,7 +41,21 @@ public class Bounds {
         width = right > left ? right - left : 360 + right - left;
     }
 
-    public Bounds multiplyBy(double mul) {
+    public static Bounds fromCenter(LatLng center, int paddingMiles) {
+        double LAT_DEG_MILES = 69.055; // miles in 1 deg latitude at equator
+        double LONG_DEG_MILES = 69.172; // miles in 1 deg longitude at equator
+
+        double deltaLat = paddingMiles / LAT_DEG_MILES;
+        double deltaLong = paddingMiles / (LONG_DEG_MILES * Math.cos(Math.toRadians(center.latitude)));
+
+        Bounds bounds = new Bounds(center.latitude, center.longitude, center.latitude, center.longitude);
+        bounds.height = deltaLat;
+        bounds.width = deltaLong;
+
+        return bounds.increaseByASideMultipliedBy(1);
+    }
+
+    public Bounds increaseByASideMultipliedBy(double mul) {
         return new Bounds(
                 min(90, top + height * mul),
                 (540 + right + width * mul) % 360 - 180,

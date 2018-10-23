@@ -68,13 +68,12 @@ public class SearchRepositoryImpl implements SearchRepository {
     }
 
     @Override
-    public Single<List<Station>> searchStationsByCoordinates(MapPosition state) {
-        Timber.e("searchStationsByCoordinates: ");
-        resolveCache(String.valueOf(state.latitude), String.valueOf(state.longitude));
-
-        return restService.getStationsByCoordinates(state.latitude, state.longitude)
-                .doOnError(e -> cacheSource.cleanCache(String.valueOf(state.latitude),
-                        String.valueOf(state.longitude)))
+    public Single<List<Station>> searchStationsByCoordinates(MapPosition position) {
+        resolveCache(String.valueOf(position.latitude), String.valueOf(position.longitude));
+        Timber.e("searchStationsByCoordinates: %s", position.getLatLng().toString());
+        return restService.getStationsByCoordinates(position.latitude, position.longitude)
+                .doOnError(e -> cacheSource.cleanCache(String.valueOf(position.latitude),
+                        String.valueOf(position.longitude)))
                 .compose(new RxRetryTransformer<>())
                 .map(StationsResult::getStations)
                 .map(this::mapResponse)
@@ -83,7 +82,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Single<List<Station>> searchStationsByCountry(String country) {
-        Timber.e("searchStationsByCountry: %s", country);
+        Timber.w("searchStationsByCountry: %s", country);
         resolveCache(country);
         return restService.getStationsByLocation(country, 1)
                 .doOnError(e -> cacheSource.cleanCache(country))
@@ -95,7 +94,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 
     @Override
     public Single<List<Station>> searchStationsByCity(String country, String city) {
-        Timber.e("searchStationsByCity: %s, %s", country, city);
+        Timber.w("searchStationsByCity: %s, %s", country, city);
         resolveCache(country, city);
         return restService.getStationsByLocation(country, city, 1)
                 .doOnError(e -> cacheSource.cleanCache(country, city))
