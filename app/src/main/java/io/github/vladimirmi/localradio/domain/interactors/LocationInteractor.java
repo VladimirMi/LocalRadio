@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
@@ -120,9 +119,14 @@ public class LocationInteractor {
                 .doOnSuccess(location -> selectedManualLocation = location);
     }
 
-    public Single<Set<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
-        return locationRepository.loadClusters(query)
-                .flattenAsObservable(locationEntities -> locationEntities)
+    public Single<Set<LocationClusterItem>> loadClusters() {
+        Single<List<LocationEntity>> locations;
+        if (mapMode.equals(MapWrapper.COUNTRY_MODE)) {
+            locations = getCountries();
+        } else {
+            locations = getCities("");
+        }
+        return locations.flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
                 .collect(HashSet::new, Set::add);
     }
@@ -151,11 +155,12 @@ public class LocationInteractor {
 
     private Observable<LocationClusterItem> getCityFromLocation(MapPosition position) {
         Bounds bounds = Bounds.fromCenter(position.getLatLng(), 5);
-        return loadClusters(MapUtils.createQueryFor(bounds, false))
-                .flatMapObservable(locationClusterItems -> {
-                    LocationClusterItem closest = MapUtils.closestToCenter(position.getLatLng(),
-                            locationClusterItems);
-                    return closest == null ? Observable.empty() : Observable.just(closest);
+        return locationRepository.loadClusters(MapUtils.createQueryFor(bounds, false))
+                .flatMapObservable(locations -> {
+                    LocationEntity closest = MapUtils.closestToCenter(position.getLatLng(),
+                            locations);
+                    return closest == null ? Observable.empty()
+                            : Observable.just(new LocationClusterItem(closest));
                 });
     }
 }

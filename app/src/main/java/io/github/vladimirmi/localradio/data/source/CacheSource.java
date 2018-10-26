@@ -1,14 +1,13 @@
 package io.github.vladimirmi.localradio.data.source;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Set;
 
+import androidx.annotation.Nullable;
 import io.github.vladimirmi.localradio.data.net.Api;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -35,7 +34,7 @@ public class CacheSource implements Interceptor {
     }
 
     @Override
-    public Response intercept(@NonNull Chain chain) throws IOException {
+    public Response intercept(Chain chain) throws IOException {
         cleanOldCache();
 
         File cacheFile = createCacheFile(chain.request().url());

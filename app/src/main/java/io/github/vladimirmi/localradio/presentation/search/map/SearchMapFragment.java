@@ -57,19 +57,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         mapWrapper = new MapWrapper(getContext(), map);
         presenter.onMapReady();
         mapWrapper.setOnSaveMapPositionListener(position -> presenter.setMapPosition(position));
-        setupMapObservables();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mapWrapper != null) setupMapObservables();
-    }
-
-    private void setupMapObservables() {
-        presenter.loadClusters(mapWrapper.getQueryObservable());
         presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
-        setupRadius(mapWrapper.getMapMode());
     }
 
     @Override

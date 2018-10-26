@@ -15,12 +15,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import androidx.sqlite.db.SupportSQLiteQuery;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposables;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 31.07.2018.
@@ -34,25 +34,25 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     private final Object emit = new Object();
     private final Set<LocationClusterItem> emptyLocations = Collections.emptySet();
     private final Observable<Object> cameraMoveObservable;
-    private final ClusterLoader clusterLoader;
     private final CustomClusterManager clusterManager;
     private final Context context;
     private final GoogleMap map;
 
     private OnSaveMapPositionListener onSaveStateListener;
     private String mapMode = COUNTRY_MODE;
-    private String previousMapMode = COUNTRY_MODE;
     private PublishRelay<Set<LocationClusterItem>> selection = PublishRelay.create();
+    private boolean needReCluster;
+    private boolean modeChanged;
 
 
     public MapWrapper(Context context, GoogleMap map) {
         this.context = context;
         this.map = map;
 
-        cameraMoveObservable = createCameraMoveObservable();
         configureMap();
         clusterManager = new CustomClusterManager(context, map);
-        clusterLoader = new ClusterLoader(map, clusterManager);
+        cameraMoveObservable = createCameraMoveObservable()
+                .doOnNext(o -> clusterManager.cluster());
 
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(clusterManager);
@@ -71,16 +71,12 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
 
     public void addClusters(Set<LocationClusterItem> clusterItems) {
+        Timber.e("addClusters: %d", clusterItems.size());
         clusterManager.addItems(clusterItems);
-        if (previousMapMode.equals(COUNTRY_MODE) && mapMode.equals(RADIUS_MODE)) {
+        if (needReCluster) clusterManager.cluster();
+        if (mapMode.equals(RADIUS_MODE)) {
             selectInsideRadius();
-        } else {
-            clusterManager.cluster();
         }
-    }
-
-    public Observable<SupportSQLiteQuery> getQueryObservable() {
-        return clusterLoader.getQueryObservable(cameraMoveObservable);
     }
 
     public Observable<CameraPosition> getRadiusChangeObservable() {
@@ -121,25 +117,30 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
     public void selectClusters(Set<LocationClusterItem> items) {
         clusterManager.selectClusters(items);
-        if (!mapMode.equals(COUNTRY_MODE)) clusterManager.cluster();
+        if (modeChanged) clusterManager.cluster();
     }
 
     public void setMapMode(String mode) {
-        previousMapMode = mapMode;
-        mapMode = mode;
-        clusterLoader.setIsCountry(mode.equals(COUNTRY_MODE));
 
+        needReCluster = mapMode.equals(COUNTRY_MODE) != mode.equals(COUNTRY_MODE);
+        modeChanged = mapMode.equals(mode);
+        Timber.e("setMapMode: %s - %s clear: %b", mapMode, mode, needReCluster);
+        if (needReCluster) {
+            clusterManager.clearItems();
+        }
+
+        // TODO: 26.10.18 set min/max after zoom animation (onIdle)
         switch (mode) {
             case EXACT_MODE: {
                 selection.accept(emptyLocations);
-                map.setMinZoomPreference(6f);
+                map.setMinZoomPreference(7f);
                 map.setMaxZoomPreference(10f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
                 map.animateCamera(cameraUpdate);
                 break;
             }
             case RADIUS_MODE: {
-                if (previousMapMode.equals(EXACT_MODE)) selectInsideRadius();
+                if (mapMode.equals(EXACT_MODE)) selectInsideRadius();
                 map.setMinZoomPreference(6f);
                 map.setMaxZoomPreference(9f);
                 CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
@@ -155,10 +156,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 break;
             }
         }
-    }
-
-    public String getMapMode() {
-        return mapMode;
+        mapMode = mode;
     }
 
     private void selectInsideRadius() {

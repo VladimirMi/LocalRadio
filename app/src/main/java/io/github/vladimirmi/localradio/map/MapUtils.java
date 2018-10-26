@@ -1,5 +1,6 @@
 package io.github.vladimirmi.localradio.map;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Collection;
@@ -11,6 +12,7 @@ import javax.annotation.Nullable;
 
 import androidx.sqlite.db.SimpleSQLiteQuery;
 import androidx.sqlite.db.SupportSQLiteQuery;
+import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 
 /**
@@ -83,17 +85,26 @@ public class MapUtils {
     }
 
     @Nullable
-    public static LocationClusterItem closestToCenter(LatLng center, Set<LocationClusterItem> locations) {
-        LocationClusterItem closest = null;
+    public static LocationEntity closestToCenter(LatLng center, List<LocationEntity> locations) {
+        LocationEntity closest = null;
         double minDistance = Double.MAX_VALUE;
-        for (LocationClusterItem location : locations) {
-            double distance = distanceMiles(center, location.getPosition());
+        for (LocationEntity location : locations) {
+            double distance = distanceMiles(center, new LatLng(location.latitude, location.longitude));
             if (closest == null || distance < minDistance) {
                 minDistance = distance;
                 closest = location;
             }
         }
         return closest;
+    }
+
+    public static Set<LocationClusterItem> visibleItems(GoogleMap map, Collection<LocationClusterItem> items) {
+        Bounds bounds = new Bounds(map.getProjection().getVisibleRegion().latLngBounds);
+        Set<LocationClusterItem> visible = new HashSet<>();
+        for (LocationClusterItem item : items) {
+            if (bounds.contains(item.getPosition())) visible.add(item);
+        }
+        return visible;
     }
 
     public static SupportSQLiteQuery createQueryFor(List<Bounds> bounds, boolean isCountry) {
