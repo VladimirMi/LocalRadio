@@ -17,7 +17,7 @@ public interface SearchMapView extends BaseView {
 
     void changeRadius(CameraPosition cameraPosition);
 
-    void restoreMapPosition(MapPosition state);
+    void restoreMapPosition(MapPosition position);
 
     void addClusters(Set<LocationClusterItem> clusterItems);
 

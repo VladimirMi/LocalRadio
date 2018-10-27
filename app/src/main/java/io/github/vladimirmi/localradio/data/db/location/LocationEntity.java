@@ -22,7 +22,7 @@ public class LocationEntity {
     }
 
     public boolean isCountry() {
-        return endpoints.equals("isCountry");
+        return "isCountry".equals(endpoints);
     }
 
     @Override

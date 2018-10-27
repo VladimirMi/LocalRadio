@@ -40,7 +40,7 @@ public interface LocationRepository {
 
     Completable checkCanGetLocation();
 
-    Single<Pair<Float, Float>> getCurrentLocation();
+    Single<MapPosition> getCurrentLocation();
 
     Pair<String, String> getCountryCodeCity(MapPosition coordinates);
 }

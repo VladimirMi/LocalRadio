@@ -18,8 +18,8 @@ import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.map.MapUtils;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
-import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 24.04.2018.
@@ -131,10 +131,26 @@ public class LocationInteractor {
                 .collect(HashSet::new, Set::add);
     }
 
-    public Observable<LocationClusterItem> setMyLocation(MapPosition position) {
+    public boolean isServicesAvailable() {
+        return locationRepository.isServicesAvailable();
+    }
+
+    public Single<Pair<MapPosition, LocationClusterItem>> getMyLocation() {
+        return locationRepository.getCurrentLocation()
+//                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .flatMap(position -> getMyLocationClusterItem(position)
+                        .map(item -> {
+                            MapPosition newPosition = item.isEmpty() ? position
+                                    : new MapPosition(item.getPosition(), 0);
+                            return new Pair<>(newPosition, item);
+                        }));
+    }
+
+    private Single<LocationClusterItem> getMyLocationClusterItem(MapPosition position) {
         switch (mapMode) {
             case MapWrapper.RADIUS_MODE:
-                return Observable.empty();
+                return Single.just(LocationClusterItem.empty());
             case MapWrapper.COUNTRY_MODE:
                 return getCountryFromLocation(position);
             default:
@@ -142,25 +158,20 @@ public class LocationInteractor {
         }
     }
 
-    public boolean isServicesAvailable() {
-        return locationRepository.isServicesAvailable();
-    }
-
-    private Observable<LocationClusterItem> getCountryFromLocation(MapPosition position) {
+    private Single<LocationClusterItem> getCountryFromLocation(MapPosition position) {
         Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(position);
         return getCountry(countryCodeCity.first)
-                .map(LocationClusterItem::new)
-                .toObservable();
+                .map(LocationClusterItem::new);
     }
 
-    private Observable<LocationClusterItem> getCityFromLocation(MapPosition position) {
+    private Single<LocationClusterItem> getCityFromLocation(MapPosition position) {
         Bounds bounds = Bounds.fromCenter(position.getLatLng(), 5);
         return locationRepository.loadClusters(MapUtils.createQueryFor(bounds, false))
-                .flatMapObservable(locations -> {
+                .flatMap(locations -> {
                     LocationEntity closest = MapUtils.closestToCenter(position.getLatLng(),
                             locations);
-                    return closest == null ? Observable.empty()
-                            : Observable.just(new LocationClusterItem(closest));
+                    return closest == null ? Single.just(LocationClusterItem.empty())
+                            : Single.just(new LocationClusterItem(closest));
                 });
     }
 }

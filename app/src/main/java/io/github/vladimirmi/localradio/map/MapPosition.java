@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 /**
  * Created by Vladimir Mikhalev 24.07.2018.
  */
+// TODO: 27.10.18 Remove class
 public class MapPosition {
 
     public final float latitude;

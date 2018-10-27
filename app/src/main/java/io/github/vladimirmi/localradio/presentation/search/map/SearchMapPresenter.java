@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
 import android.Manifest;
+import android.util.Pair;
 
 import com.google.android.gms.maps.model.CameraPosition;
 import com.tbruyelle.rxpermissions2.Permission;
@@ -21,7 +22,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -30,7 +30,6 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     private final LocationInteractor locationInteractor;
     private Disposable radiusSub;
-    boolean animateMyLocation = false;
 
     @Inject
     public SearchMapPresenter(LocationInteractor locationInteractor) {
@@ -63,7 +62,6 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     private void loadClusters() {
-        Timber.e("loadClusters: ");
         viewSubs.add(locationInteractor.loadClusters()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -98,23 +96,10 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         }
     }
 
-    public void setMapPosition(MapPosition position) { // calls on map idle
-        if (animateMyLocation) {
-            setupMyLocation(position);
-        }
+    public void setMapPosition(MapPosition position) {
         locationInteractor.setMapPosition(position);
     }
 
-    private void setupMyLocation(MapPosition state) {
-        view.setMapMode(locationInteractor.getMapMode());
-        viewSubs.add(locationInteractor.setMyLocation(state)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(locationClusterItem -> {
-                    view.selectClusters(Collections.singleton(locationClusterItem));
-                }));
-        animateMyLocation = false;
-    }
 
     private void askLocationPermission() {
         dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -124,5 +109,18 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                         view.enableLocationData(permission.granted);
                     }
                 }));
+    }
+
+    public void findMyLocation() {
+        viewSubs.add(locationInteractor.getMyLocation()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new RxUtils.ErrorSingleObserver<Pair<MapPosition, LocationClusterItem>>(view) {
+                    @Override
+                    public void onSuccess(Pair<MapPosition, LocationClusterItem> pair) {
+                        view.restoreMapPosition(pair.first);
+                        view.selectClusters(Collections.singleton(pair.second));
+                    }
+                })
+        );
     }
 }

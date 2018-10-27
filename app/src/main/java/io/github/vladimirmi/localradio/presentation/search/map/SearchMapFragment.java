@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -118,6 +119,11 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
     public void selectClusters(Set<LocationClusterItem> clusterItems) {
         int stations = 0;
         for (LocationClusterItem locationClusterItem : clusterItems) {
@@ -133,8 +139,8 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         GoogleMap map = mapWrapper.getMap();
         map.setMyLocationEnabled(enabled);
         map.setOnMyLocationButtonClickListener(() -> {
-            presenter.animateMyLocation = true;
-            return false;
+            presenter.findMyLocation();
+            return true;
         });
     }
 

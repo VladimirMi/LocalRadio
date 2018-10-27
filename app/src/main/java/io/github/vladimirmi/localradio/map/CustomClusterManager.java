@@ -17,7 +17,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 24.07.2018.
@@ -124,7 +123,6 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
     public void cluster() {
         Set<LocationClusterItem> items = MapUtils.visibleItems(map, this.items);
         if (visibleItems.equals(items)) return;
-        Timber.e("cluster: %d - %d", this.items.size(), items.size());
         clearAlgItems();
         addAlgItems(items);
         visibleItems = items;

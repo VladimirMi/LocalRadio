@@ -41,6 +41,7 @@ public class Preferences {
     private static final String KEY_MAP_LONG = "MAP_LONG";
     public final Preference<Float> mapLong;
 
+    // TODO: 27.10.18 remove zoom
     private static final String KEY_MAP_ZOOM = "MAP_ZOOM";
     public final Preference<Float> mapZoom;
 

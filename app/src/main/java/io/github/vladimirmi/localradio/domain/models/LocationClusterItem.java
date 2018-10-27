@@ -27,6 +27,14 @@ public class LocationClusterItem implements ClusterItem {
         id = location.id;
     }
 
+    public static LocationClusterItem empty() {
+        return new LocationClusterItem(new LocationEntity());
+    }
+
+    public boolean isEmpty() {
+        return stationsNum == 0;
+    }
+
     @Override
     public LatLng getPosition() {
         return position;

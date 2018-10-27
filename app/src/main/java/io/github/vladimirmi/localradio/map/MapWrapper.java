@@ -111,8 +111,8 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
     public void restoreMapPosition(MapPosition state) {
         LatLng position = new LatLng(state.latitude, state.longitude);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, state.zoom);
-        map.moveCamera(cameraUpdate);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(position);
+        map.animateCamera(cameraUpdate);
     }
 
     public void selectClusters(Set<LocationClusterItem> items) {
@@ -124,7 +124,6 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
         needReCluster = mapMode.equals(COUNTRY_MODE) != mode.equals(COUNTRY_MODE);
         modeChanged = mapMode.equals(mode);
-        Timber.e("setMapMode: %s - %s clear: %b", mapMode, mode, needReCluster);
         if (needReCluster) {
             clusterManager.clearItems();
         }

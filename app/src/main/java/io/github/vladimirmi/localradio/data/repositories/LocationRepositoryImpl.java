@@ -116,8 +116,9 @@ public class LocationRepositoryImpl implements LocationRepository {
     }
 
     @Override
-    public Single<Pair<Float, Float>> getCurrentLocation() {
-        return locationSource.getCoordinates();
+    public Single<MapPosition> getCurrentLocation() {
+        return locationSource.getCoordinates()
+                .map(coordinates -> new MapPosition(coordinates.first, coordinates.second, 0));
     }
 
     @Override
