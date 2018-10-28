@@ -52,7 +52,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
     public void onMapReady() {
         view.setMapMode(locationInteractor.getMapMode());
-        view.restoreMapPosition(locationInteractor.getPosition());
+        view.restoreMapPosition(locationInteractor.getPosition(), false);
         loadClusters();
 
         viewSubs.add(locationInteractor.getMapLocations()
@@ -117,7 +117,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
                 .subscribeWith(new RxUtils.ErrorSingleObserver<Pair<MapPosition, LocationClusterItem>>(view) {
                     @Override
                     public void onSuccess(Pair<MapPosition, LocationClusterItem> pair) {
-                        view.restoreMapPosition(pair.first);
+                        view.restoreMapPosition(pair.first, true);
                         view.selectClusters(Collections.singleton(pair.second));
                     }
                 })

@@ -52,7 +52,8 @@ public class LocationSource {
     private final LocationRequest locationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_LOW_POWER)
             .setInterval(1000)
-            .setNumUpdates(1);
+            .setNumUpdates(1)
+            .setMaxWaitTime(LOCATION_MAX_WAIT_TIME);
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -147,7 +148,6 @@ public class LocationSource {
         });
 //        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new LocationTimeoutException()));
 
-//        return lastLocation.onErrorResumeNext(updateLocation);
         return updateLocation.onErrorResumeNext(lastLocation);
     }
 

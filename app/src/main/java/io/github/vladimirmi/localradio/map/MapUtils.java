@@ -98,8 +98,11 @@ public class MapUtils {
         return closest;
     }
 
-    public static Set<LocationClusterItem> visibleItems(GoogleMap map, Collection<LocationClusterItem> items) {
+    public static Set<LocationClusterItem> visibleItems(GoogleMap map,
+                                                        Collection<LocationClusterItem> items,
+                                                        double increase) {
         Bounds bounds = new Bounds(map.getProjection().getVisibleRegion().latLngBounds);
+        bounds = bounds.increaseByASideMultipliedBy(increase);
         Set<LocationClusterItem> visible = new HashSet<>();
         for (LocationClusterItem item : items) {
             if (bounds.contains(item.getPosition())) visible.add(item);

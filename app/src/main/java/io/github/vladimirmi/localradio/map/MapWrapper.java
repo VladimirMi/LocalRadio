@@ -20,7 +20,6 @@ import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposables;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 31.07.2018.
@@ -38,7 +37,7 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     private final Context context;
     private final GoogleMap map;
 
-    private OnSaveMapPositionListener onSaveStateListener;
+    private OnSaveMapPositionListener onSavePositionListener;
     private String mapMode = COUNTRY_MODE;
     private PublishRelay<Set<LocationClusterItem>> selection = PublishRelay.create();
     private boolean needReCluster;
@@ -71,7 +70,6 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
 
     public void addClusters(Set<LocationClusterItem> clusterItems) {
-        Timber.e("addClusters: %d", clusterItems.size());
         clusterManager.addItems(clusterItems);
         if (needReCluster) clusterManager.cluster();
         if (mapMode.equals(RADIUS_MODE)) {
@@ -98,21 +96,24 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
     @Override
     public void onCameraIdle() {
-        if (onSaveStateListener != null) {
+        if (onSavePositionListener != null) {
             float zoom = map.getCameraPosition().zoom;
             LatLng target = map.getCameraPosition().target;
-            onSaveStateListener.onSaveMapPosition(new MapPosition(target, zoom));
+            onSavePositionListener.onSaveMapPosition(new MapPosition(target, zoom));
         }
     }
 
     public void setOnSaveMapPositionListener(OnSaveMapPositionListener listener) {
-        onSaveStateListener = listener;
+        onSavePositionListener = listener;
     }
 
-    public void restoreMapPosition(MapPosition state) {
+    public void restoreMapPosition(MapPosition state, boolean animate) {
         LatLng position = new LatLng(state.latitude, state.longitude);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(position);
-        map.animateCamera(cameraUpdate);
+        int zoom = mapMode.equals(COUNTRY_MODE) ? 5 : 7;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, zoom);
+        if (animate) map.animateCamera(cameraUpdate);
+        else map.moveCamera(cameraUpdate);
+
     }
 
     public void selectClusters(Set<LocationClusterItem> items) {
@@ -121,37 +122,30 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     }
 
     public void setMapMode(String mode) {
-
         needReCluster = mapMode.equals(COUNTRY_MODE) != mode.equals(COUNTRY_MODE);
         modeChanged = mapMode.equals(mode);
-        if (needReCluster) {
-            clusterManager.clearItems();
-        }
+        if (needReCluster) clusterManager.clearItems();
 
-        // TODO: 26.10.18 set min/max after zoom animation (onIdle)
         switch (mode) {
             case EXACT_MODE: {
                 selection.accept(emptyLocations);
+                map.animateCamera(CameraUpdateFactory.zoomTo(7));
                 map.setMinZoomPreference(7f);
                 map.setMaxZoomPreference(10f);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
-                map.animateCamera(cameraUpdate);
                 break;
             }
             case RADIUS_MODE: {
                 if (mapMode.equals(EXACT_MODE)) selectInsideRadius();
+                map.animateCamera(CameraUpdateFactory.zoomTo(7));
                 map.setMinZoomPreference(6f);
                 map.setMaxZoomPreference(9f);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
-                map.animateCamera(cameraUpdate);
                 break;
             }
             case COUNTRY_MODE: {
                 selection.accept(emptyLocations);
+                map.animateCamera(CameraUpdateFactory.zoomTo(5));
                 map.setMinZoomPreference(2f);
                 map.setMaxZoomPreference(6f);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(5);
-                map.animateCamera(cameraUpdate);
                 break;
             }
         }

@@ -1,7 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.view.View;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -109,18 +108,13 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void restoreMapPosition(MapPosition position) {
-        mapWrapper.restoreMapPosition(position);
+    public void restoreMapPosition(MapPosition position, boolean animate) {
+        mapWrapper.restoreMapPosition(position, animate);
     }
 
     @Override
     public void addClusters(Set<LocationClusterItem> clusterItems) {
         mapWrapper.addClusters(clusterItems);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
     }
 
     @Override

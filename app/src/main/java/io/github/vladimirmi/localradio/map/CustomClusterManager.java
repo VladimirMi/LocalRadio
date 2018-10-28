@@ -121,7 +121,7 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
 
     @Override
     public void cluster() {
-        Set<LocationClusterItem> items = MapUtils.visibleItems(map, this.items);
+        Set<LocationClusterItem> items = MapUtils.visibleItems(map, this.items, 0.3);
         if (visibleItems.equals(items)) return;
         clearAlgItems();
         addAlgItems(items);
