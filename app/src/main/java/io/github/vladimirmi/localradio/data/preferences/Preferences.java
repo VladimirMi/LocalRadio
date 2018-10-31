@@ -47,6 +47,12 @@ public class Preferences {
     private static final String KEY_MAP_ZOOM = "MAP_ZOOM";
     public final Preference<Float> mapZoom;
 
+    private static final String KEY_INITIAL_BUFFER_LENGTH = "INITIAL_BUFFER_LENGTH";
+    public final Preference<Integer> initialBufferLength;
+
+    private static final String KEY_BUFFER_LENGTH = "BUFFER_LENGTH";
+    public final Preference<Integer> bufferLength;
+
     @Inject
     public Preferences(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
@@ -61,5 +67,7 @@ public class Preferences {
         mapLat = new Preference<>(prefs, KEY_MAP_LAT, 0f);
         mapLong = new Preference<>(prefs, KEY_MAP_LONG, 0f);
         mapZoom = new Preference<>(prefs, KEY_MAP_ZOOM, 0f);
+        initialBufferLength = new Preference<>(prefs, KEY_INITIAL_BUFFER_LENGTH, 3);
+        bufferLength = new Preference<>(prefs, KEY_BUFFER_LENGTH, 6);
     }
 }

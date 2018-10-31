@@ -36,7 +36,8 @@ public class SeekBarDialogPreference extends DialogPreference {
     }
 
     private void init() {
-        setProgress(getPersistedInt(progress));
+        progress = getPersistedInt(progress);
+        setSummary(createSummary(progress));
     }
 
     public int getProgress() {
@@ -50,13 +51,17 @@ public class SeekBarDialogPreference extends DialogPreference {
     }
 
     @Override
-    protected Object onGetDefaultValue(TypedArray a, int index) {
+    protected Integer onGetDefaultValue(TypedArray a, int index) {
         return a.getInt(index, 0);
     }
 
     @Override
     protected void onSetInitialValue(@Nullable Object defaultValue) {
-        setProgress(getPersistedInt(progress));
+        int value;
+        if (defaultValue == null) value = getPersistedInt(0);
+        else value = (int) defaultValue;
+
+        setProgress(value);
     }
 
     @Override
