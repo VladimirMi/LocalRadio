@@ -55,17 +55,25 @@
 
     <string name="second">%1$d second</string>
     <string name="seconds">%1$d seconds</string>
-    <string name="description">
+    <string name="settings_stream">Stream settings</string>
+    <string name="settings_backup_restore">Backup and restore</string>
+    <string name="settings_about">About</string>
+    <string name="setting_initial_buffer">Initial buffer duration</string>
+    <string name="setting_initial_buffer_desc">Initial duration of media that must be buffered for playback to start</string>
+    <string name="setting_buffer">Buffer duration</string>
+    <string name="setting_buffer_desc">Duration of media that must be buffered for playback to resume after a rebuffer</string>
+    <string name="setting_backup">Backup stations</string>
+    <string name="setting_restore">Restore stations</string>
+    <string name="setting_privacy">Privacy policy</string>
+    <string name="setting_description">
         Local Radio is an open source app for searching and listening to radio broadcasts over the internet.
         It can search stations by country and city and also automatically detect the location
         and perform a search based on this.
     </string>
-    <string name="project_page">Project page</string>
-    <string name="developer">Developer</string>
-    <string name="version">Version</string>
-    <string name="rate_app">Rate this app</string>
+    <string name="setting_version">Version</string>
+    <string name="setting_rate_app">Rate this app</string>
+
     <string name="powered_by" translatable="false">Powered by\ </string>
-    <string name="developer_name" translatable="false">Vladimir Mikhalev</string>
     <string name="project_link" translatable="false">https://github.com/VladimirMi/LocalRadio</string>
 
     <plurals name="search_result">
