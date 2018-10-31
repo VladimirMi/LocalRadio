@@ -9,20 +9,17 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 
-import com.google.android.exoplayer2.C;
-import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.upstream.DefaultAllocator;
 
 import io.github.vladimirmi.localradio.BuildConfig;
 import io.github.vladimirmi.localradio.data.source.IcyDataSourceFactory;
+import io.github.vladimirmi.localradio.di.Scopes;
 
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 
@@ -41,6 +38,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     private final PlayerCallback callback;
     private final AudioManager audioManager;
     private final WifiManager.WifiLock wifiLock;
+    private final LoadControl loadControl;
 
     private boolean playAgainOnFocus = false;
     private boolean playAgainOnHeadset = false;
@@ -55,6 +53,7 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
         //noinspection ConstantConditions
         wifiLock = ((WifiManager) service.getApplicationContext().getSystemService(Context.WIFI_SERVICE))
                 .createWifiLock(WifiManager.WIFI_MODE_FULL, BuildConfig.APPLICATION_ID);
+        loadControl = Scopes.getAppScope().getInstance(LoadControl.class);
     }
 
     public void play(Uri uri) {
@@ -110,8 +109,6 @@ public class Playback implements AudioManager.OnAudioFocusChangeListener {
     private void createPlayer() {
         RenderersFactory renderersFactory = new DefaultRenderersFactory(service);
         TrackSelector selector = new DefaultTrackSelector();
-        LoadControl loadControl = new DefaultLoadControl(
-                new DefaultAllocator(true, C.DEFAULT_AUDIO_BUFFER_SIZE));
 
         player = ExoPlayerFactory.newSimpleInstance(renderersFactory, selector, loadControl);
         player.addListener(callback);

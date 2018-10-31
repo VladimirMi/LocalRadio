@@ -14,6 +14,8 @@ import io.github.vladimirmi.localradio.presentation.stations.StationsPagerFragme
 
 public class Preferences {
 
+    public final SharedPreferences prefs;
+
     public static final String NAME = "default";
 
     private static final String KEY_LOCATIONS = "LOCATIONS";
@@ -47,15 +49,15 @@ public class Preferences {
     private static final String KEY_MAP_ZOOM = "MAP_ZOOM";
     public final Preference<Float> mapZoom;
 
-    private static final String KEY_INITIAL_BUFFER_LENGTH = "INITIAL_BUFFER_LENGTH";
+    public static final String KEY_INITIAL_BUFFER_LENGTH = "INITIAL_BUFFER_LENGTH";
     public final Preference<Integer> initialBufferLength;
 
-    private static final String KEY_BUFFER_LENGTH = "BUFFER_LENGTH";
+    public static final String KEY_BUFFER_LENGTH = "BUFFER_LENGTH";
     public final Preference<Integer> bufferLength;
 
     @Inject
     public Preferences(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
+        prefs = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
 
         locations = new Preference<>(prefs, KEY_LOCATIONS, Collections.emptySet());
         isSearchDone = new Preference<>(prefs, KEY_SEARCH_DONE, false);
