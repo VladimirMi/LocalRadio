@@ -6,9 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.common.api.ResolvableApiException;
-import com.google.android.material.snackbar.Snackbar;
 import com.tbruyelle.rxpermissions2.Permission;
-import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +24,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
 
     protected P presenter;
     private Unbinder unbinder;
+    private FragmentBaseViewDelegate baseViewDelegate;
 
     protected abstract int getLayout();
 
@@ -82,32 +81,37 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        baseViewDelegate = new FragmentBaseViewDelegate(this);
+    }
+
+    //region =============== BaseView ==============
+
+    @Override
     public boolean handleBackPress() {
-        for (Fragment fragment : getChildFragmentManager().getFragments()) {
-            if (fragment instanceof BaseView && ((BaseView) fragment).handleBackPress()) {
-                return true;
-            }
-        }
-        return false;
+        return baseViewDelegate.handleBackPress();
     }
 
     @Override
     public Observable<Permission> resolvePermissions(String... permissions) {
-        return new RxPermissions(this).requestEachCombined(permissions);
+        return baseViewDelegate.resolvePermissions(permissions);
     }
 
     @Override
     public void showMessage(String message) {
-        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+        baseViewDelegate.showMessage(message);
     }
 
     @Override
     public void showMessage(int messageId) {
-        Snackbar.make(getView(), messageId, Snackbar.LENGTH_SHORT).show();
+        baseViewDelegate.showMessage(messageId);
     }
 
     @Override
     public void resolveApiException(ResolvableApiException resolvable) {
-        ((BaseActivity) getActivity()).resolveApiException(resolvable);
+        baseViewDelegate.resolveApiException(resolvable);
     }
+
+    //endregion
 }

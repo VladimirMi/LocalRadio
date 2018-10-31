@@ -31,10 +31,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".presentation.about.AboutActivity"
-            android:label="@string/about"/>
-
         <service
             android:name=".data.service.player.PlayerService"
             android:exported="false">

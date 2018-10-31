@@ -16,9 +16,9 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_about"
-        android:icon="@drawable/ic_info"
-        android:title="@string/about"
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings"
         app:showAsAction="never"/>
 
     <item

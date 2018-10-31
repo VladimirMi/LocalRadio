@@ -14,6 +14,8 @@ import io.github.vladimirmi.localradio.presentation.stations.StationsPagerFragme
 
 public class Preferences {
 
+    public static final String NAME = "default";
+
     private static final String KEY_LOCATIONS = "LOCATIONS";
     public final Preference<Set<String>> locations;
 
@@ -47,7 +49,7 @@ public class Preferences {
 
     @Inject
     public Preferences(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("default", Context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
 
         locations = new Preference<>(prefs, KEY_LOCATIONS, Collections.emptySet());
         isSearchDone = new Preference<>(prefs, KEY_SEARCH_DONE, false);

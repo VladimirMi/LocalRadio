@@ -16,8 +16,8 @@
     <string name="desc_clear_country_field">clear country field</string>
     <string name="desc_clear_city_field">clear city field</string>
 
-    <string name="about">About</string>
     <string name="exit">Exit</string>
+    <string name="settings">Settings</string>
     <string name="favorite">Favorite</string>
     <string name="stations">Stations</string>
     <string name="search">Search</string>
