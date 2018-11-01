@@ -1,8 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.stations.base;
 
 import android.graphics.PorterDuff;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -10,6 +8,8 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Set;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.models.Station;

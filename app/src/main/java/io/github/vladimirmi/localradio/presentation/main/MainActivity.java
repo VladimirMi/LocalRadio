@@ -100,27 +100,33 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     @Override
     public void showStations() {
 //        enableToolbarScroll(true);
-        forbidShowControls = false;
-        showControls();
-        toolbar.setTitle(R.string.app_name);
+        hideControls(false);
         getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                        android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.contentContainer, new StationsPagerFragment())
-                .addToBackStack(null)
                 .commit();
     }
 
     @Override
     public void showSearch() {
 //        enableToolbarScroll(false);
-        forbidShowControls = true;
-        hideControls();
-        toolbar.setTitle(R.string.search);
-        //noinspection ConstantConditions
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        hideControls(true);
         getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                        android.R.anim.fade_in, android.R.anim.fade_out)
                 .replace(R.id.contentContainer, new SearchFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void showSettings() {
+        hideControls(true);
+        getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                        android.R.anim.fade_in, android.R.anim.fade_out)
+                .replace(R.id.contentContainer, new SettingsFragment())
                 .addToBackStack(null)
                 .commit();
     }
@@ -139,7 +145,8 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
     }
 
     @Override
-    public void hideControls() {
+    public void hideControls(boolean forbidShow) {
+        forbidShowControls = forbidShow;
         bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         Slide slide = createSlideTransition();
         slide.setMode(Visibility.MODE_OUT);
@@ -156,19 +163,6 @@ public class MainActivity extends BaseActivity<MainPresenter> implements MainVie
         slide.addTarget(playerControlsFr);
         slide.setInterpolator(new FastOutSlowInInterpolator());
         return slide;
-    }
-
-    private void showSettings() {
-        forbidShowControls = true;
-        hideControls();
-        toolbar.setTitle(R.string.settings);
-        //noinspection ConstantConditions
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportFragmentManager().beginTransaction()
-                .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-                .replace(R.id.contentContainer, new SettingsFragment())
-                .addToBackStack(null)
-                .commit();
     }
 
     private void exit() {

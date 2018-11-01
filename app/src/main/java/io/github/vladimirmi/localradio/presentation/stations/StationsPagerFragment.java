@@ -1,15 +1,17 @@
 package io.github.vladimirmi.localradio.presentation.stations;
 
-import com.google.android.material.tabs.TabLayout;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 
+import com.google.android.material.tabs.TabLayout;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
+import io.github.vladimirmi.localradio.presentation.main.MainView;
 
 /**
  * Created by Vladimir Mikhalev 30.06.2018.
@@ -37,6 +39,8 @@ public class StationsPagerFragment extends BaseFragment<StationsPagerPresenter> 
     protected void setupView(View view) {
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(false);
+        actionBar.setTitle(R.string.app_name);
+        hideControls(false);
 
         StationsPagerAdapter pagerAdapter = new StationsPagerAdapter(getChildFragmentManager());
 
@@ -58,5 +62,15 @@ public class StationsPagerFragment extends BaseFragment<StationsPagerPresenter> 
     @Override
     public void showStations() {
         viewPager.setCurrentItem(PAGE_STATIONS);
+    }
+
+    @Override
+    public void hideControls(boolean forbidShow) {
+        ((MainView) getActivity()).hideControls(forbidShow);
+    }
+
+    @Override
+    public void showControls() {
+        ((MainView) getActivity()).showControls();
     }
 }
