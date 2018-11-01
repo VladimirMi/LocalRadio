@@ -4,12 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
-import androidx.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import androidx.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -20,6 +16,10 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.media.MediaBrowserServiceCompat;
+import androidx.media.session.MediaButtonReceiver;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.reciever.PlayerWidget;
 import io.github.vladimirmi.localradio.di.Scopes;
@@ -29,6 +29,7 @@ import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.utils.ExponentialBackoff;
 import io.github.vladimirmi.localradio.utils.ImageUtils;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
@@ -62,6 +63,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private int currentStationId;
     private int playingStationId;
     private CompositeDisposable subs = new CompositeDisposable();
+    private ExponentialBackoff backoff = new ExponentialBackoff();
     private TimerTask stopTask;
 
 
@@ -112,7 +114,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
             waitSearch = searchInteractor.getSearchResultObs()
                     .map(SearchResult::isSearchDone)
                     .filter(aBoolean -> aBoolean)
-                    .firstOrError().toCompletable()
+                    .firstOrError().ignoreElement()
                     .subscribe(() -> handleIntent(intent));
         } else {
             handleIntent(intent);
@@ -263,9 +265,14 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerError(MessageException error) {
-            // TODO: 5/7/18 player internally stops. try to keep notification
-            onStopCommand();
-            UiUtils.handleError(PlayerService.this, error);
+            playback.stop();
+            boolean scheduledReconnect = error.getMessageId() == R.string.error_connection
+                    && backoff.schedule(PlayerService.this::onPlayCommand);
+
+            if (!scheduledReconnect) {
+                UiUtils.handleError(PlayerService.this, error);
+                stopSelf();
+            }
         }
     };
 
