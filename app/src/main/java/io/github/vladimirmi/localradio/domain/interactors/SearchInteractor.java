@@ -125,7 +125,7 @@ public class SearchInteractor {
                 .collect(ArrayList::new, List::addAll);
     }
 
-    private Completable checkInternet() {
+    public Completable checkInternet() {
         return Completable.fromCallable(() -> {
             if (!networkChecker.isAvailableNet()) {
                 throw new MessageException(R.string.error_network);

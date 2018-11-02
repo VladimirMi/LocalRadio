@@ -200,6 +200,11 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onPlayCommand() {
+        Throwable throwable = searchInteractor.checkInternet().blockingGet();
+        if (throwable != null) {
+            UiUtils.handleError(this, throwable);
+            return;
+        }
         if (stopTask != null) stopTask.cancel();
         startService();
         if (isPaused() && currentStationId == playingStationId) {
