@@ -5,8 +5,6 @@ import javax.inject.Inject;
 import io.github.vladimirmi.localradio.domain.interactors.MainInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.PlayerControlsInteractor;
 import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
-import io.github.vladimirmi.localradio.utils.RxUtils;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
 /**
@@ -29,9 +27,9 @@ public class MainPresenter extends BasePresenter<MainView> {
     protected void onFirstAttach(MainView view, CompositeDisposable dataSubs) {
         controlInteractor.connect();
 
-        dataSubs.add(mainInteractor.initApp()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
+//        dataSubs.add(mainInteractor.initApp()
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeWith(new RxUtils.ErrorCompletableObserver(view)));
     }
 
     @Override

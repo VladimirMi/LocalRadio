@@ -243,8 +243,11 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private PlayerCallback playerCallback = new PlayerCallback() {
 
+        private boolean scheduledReconnect;
+
         @Override
         public void onPlayerStateChanged(int state) {
+            if (scheduledReconnect) return;
             playbackState = new PlaybackStateCompat.Builder(playbackState)
                     .setState(state, 0, 1f)
                     .build();
@@ -265,13 +268,12 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerError(MessageException error) {
-            playback.stop();
-            boolean scheduledReconnect = error.getMessageId() == R.string.error_connection
+            scheduledReconnect = error.getMessageId() == R.string.error_connection
                     && backoff.schedule(PlayerService.this::onPlayCommand);
 
             if (!scheduledReconnect) {
                 UiUtils.handleError(PlayerService.this, error);
-                stopSelf();
+                onStopCommand();
             }
         }
     };

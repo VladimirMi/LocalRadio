@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.presentation.stations.stations;
 
-import androidx.appcompat.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.widget.ImageView;
 
 import java.util.List;
 
+import androidx.appcompat.widget.SearchView;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
@@ -16,6 +16,7 @@ import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.main.MainView;
 import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsFragment;
 import io.github.vladimirmi.localradio.utils.UiUtils;
+import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -56,7 +57,10 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     protected void setupView(View view) {
         super.setupView(view);
         //noinspection ConstantConditions
-        goToSearchBt.setOnClickListener((v) -> ((MainView) getActivity()).showSearch());
+        goToSearchBt.setOnClickListener((v) -> {
+            Timber.e("setupView: onSearch");
+            ((MainView) getActivity()).showSearch();
+        });
     }
 
     @Override

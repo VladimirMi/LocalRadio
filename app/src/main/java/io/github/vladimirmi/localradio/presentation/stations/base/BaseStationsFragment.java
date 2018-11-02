@@ -74,11 +74,13 @@ public abstract class BaseStationsFragment<P extends BasePresenter> extends Base
 
     @Override
     public void showPlaceholder() {
+        stationList.setVisibility(View.GONE);
         placeholder.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hidePlaceholder() {
+        stationList.setVisibility(View.VISIBLE);
         placeholder.setVisibility(View.GONE);
     }
 

@@ -66,12 +66,12 @@ public class SearchInteractor {
 
     public Completable searchStations() {
         return checkInternet()
-                .andThen(search(false)).toCompletable();
+                .andThen(search(false)).ignoreElement();
     }
 
     public Completable refreshStations() {
         return checkInternet()
-                .andThen(search(true)).toCompletable();
+                .andThen(search(true)).ignoreElement();
     }
 
     private Single<List<Station>> search(boolean skipCache) {
