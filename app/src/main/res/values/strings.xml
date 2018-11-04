@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Local Radio</string>
+    <string name="app_name">Local Radio</string>
 
     <string name="country">Country</string>
     <string name="city">City</string>
@@ -67,9 +67,8 @@
     <string name="setting_restore">Restore stations</string>
     <string name="setting_privacy">Privacy policy</string>
     <string name="setting_description">
-        Local Radio is an open source app for searching and listening to radio broadcasts over the internet.
-        It can search stations by country and city and also automatically detect the location
-        and perform a search based on this.
+        "Local Radio" is an open source app for searching and listening to radio broadcasts over the internet.
+        It can search stations by country, city and within a certain area.
     </string>
     <string name="setting_version">Version</string>
     <string name="setting_rate_app">Rate this app</string>

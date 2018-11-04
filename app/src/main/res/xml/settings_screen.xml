@@ -25,12 +25,8 @@
         <Preference android:title="@string/setting_privacy">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://vladimirmi.github.io/InternetRadioPlayer/"/>
+                android:data="https://vladimirmi.github.io/LocalRadio/"/>
         </Preference>
-
-        <Preference
-            android:persistent="false"
-            android:title="@string/setting_version"/>
 
         <Preference
             android:persistent="false"
