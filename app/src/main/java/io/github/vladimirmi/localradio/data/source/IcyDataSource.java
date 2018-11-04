@@ -109,7 +109,7 @@ public final class IcyDataSource implements DataSource {
         connection.setConnectTimeout(connectTimeoutMillis);
         connection.setReadTimeout(readTimeoutMillis);
         connection.setInstanceFollowRedirects(true);
-        connection.setRequestProperty("Icy-Metadata", "1");
+        connection.setRequestProperty("Icy-Metadata", "1.ver");
 
         connection.connect();
 

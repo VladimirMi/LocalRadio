@@ -55,6 +55,9 @@ public class Preferences {
     public static final String KEY_BUFFER_LENGTH = "BUFFER_LENGTH";
     public final Preference<Integer> bufferLength;
 
+    public static final String KEY_LOCATIONS_DB_VER = "LOCATIONS_DB_VER";
+    public final Preference<Integer> locationsDbVer;
+
     @Inject
     public Preferences(Context context) {
         prefs = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
@@ -71,5 +74,6 @@ public class Preferences {
         mapZoom = new Preference<>(prefs, KEY_MAP_ZOOM, 0f);
         initialBufferLength = new Preference<>(prefs, KEY_INITIAL_BUFFER_LENGTH, 3);
         bufferLength = new Preference<>(prefs, KEY_BUFFER_LENGTH, 6);
+        locationsDbVer = new Preference<>(prefs, KEY_LOCATIONS_DB_VER, 0);
     }
 }
