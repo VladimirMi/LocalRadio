@@ -116,9 +116,8 @@ public class SearchInteractor {
                         return searchRepository.searchStationsByCountry(location.country);
                     } else {
                         return Observable.fromIterable(Arrays.asList(location.endpoints.split(",")))
-                                .flatMapSingle(city -> {
-                                    return searchRepository.searchStationsByCity(location.country, city.trim());
-                                })
+                                .flatMapSingle(city ->
+                                        searchRepository.searchStationsByCity(location.country, city.trim()))
                                 .<List<Station>>collect(ArrayList::new, List::addAll);
                     }
                 })

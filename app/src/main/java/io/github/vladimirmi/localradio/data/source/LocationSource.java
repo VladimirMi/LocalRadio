@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
@@ -145,10 +146,9 @@ public class LocationSource {
 
             emitter.setDisposable(Disposables.fromRunnable(() -> fusedLocationProviderClient
                     .removeLocationUpdates(locationCallback)));
-        });
-//        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new LocationTimeoutException()));
+        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new TimeoutException()));
 
-        return updateLocation.onErrorResumeNext(lastLocation);
+        return lastLocation.onErrorResumeNext(updateLocation);
     }
 
 
@@ -157,9 +157,5 @@ public class LocationSource {
         String city = address.getLocality() != null ? address.getLocality() : "";
         Timber.i("getCountryCodeCity: %s, %s", countryCode, city);
         return new Pair<>(countryCode, city);
-    }
-
-    public static class LocationTimeoutException extends TimeoutException {
-
     }
 }

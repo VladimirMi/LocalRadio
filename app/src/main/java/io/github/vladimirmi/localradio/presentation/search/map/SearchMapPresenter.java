@@ -8,9 +8,11 @@ import com.tbruyelle.rxpermissions2.Permission;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
+import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.interactors.LocationInteractor;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.map.MapPosition;
@@ -112,13 +114,21 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
     public void findMyLocation() {
-        viewSubs.add(locationInteractor.getMyLocation()
+        viewSubs.add(locationInteractor.checkCanGetLocation()
+                .andThen(locationInteractor.getMyLocation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new RxUtils.ErrorSingleObserver<Pair<MapPosition, LocationClusterItem>>(view) {
                     @Override
                     public void onSuccess(Pair<MapPosition, LocationClusterItem> pair) {
                         view.restoreMapPosition(pair.first, true);
                         view.selectClusters(Collections.singleton(pair.second));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (e instanceof TimeoutException)
+                            view.showMessage(R.string.error_get_location);
+                        else super.onError(e);
                     }
                 })
         );

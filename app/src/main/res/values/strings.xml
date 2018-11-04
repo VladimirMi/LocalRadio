@@ -36,6 +36,7 @@
     <string name="error_network">Network not available</string>
     <string name="error_connection">Connection error</string>
     <string name="error_renderer">Not supported audio stream</string>
+    <string name="error_get_location">Can\'t get location</string>
     <string name="error_unexpected">Unexpected error</string>
 
     <string name="search_map">Map</string>

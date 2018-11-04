@@ -10,7 +10,6 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
 import io.github.vladimirmi.localradio.utils.RxUtils;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 01.07.2018.
@@ -79,7 +78,6 @@ public class SearchPresenter extends BasePresenter<SearchView> {
             view.setSearchResult(result.result);
         } else {
             view.showLoading(false);
-            Timber.e("handleSearchResult: not done");
         }
     }
 }

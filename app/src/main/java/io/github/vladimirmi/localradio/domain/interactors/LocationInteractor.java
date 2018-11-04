@@ -18,6 +18,7 @@ import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.map.MapUtils;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
+import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.schedulers.Schedulers;
 
@@ -133,6 +134,10 @@ public class LocationInteractor {
 
     public boolean isServicesAvailable() {
         return locationRepository.isServicesAvailable();
+    }
+
+    public Completable checkCanGetLocation() {
+        return locationRepository.checkCanGetLocation();
     }
 
     public Single<Pair<MapPosition, LocationClusterItem>> getMyLocation() {

@@ -16,7 +16,6 @@ import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.presentation.main.MainView;
 import io.github.vladimirmi.localradio.presentation.stations.base.BaseStationsFragment;
 import io.github.vladimirmi.localradio.utils.UiUtils;
-import timber.log.Timber;
 
 /**
  * Created by Vladimir Mikhalev 06.04.2018.
@@ -56,11 +55,7 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     @Override
     protected void setupView(View view) {
         super.setupView(view);
-        //noinspection ConstantConditions
-        goToSearchBt.setOnClickListener((v) -> {
-            Timber.e("setupView: onSearch");
-            ((MainView) getActivity()).showSearch();
-        });
+        goToSearchBt.setOnClickListener((v) -> ((MainView) getActivity()).showSearch());
     }
 
     @Override
