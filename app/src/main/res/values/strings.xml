@@ -75,6 +75,7 @@
 
     <string name="powered_by" translatable="false">Powered by\ </string>
     <string name="project_link" translatable="false">https://github.com/VladimirMi/LocalRadio</string>
+    <string name="api_logo" translatable="false">Api logo</string>
 
     <plurals name="search_result">
         <item quantity="one">@string/search_result_one</item>

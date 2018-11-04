@@ -124,4 +124,36 @@
         app:layout_constraintTop_toBottomOf="@+id/emailTv"
         tools:text="123.456.789"
         />
+
+    <LinearLayout
+        android:id="@+id/brandTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phoneTv"
+        tools:ignore="UseCompoundDrawables"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/powered_by"
+            android:textSize="10sp"
+            android:textColor="@color/grey_50"
+            tools:ignore="SmallSp"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/uberstations_logo"
+            android:paddingBottom="2dp"
+            android:paddingStart="4dp"
+            tools:ignore="RtlSymmetry"
+            android:contentDescription="@string/api_logo"
+            />
+
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
