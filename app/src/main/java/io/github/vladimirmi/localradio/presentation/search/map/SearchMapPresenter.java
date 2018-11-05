@@ -60,7 +60,6 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
         viewSubs.add(locationInteractor.getMapLocations()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(view::selectClusters));
-        askLocationPermission();
     }
 
     private void loadClusters() {
@@ -103,7 +102,7 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
     }
 
 
-    private void askLocationPermission() {
+    public void askLocationPermission() {
         dataSubs.add(view.resolvePermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
                 .subscribeWith(new RxUtils.ErrorObserver<Permission>(view) {
                     @Override

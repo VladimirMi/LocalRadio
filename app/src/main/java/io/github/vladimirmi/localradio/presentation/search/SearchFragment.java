@@ -71,7 +71,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
         searchBt.setOnClickListener((v) -> presenter.search());
 
-        resultBt.setOnClickListener((v) -> handleBackPress());
+        resultBt.setOnClickListener((v) -> getActivity().onBackPressed());
 
         loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
                 .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);

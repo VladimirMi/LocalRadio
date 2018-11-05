@@ -58,6 +58,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         presenter.onMapReady();
         mapWrapper.setOnSaveMapPositionListener(position -> presenter.setMapPosition(position));
         presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
+        if (getUserVisibleHint()) presenter.askLocationPermission();
     }
 
     @Override
@@ -75,6 +76,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void initOptions(String mapMode) {
         if (!getUserVisibleHint()) return;
+        if (mapWrapper != null) presenter.askLocationPermission();
         switch (mapMode) {
             case MapWrapper.EXACT_MODE:
                 selectionRg.check(R.id.exactLocRBtn);
