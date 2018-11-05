@@ -146,6 +146,7 @@ public class LocationInteractor {
                 .observeOn(Schedulers.io())
                 .flatMap(position -> getMyLocationClusterItem(position)
                         .map(item -> {
+                            setSelectedMapLocations(Collections.singleton(item));
                             MapPosition newPosition = item.isEmpty() ? position
                                     : new MapPosition(item.getPosition(), 0);
                             return new Pair<>(newPosition, item);
