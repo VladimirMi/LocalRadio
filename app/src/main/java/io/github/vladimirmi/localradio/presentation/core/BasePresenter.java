@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.core;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import io.reactivex.disposables.CompositeDisposable;
 

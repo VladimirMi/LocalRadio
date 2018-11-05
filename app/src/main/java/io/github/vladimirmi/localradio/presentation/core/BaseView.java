@@ -1,6 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.core;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.tbruyelle.rxpermissions2.Permission;
 
 import io.reactivex.Observable;
 
@@ -10,7 +11,7 @@ import io.reactivex.Observable;
 
 public interface BaseView {
 
-    Observable<Boolean> resolvePermissions(String... permissions);
+    Observable<Permission> resolvePermissions(String... permissions);
 
     void showMessage(String message);
 

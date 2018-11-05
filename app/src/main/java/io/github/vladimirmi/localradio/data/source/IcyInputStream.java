@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.data.source;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.io.FilterInputStream;
 import java.io.IOException;

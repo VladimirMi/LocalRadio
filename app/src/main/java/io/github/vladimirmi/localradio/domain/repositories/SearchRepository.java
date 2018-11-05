@@ -4,7 +4,7 @@ import java.util.List;
 
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 
@@ -24,7 +24,7 @@ public interface SearchRepository {
 
     int getSearchMode();
 
-    Single<List<Station>> searchStationsByCoordinates(MapState state);
+    Single<List<Station>> searchStationsByCoordinates(MapPosition state);
 
     Single<List<Station>> searchStationsByCountry(String country);
 

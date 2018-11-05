@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.data.source;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;

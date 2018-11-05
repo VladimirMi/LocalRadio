@@ -1,9 +1,9 @@
 package io.github.vladimirmi.localradio.presentation.search;
 
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 import io.github.vladimirmi.localradio.presentation.search.manual.SearchManualFragment;
 import io.github.vladimirmi.localradio.presentation.search.map.SearchMapFragment;

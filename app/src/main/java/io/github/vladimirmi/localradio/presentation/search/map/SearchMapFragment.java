@@ -1,7 +1,7 @@
 package io.github.vladimirmi.localradio.presentation.search.map;
 
+import android.annotation.SuppressLint;
 import android.view.View;
-import android.widget.CheckedTextView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
@@ -16,7 +16,7 @@ import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.custom.RadiusView;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.core.BaseMapFragment;
 import io.github.vladimirmi.localradio.utils.UiUtils;
@@ -27,7 +27,6 @@ import io.github.vladimirmi.localradio.utils.UiUtils;
 public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> implements SearchMapView {
 
     @BindView(R.id.mapView) MapView mapView;
-    @BindView(R.id.autodetectCb) CheckedTextView autodetectCb;
     @BindView(R.id.selectionRg) RadioGroup selectionRg;
     @BindView(R.id.selectionResultTv) TextView selectionResultTv;
     @BindView(R.id.radiusView) RadiusView radiusView;
@@ -57,22 +56,9 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     public void onMapReady(GoogleMap map) {
         mapWrapper = new MapWrapper(getContext(), map);
         presenter.onMapReady();
-        mapWrapper.setOnSaveStateListener(state -> {
-            presenter.setMapState(state);
-        });
-        setupMapObservables();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (mapWrapper != null) setupMapObservables();
-    }
-
-    private void setupMapObservables() {
-        presenter.loadClusters(mapWrapper.getQueryObservable());
+        mapWrapper.setOnSaveMapPositionListener(position -> presenter.setMapPosition(position));
         presenter.selectedItemsChange(mapWrapper.getSelectedItemsObservable());
-        setupRadius(mapWrapper.getMapMode());
+        if (getUserVisibleHint()) presenter.askLocationPermission();
     }
 
     @Override
@@ -90,6 +76,7 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     @Override
     public void initOptions(String mapMode) {
         if (!getUserVisibleHint()) return;
+        if (mapWrapper != null) presenter.askLocationPermission();
         switch (mapMode) {
             case MapWrapper.EXACT_MODE:
                 selectionRg.check(R.id.exactLocRBtn);
@@ -123,8 +110,8 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
     }
 
     @Override
-    public void restoreMapState(MapState state) {
-        mapWrapper.restoreMapState(state);
+    public void restoreMapPosition(MapPosition position, boolean animate) {
+        mapWrapper.restoreMapPosition(position, animate);
     }
 
     @Override
@@ -140,6 +127,17 @@ public class SearchMapFragment extends BaseMapFragment<SearchMapPresenter> imple
         }
         setSelectionResult(stations);
         mapWrapper.selectClusters(clusterItems);
+    }
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void enableLocationData(boolean enabled) {
+        GoogleMap map = mapWrapper.getMap();
+        map.setMyLocationEnabled(enabled);
+        map.setOnMyLocationButtonClickListener(() -> {
+            presenter.findMyLocation();
+            return true;
+        });
     }
 
     //endregion

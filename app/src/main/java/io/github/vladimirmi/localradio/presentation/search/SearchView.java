@@ -12,4 +12,5 @@ public interface SearchView extends BaseView {
     void showLoading(boolean show);
 
     void setSearchResult(int stations);
+
 }

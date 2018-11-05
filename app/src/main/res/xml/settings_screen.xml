@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/settings_stream">
+
+        <io.github.vladimirmi.localradio.presentation.settings.SeekBarDialogPreference
+            android:defaultValue="3"
+            android:dialogMessage="@string/setting_initial_buffer_desc"
+            android:key="INITIAL_BUFFER_LENGTH"
+            android:title="@string/setting_initial_buffer"
+            />
+
+        <io.github.vladimirmi.localradio.presentation.settings.SeekBarDialogPreference
+            android:defaultValue="6"
+            android:dialogMessage="@string/setting_buffer_desc"
+            android:key="BUFFER_LENGTH"
+            android:title="@string/setting_buffer"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_about">
+
+        <Preference android:title="@string/setting_privacy">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://vladimirmi.github.io/LocalRadio/"/>
+        </Preference>
+
+        <Preference
+            android:persistent="false"
+            android:title="@string/setting_rate_app">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="market://details?id=io.github.vladimirmi.localradio"/>
+        </Preference>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

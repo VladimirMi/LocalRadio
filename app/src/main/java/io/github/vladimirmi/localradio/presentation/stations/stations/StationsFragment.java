@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.presentation.stations.stations;
 
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.widget.ImageView;
 
 import java.util.List;
 
+import androidx.appcompat.widget.SearchView;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.Scopes;
@@ -55,13 +55,12 @@ public class StationsFragment extends BaseStationsFragment<StationsPresenter>
     @Override
     protected void setupView(View view) {
         super.setupView(view);
-        //noinspection ConstantConditions
         goToSearchBt.setOnClickListener((v) -> ((MainView) getActivity()).showSearch());
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        ImageView v = searchView.findViewById(android.support.v7.appcompat.R.id.search_button);
+        ImageView v = searchView.findViewById(androidx.appcompat.R.id.search_button);
         v.setImageResource(R.drawable.ic_filter);
         super.onPrepareOptionsMenu(menu);
     }

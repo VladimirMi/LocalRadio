@@ -2,21 +2,23 @@ package io.github.vladimirmi.localradio.presentation.search;
 
 import android.graphics.PorterDuff;
 import android.os.Handler;
-import android.support.design.button.MaterialButton;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.tabs.TabLayout;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.di.LocationsModule;
 import io.github.vladimirmi.localradio.di.Scopes;
 import io.github.vladimirmi.localradio.presentation.core.BaseFragment;
-import io.github.vladimirmi.localradio.presentation.main.MainView;
 import toothpick.Scope;
 import toothpick.Toothpick;
 
@@ -30,6 +32,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
     @BindView(R.id.loadingPb) ProgressBar loadingPb;
     @BindView(R.id.searchBt) FloatingActionButton searchBt;
     @BindView(R.id.resultBt) MaterialButton resultBt;
+
 
     @Override
     protected int getLayout() {
@@ -50,6 +53,10 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     protected void setupView(View view) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        actionBar.setTitle(R.string.search);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         String[] pagerTitles = getResources().getStringArray(R.array.search_pager);
         SearchPagerAdapter adapter = new SearchPagerAdapter(getChildFragmentManager(), pagerTitles);
         viewPager.setAdapter(adapter);
@@ -64,7 +71,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
         searchBt.setOnClickListener((v) -> presenter.search());
 
-        resultBt.setOnClickListener((v) -> handleBackPress());
+        resultBt.setOnClickListener((v) -> getActivity().onBackPressed());
 
         loadingPb.getIndeterminateDrawable().setColorFilter(getResources()
                 .getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
@@ -72,12 +79,9 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
 
     @Override
     public boolean handleBackPress() {
-        if (!super.handleBackPress()) {
-            Toothpick.closeScope(Scopes.LOCATIONS_SCOPE);
-            //noinspection ConstantConditions
-            ((MainView) getActivity()).showStations();
-        }
-        return true;
+        boolean handled = super.handleBackPress();
+        if (!handled) Toothpick.closeScope(Scopes.LOCATIONS_SCOPE);
+        return handled;
     }
 
     //region =============== SearchView ==============
@@ -93,9 +97,7 @@ public class SearchFragment extends BaseFragment<SearchPresenter> implements Sea
             resultBt.setVisibility(View.GONE);
             loadingPb.setVisibility(View.VISIBLE);
         } else {
-            new Handler().postDelayed(() -> {
-                loadingPb.setVisibility(View.GONE);
-            }, 1000);
+            new Handler().postDelayed(() -> loadingPb.setVisibility(View.GONE), 1000);
         }
     }
 

@@ -11,6 +11,7 @@ import com.google.maps.android.clustering.algo.Algorithm;
 import com.google.maps.android.clustering.view.ClusterRenderer;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -29,6 +30,8 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
     private final GoogleMap map;
     private final ReadWriteLock clusterTaskLock = new ReentrantReadWriteLock();
     private ClusterTask clusterTask;
+    private final Set<LocationClusterItem> items = new HashSet<>();
+    private Set<LocationClusterItem> visibleItems = new HashSet<>();
 
     public CustomClusterManager(Context context, GoogleMap map) {
         super(context, map);
@@ -58,6 +61,11 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
 
     @Override
     public void clearItems() {
+        items.clear();
+        clearAlgItems();
+    }
+
+    private void clearAlgItems() {
         algorithmLock.writeLock().lock();
         try {
             algorithm.clearItems();
@@ -68,6 +76,11 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
 
     @Override
     public void addItems(Collection<LocationClusterItem> items) {
+        this.items.addAll(items);
+        addAlgItems(items);
+    }
+
+    private void addAlgItems(Collection<LocationClusterItem> items) {
         algorithmLock.writeLock().lock();
         try {
             algorithm.addItems(items);
@@ -78,6 +91,11 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
 
     @Override
     public void addItem(LocationClusterItem myItem) {
+        items.add(myItem);
+        addAlgItem(myItem);
+    }
+
+    private void addAlgItem(LocationClusterItem myItem) {
         algorithmLock.writeLock().lock();
         try {
             algorithm.addItem(myItem);
@@ -88,6 +106,11 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
 
     @Override
     public void removeItem(LocationClusterItem item) {
+        items.remove(item);
+        removeAlgItem(item);
+    }
+
+    private void removeAlgItem(LocationClusterItem item) {
         algorithmLock.writeLock().lock();
         try {
             algorithm.removeItem(item);
@@ -98,6 +121,12 @@ public class CustomClusterManager extends ClusterManager<LocationClusterItem> {
 
     @Override
     public void cluster() {
+        Set<LocationClusterItem> items = MapUtils.visibleItems(map, this.items, 0.3);
+        if (visibleItems.equals(items)) return;
+        clearAlgItems();
+        addAlgItems(items);
+        visibleItems = items;
+
         clusterTaskLock.writeLock().lock();
         try {
             clusterTask.cancel(true);

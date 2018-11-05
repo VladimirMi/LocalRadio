@@ -14,7 +14,7 @@ import io.github.vladimirmi.localradio.domain.models.Station;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
 import io.github.vladimirmi.localradio.domain.repositories.StationsRepository;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.reactivex.Completable;
@@ -66,12 +66,12 @@ public class SearchInteractor {
 
     public Completable searchStations() {
         return checkInternet()
-                .andThen(search(false)).toCompletable();
+                .andThen(search(false)).ignoreElement();
     }
 
     public Completable refreshStations() {
         return checkInternet()
-                .andThen(search(true)).toCompletable();
+                .andThen(search(true)).ignoreElement();
     }
 
     private Single<List<Station>> search(boolean skipCache) {
@@ -104,7 +104,7 @@ public class SearchInteractor {
     }
 
     private Single<List<Station>> searchStationsByCoordinates() {
-        MapState mapState = locationRepository.getMapState();
+        MapPosition mapState = locationRepository.getMapPosition();
         return searchRepository.searchStationsByCoordinates(mapState);
     }
 
@@ -116,16 +116,15 @@ public class SearchInteractor {
                         return searchRepository.searchStationsByCountry(location.country);
                     } else {
                         return Observable.fromIterable(Arrays.asList(location.endpoints.split(",")))
-                                .flatMapSingle(city -> {
-                                    return searchRepository.searchStationsByCity(location.country, city.trim());
-                                })
+                                .flatMapSingle(city ->
+                                        searchRepository.searchStationsByCity(location.country, city.trim()))
                                 .<List<Station>>collect(ArrayList::new, List::addAll);
                     }
                 })
                 .collect(ArrayList::new, List::addAll);
     }
 
-    private Completable checkInternet() {
+    public Completable checkInternet() {
         return Completable.fromCallable(() -> {
             if (!networkChecker.isAvailableNet()) {
                 throw new MessageException(R.string.error_network);

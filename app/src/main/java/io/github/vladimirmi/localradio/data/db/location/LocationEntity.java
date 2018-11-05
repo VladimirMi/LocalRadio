@@ -1,7 +1,7 @@
 package io.github.vladimirmi.localradio.data.db.location;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 /**
  * Created by Vladimir Mikhalev 29.06.2018.
@@ -22,7 +22,7 @@ public class LocationEntity {
     }
 
     public boolean isCountry() {
-        return endpoints.equals("isCountry");
+        return "isCountry".equals(endpoints);
     }
 
     @Override

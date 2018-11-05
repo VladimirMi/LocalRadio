@@ -28,7 +28,7 @@ public class Metadata {
     public static Metadata UNSUPPORTED = new Metadata(unsupported, unsupported);
 
     public static Metadata create(String meta) {
-        Timber.d("create: " + meta);
+        Timber.d("create: %s", meta);
         String artistTitle = new StringUtils.Builder(meta).substringAfter("StreamTitle=", unsupported)
                 .substringBefore(";")
                 .trim(' ', '\'')

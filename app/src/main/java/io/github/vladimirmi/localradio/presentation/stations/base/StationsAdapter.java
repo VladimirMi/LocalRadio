@@ -2,12 +2,12 @@ package io.github.vladimirmi.localradio.presentation.stations.base;
 
 import android.graphics.PorterDuff;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +37,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
     private static final String PAYLOAD_SELECTED_CHANGE = "PAYLOAD_SELECTED_CHANGE";
     private static final String PAYLOAD_BACKGROUND_CHANGE = "PAYLOAD_BACKGROUND_CHANGE";
 
-    private final onStationListener listener;
+    private final OnStationListener listener;
     private List<Station> stations = Collections.emptyList();
     private Station selectedStation = Station.nullObject();
     private int selectedPosition;
@@ -51,7 +51,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
             Build.VERSION.SDK_INT >= 21 ? new FixedOutlineProvider() : null;
 
     @SuppressWarnings("WeakerAccess")
-    public StationsAdapter(onStationListener listener) {
+    public StationsAdapter(OnStationListener listener) {
         this.listener = listener;
     }
 
@@ -244,7 +244,7 @@ public class StationsAdapter extends RecyclerView.Adapter<StationsAdapter.Statio
         }
     }
 
-    public interface onStationListener {
+    public interface OnStationListener {
 
         void onStationClick(Station station);
 

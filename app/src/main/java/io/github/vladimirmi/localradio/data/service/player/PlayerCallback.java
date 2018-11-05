@@ -69,15 +69,15 @@ public abstract class PlayerCallback implements Player.EventListener {
         MessageException exception;
         switch (error.type) {
             case ExoPlaybackException.TYPE_SOURCE:
-                Timber.w("SOURCE error occurred: %s", error.getSourceException());
+                Timber.w(error.getSourceException(), "SOURCE error occurred");
                 exception = new MessageException(R.string.error_connection);
                 break;
             case ExoPlaybackException.TYPE_RENDERER:
-                Timber.w("RENDERER error occurred: %s", error.getRendererException());
+                Timber.w(error.getRendererException(), "RENDERER error occurred");
                 exception = new MessageException(R.string.error_renderer);
                 break;
             default:
-                Timber.w("UNEXPECTED error occurred: %s", error.getUnexpectedException());
+                Timber.w(error.getUnexpectedException(), "UNEXPECTED error occurred");
                 exception = new MessageException(R.string.error_unexpected);
                 break;
         }

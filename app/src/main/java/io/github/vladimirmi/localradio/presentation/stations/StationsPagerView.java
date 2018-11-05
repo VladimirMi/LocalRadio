@@ -10,4 +10,8 @@ public interface StationsPagerView extends BaseView {
     void showFavorite();
 
     void showStations();
+
+    void hideControls(boolean forbidShow);
+
+    void showControls();
 }

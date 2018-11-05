@@ -1,16 +1,16 @@
 package io.github.vladimirmi.localradio.presentation.core;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.android.gms.common.api.ResolvableApiException;
+import com.tbruyelle.rxpermissions2.Permission;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.reactivex.Observable;
@@ -24,6 +24,7 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
 
     protected P presenter;
     private Unbinder unbinder;
+    private FragmentBaseViewDelegate baseViewDelegate;
 
     protected abstract int getLayout();
 
@@ -80,36 +81,37 @@ public abstract class BaseFragment<P extends BasePresenter> extends Fragment imp
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        baseViewDelegate = new FragmentBaseViewDelegate(this);
+    }
+
+    //region =============== BaseView ==============
+
+    @Override
     public boolean handleBackPress() {
-        for (Fragment fragment : getChildFragmentManager().getFragments()) {
-            if (fragment instanceof BaseView && ((BaseView) fragment).handleBackPress()) {
-                return true;
-            }
-        }
-        return false;
+        return baseViewDelegate.handleBackPress();
     }
 
     @Override
-    public Observable<Boolean> resolvePermissions(String... permissions) {
-        //noinspection unchecked,ConstantConditions
-        return ((BaseActivity) getActivity()).resolvePermissions(permissions);
+    public Observable<Permission> resolvePermissions(String... permissions) {
+        return baseViewDelegate.resolvePermissions(permissions);
     }
 
     @Override
     public void showMessage(String message) {
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT).show();
+        baseViewDelegate.showMessage(message);
     }
 
     @Override
     public void showMessage(int messageId) {
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), messageId, Snackbar.LENGTH_SHORT).show();
+        baseViewDelegate.showMessage(messageId);
     }
 
     @Override
     public void resolveApiException(ResolvableApiException resolvable) {
-        //noinspection ConstantConditions
-        ((BaseActivity) getActivity()).resolveApiException(resolvable);
+        baseViewDelegate.resolveApiException(resolvable);
     }
+
+    //endregion
 }

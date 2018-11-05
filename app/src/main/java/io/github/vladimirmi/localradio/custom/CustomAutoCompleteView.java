@@ -2,8 +2,8 @@ package io.github.vladimirmi.localradio.custom;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.AppCompatAutoCompleteTextView;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 

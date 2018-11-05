@@ -1,6 +1,6 @@
 package io.github.vladimirmi.localradio.domain.interactors;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
+import android.util.Pair;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,9 +13,14 @@ import io.github.vladimirmi.localradio.data.db.location.LocationEntity;
 import io.github.vladimirmi.localradio.domain.models.LocationClusterItem;
 import io.github.vladimirmi.localradio.domain.repositories.LocationRepository;
 import io.github.vladimirmi.localradio.domain.repositories.SearchRepository;
-import io.github.vladimirmi.localradio.map.MapState;
+import io.github.vladimirmi.localradio.map.Bounds;
+import io.github.vladimirmi.localradio.map.MapPosition;
+import io.github.vladimirmi.localradio.map.MapUtils;
+import io.github.vladimirmi.localradio.map.MapWrapper;
 import io.github.vladimirmi.localradio.presentation.search.SearchPresenter;
+import io.reactivex.Completable;
 import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 24.04.2018.
@@ -26,7 +31,7 @@ public class LocationInteractor {
     private final SearchRepository searchRepository;
     private Set<LocationClusterItem> selectedMapLocations;
     private LocationEntity selectedManualLocation;
-    private MapState mapState;
+    private MapPosition position;
     private String mapMode;
 
     @SuppressWarnings("WeakerAccess")
@@ -35,7 +40,7 @@ public class LocationInteractor {
                               SearchRepository searchRepository) {
         this.locationRepository = locationRepository;
         mapMode = locationRepository.getMapMode();
-        mapState = locationRepository.getMapState();
+        position = locationRepository.getMapPosition();
         this.searchRepository = searchRepository;
     }
 
@@ -47,12 +52,12 @@ public class LocationInteractor {
         mapMode = mode;
     }
 
-    public MapState getMapState() {
-        return mapState;
+    public MapPosition getPosition() {
+        return position;
     }
 
-    public void setMapState(MapState mapState) {
-        this.mapState = mapState;
+    public void setMapPosition(MapPosition position) {
+        this.position = position;
     }
 
     public Single<List<LocationEntity>> getCountries() {
@@ -83,20 +88,18 @@ public class LocationInteractor {
         if (ids.isEmpty()) return false;
         locationRepository.saveLocations(ids);
         locationRepository.saveMapMode(mapMode);
-        locationRepository.saveMapState(mapState);
+        locationRepository.saveMapPosition(position);
         return true;
     }
 
     public boolean saveManualSelection() {
-        Set<String> ids;
         if (selectedManualLocation != null) {
-            ids = Collections.singleton(String.valueOf(selectedManualLocation.id));
+            Set<String> ids = Collections.singleton(String.valueOf(selectedManualLocation.id));
+            locationRepository.saveLocations(ids);
+            return true;
         } else {
-            ids = Collections.emptySet();
+            return false;
         }
-        if (ids.isEmpty()) return false;
-        locationRepository.saveLocations(ids);
-        return true;
     }
 
     public Single<Set<LocationClusterItem>> getMapLocations() {
@@ -117,14 +120,64 @@ public class LocationInteractor {
                 .doOnSuccess(location -> selectedManualLocation = location);
     }
 
-    public Single<Set<LocationClusterItem>> loadClusters(SupportSQLiteQuery query) {
-        return locationRepository.loadClusters(query)
-                .flattenAsObservable(locationEntities -> locationEntities)
+    public Single<Set<LocationClusterItem>> loadClusters() {
+        Single<List<LocationEntity>> locations;
+        if (mapMode.equals(MapWrapper.COUNTRY_MODE)) {
+            locations = getCountries();
+        } else {
+            locations = getCities("");
+        }
+        return locations.flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
                 .collect(HashSet::new, Set::add);
     }
 
     public boolean isServicesAvailable() {
         return locationRepository.isServicesAvailable();
+    }
+
+    public Completable checkCanGetLocation() {
+        return locationRepository.checkCanGetLocation();
+    }
+
+    public Single<Pair<MapPosition, LocationClusterItem>> getMyLocation() {
+        return locationRepository.getCurrentLocation()
+//                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(Schedulers.io())
+                .flatMap(position -> getMyLocationClusterItem(position)
+                        .map(item -> {
+                            setSelectedMapLocations(Collections.singleton(item));
+                            MapPosition newPosition = item.isEmpty() ? position
+                                    : new MapPosition(item.getPosition(), 0);
+                            return new Pair<>(newPosition, item);
+                        }));
+    }
+
+    private Single<LocationClusterItem> getMyLocationClusterItem(MapPosition position) {
+        switch (mapMode) {
+            case MapWrapper.RADIUS_MODE:
+                return Single.just(LocationClusterItem.empty());
+            case MapWrapper.COUNTRY_MODE:
+                return getCountryFromLocation(position);
+            default:
+                return getCityFromLocation(position);
+        }
+    }
+
+    private Single<LocationClusterItem> getCountryFromLocation(MapPosition position) {
+        Pair<String, String> countryCodeCity = locationRepository.getCountryCodeCity(position);
+        return getCountry(countryCodeCity.first)
+                .map(LocationClusterItem::new);
+    }
+
+    private Single<LocationClusterItem> getCityFromLocation(MapPosition position) {
+        Bounds bounds = Bounds.fromCenter(position.getLatLng(), 5);
+        return locationRepository.loadClusters(MapUtils.createQueryFor(bounds, false))
+                .flatMap(locations -> {
+                    LocationEntity closest = MapUtils.closestToCenter(position.getLatLng(),
+                            locations);
+                    return closest == null ? Single.just(LocationClusterItem.empty())
+                            : Single.just(new LocationClusterItem(closest));
+                });
     }
 }

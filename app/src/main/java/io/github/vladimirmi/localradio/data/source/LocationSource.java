@@ -6,7 +6,6 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Looper;
-import android.support.annotation.Nullable;
 import android.util.Pair;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -32,6 +31,8 @@ import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import androidx.annotation.Nullable;
+import io.github.vladimirmi.localradio.map.MapPosition;
 import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
@@ -52,7 +53,8 @@ public class LocationSource {
     private final LocationRequest locationRequest = LocationRequest.create()
             .setPriority(LocationRequest.PRIORITY_LOW_POWER)
             .setInterval(1000)
-            .setNumUpdates(1);
+            .setNumUpdates(1)
+            .setMaxWaitTime(LOCATION_MAX_WAIT_TIME);
 
     @SuppressWarnings("WeakerAccess")
     @Inject
@@ -94,19 +96,19 @@ public class LocationSource {
     }
 
     @Nullable
-    public Pair<String, String> getCountryCodeCity(Pair<Float, Float> coordinates) {
+    public Pair<String, String> getCountryCodeCity(MapPosition position) {
         List<Address> addresses = null;
         try {
-            addresses = geocoder.getFromLocation(coordinates.first, coordinates.second, 1);
+            addresses = geocoder.getFromLocation(position.latitude, position.longitude, 1);
         } catch (IOException e) {
-            Timber.w("Service not available");
+            Timber.w(e, "Service not available");
         } catch (IllegalArgumentException e) {
-            Timber.w("Invalid latitude or longitude values (%s, %s)", coordinates.first, coordinates.second);
+            Timber.w(e, "Invalid latitude or longitude values (%s, %s)", position.latitude, position.longitude);
         }
         if (addresses != null && !addresses.isEmpty()) {
             return getCountryCodeCity(addresses.get(0));
         } else {
-            Timber.w("Can not find address (%s, %s)", coordinates.first, coordinates.second);
+            Timber.w("Can not find address (%s, %s)", position.latitude, position.longitude);
             return null;
         }
     }
@@ -144,8 +146,7 @@ public class LocationSource {
 
             emitter.setDisposable(Disposables.fromRunnable(() -> fusedLocationProviderClient
                     .removeLocationUpdates(locationCallback)));
-
-        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new LocationTimeoutException()));
+        }).timeout(LOCATION_MAX_WAIT_TIME, TimeUnit.MILLISECONDS, Single.error(new TimeoutException()));
 
         return lastLocation.onErrorResumeNext(updateLocation);
     }
@@ -156,9 +157,5 @@ public class LocationSource {
         String city = address.getLocality() != null ? address.getLocality() : "";
         Timber.i("getCountryCodeCity: %s, %s", countryCode, city);
         return new Pair<>(countryCode, city);
-    }
-
-    public static class LocationTimeoutException extends TimeoutException {
-
     }
 }

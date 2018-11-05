@@ -94,7 +94,7 @@ public class SearchManualFragment extends BaseFragment<SearchManualPresenter> im
     }
 
     //    @Override
-//    public void setAutodetect(boolean enabled) {
+//    public void enableLocationData(boolean enabled) {
 //        isAutodetect = enabled;
 //        autodetectCb.setChecked(isAutodetect);
 //    }

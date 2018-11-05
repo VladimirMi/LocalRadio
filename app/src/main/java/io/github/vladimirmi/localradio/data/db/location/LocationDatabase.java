@@ -1,8 +1,5 @@
 package io.github.vladimirmi.localradio.data.db.location;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import java.io.File;
@@ -10,6 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import io.github.vladimirmi.localradio.data.preferences.Preferences;
 import timber.log.Timber;
 
 /**
@@ -30,19 +31,38 @@ public abstract class LocationDatabase extends RoomDatabase {
     }
 
     private static void tryCopyDatabaseFile(Context context) {
-        final File dbFile = context.getDatabasePath(DB_NAME);
-        if (dbFile.exists()) return;
+        try {
+            String[] assetsNames = context.getAssets().list("");
+            if (assetsNames == null) return;
+            for (String name : assetsNames) {
+                String[] nameExtension = name.split("\\.");
+                if (nameExtension.length == 2 && nameExtension[1].equals("ver")) {
+                    Integer assetsVersion = Integer.valueOf(nameExtension[0]);
 
-        try (InputStream is = context.getAssets().open(DB_NAME)) {
-            try (FileOutputStream os = new FileOutputStream(dbFile)) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = is.read(buffer)) > 0) {
-                    os.write(buffer, 0, length);
+                    Preferences preferences = new Preferences(context);
+                    Integer version = preferences.locationsDbVer.get();
+                    if (assetsVersion > version) {
+                        replaceDatabase(context);
+                        preferences.locationsDbVer.put(assetsVersion);
+                    }
                 }
             }
-        } catch (IOException e) {
-            Timber.w(e);
+        } catch (Exception e) {
+            Timber.e(e);
+        }
+
+    }
+
+    private static void replaceDatabase(Context context) throws IOException {
+        try (InputStream iS = context.getAssets().open(DB_NAME)) {
+            File dbFile = context.getDatabasePath(DB_NAME);
+            try (FileOutputStream oS = new FileOutputStream(dbFile, false)) {
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = iS.read(buffer)) != -1) {
+                    oS.write(buffer, 0, length);
+                }
+            }
         }
     }
 }

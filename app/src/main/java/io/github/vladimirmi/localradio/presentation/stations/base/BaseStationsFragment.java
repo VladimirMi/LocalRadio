@@ -1,8 +1,6 @@
 package io.github.vladimirmi.localradio.presentation.stations.base;
 
 import android.graphics.PorterDuff;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -10,6 +8,8 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Set;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.domain.models.Station;
@@ -20,7 +20,7 @@ import io.github.vladimirmi.localradio.presentation.core.BasePresenter;
  * Created by Vladimir Mikhalev 26.05.2018.
  */
 public abstract class BaseStationsFragment<P extends BasePresenter> extends BaseFragment<P>
-        implements StationsView, StationsAdapter.onStationListener {
+        implements StationsView, StationsAdapter.OnStationListener {
 
     protected @BindView(R.id.stationList) RecyclerView stationList;
     protected @BindView(R.id.placeholder) TextView placeholder;
@@ -74,11 +74,13 @@ public abstract class BaseStationsFragment<P extends BasePresenter> extends Base
 
     @Override
     public void showPlaceholder() {
+        stationList.setVisibility(View.GONE);
         placeholder.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hidePlaceholder() {
+        stationList.setVisibility(View.VISIBLE);
         placeholder.setVisibility(View.GONE);
     }
 

@@ -52,10 +52,10 @@ public class AppModule extends Module {
         bind(RestService.class).toInstance(RestServiceProvider.getService(client, factory));
         bind(NetworkChecker.class).singletonInScope();
 
+        bind(Preferences.class).singletonInScope();
+
         bind(AppDatabase.class).toInstance(AppDatabase.getInstance(context));
         bind(LocationDatabase.class).toInstance(LocationDatabase.getInstance(context));
-
-        bind(Preferences.class).singletonInScope();
 
         bind(LocationRepository.class).to(LocationRepositoryImpl.class).singletonInScope();
         bind(StationsRepository.class).to(StationsRepositoryImpl.class).singletonInScope();

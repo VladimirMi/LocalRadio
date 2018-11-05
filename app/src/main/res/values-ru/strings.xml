@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Местное Радио</string>
     <string name="country">Страна</string>
     <string name="city">Город</string>
     <string name="automatic_location_detection">Автоматическое определение местоположения</string>
@@ -10,7 +11,6 @@
     <string name="desc_play_pause_button">воспроизвести/пауза</string>
     <string name="desc_skip_previous_button">предидущая станция</string>
     <string name="desc_skip_next_button">следующая станция</string>
-    <string name="about">О программе</string>
     <string name="exit">Выход</string>
     <string name="favorite">Избранное</string>
     <string name="stations">Станции</string>
@@ -29,15 +29,7 @@
     <string name="error_unexpected">Непредвиденная ошибка</string>
     <string name="placeholder_search_result">Результаты поиска пусты</string>
     <string name="placeholder_favorites">Список избранного пуст</string>
-    <string name="project_page">Страница проекта</string>
-    <string name="developer">Разработчик</string>
-    <string name="version">Версия</string>
-    <string name="rate_app">Оценить приложение</string>
-    <string name="description">
-        Local Radio это приложение с открытым исходным кодом для поиска и прослушивания радиостанций,
-        транслируемых через интеренет. Приложение может искать станции по стране и городу.
-        Также оно может автоматически определять местоположение и выполнять поиск на основе этого.
-    </string>
+
     <string name="desc_clear_country_field">очистить полк страны</string>
     <string name="desc_clear_city_field">очистить поле города</string>
     <string name="desc_station_icon">Иконка станции</string>
@@ -51,4 +43,24 @@
     <string name="selection_result_one">Выбрана %d станция</string>
     <string name="selection_result_other">Выбраны %d станции</string>
     <string name="selection_radius">Радиус 80 км</string>
+
+    <string name="second">%1$d секунда</string>
+    <string name="seconds">%1$d секунды</string>
+    <string name="setting_initial_buffer">Начальный размер буфера</string>
+    <string name="setting_buffer">Размер буфера</string>
+    <string name="setting_initial_buffer_desc">Начальный размер буфера для старта воспроизведения</string>
+    <string name="setting_buffer_desc">Размер буфера для продолжения воспроизведения после буферизации</string>
+    <string name="settings_stream">Настройки воспроизведения</string>
+    <string name="settings_backup_restore">Сохранение и восстановление</string>
+    <string name="settings_about">О программе</string>
+    <string name="setting_privacy">Политика конфиденциальности</string>
+    <string name="setting_backup">Сохранить список станций</string>
+    <string name="setting_restore">Восстановить список станций</string>
+    <string name="setting_version">Версия</string>
+    <string name="setting_rate_app">Оценить приложение</string>
+    <string name="setting_description">
+        "Местное Радио" это приложение с открытым исходным кодом для прослушивания радиопередач через Интернет.
+        Приложение может искать станции по стране, городу или внутри определенной территории.</string>
+    <string name="settings">Настройки</string>
+    <string name="error_get_location">Ошибка при получении местоположения</string>
 </resources>

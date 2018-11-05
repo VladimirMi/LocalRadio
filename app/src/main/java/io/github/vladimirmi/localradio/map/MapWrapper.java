@@ -1,6 +1,5 @@
 package io.github.vladimirmi.localradio.map;
 
-import android.arch.persistence.db.SupportSQLiteQuery;
 import android.content.Context;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -34,25 +33,25 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
     private final Object emit = new Object();
     private final Set<LocationClusterItem> emptyLocations = Collections.emptySet();
     private final Observable<Object> cameraMoveObservable;
-    private final ClusterLoader clusterLoader;
     private final CustomClusterManager clusterManager;
     private final Context context;
     private final GoogleMap map;
 
-    private OnSaveMapStateListener onSaveStateListener;
+    private OnSaveMapPositionListener onSavePositionListener;
     private String mapMode = COUNTRY_MODE;
-    private String previousMapMode = COUNTRY_MODE;
     private PublishRelay<Set<LocationClusterItem>> selection = PublishRelay.create();
+    private boolean needReCluster;
+    private boolean modeChanged;
 
 
     public MapWrapper(Context context, GoogleMap map) {
         this.context = context;
         this.map = map;
 
-        cameraMoveObservable = createCameraMoveObservable();
         configureMap();
         clusterManager = new CustomClusterManager(context, map);
-        clusterLoader = new ClusterLoader(map, clusterManager);
+        cameraMoveObservable = createCameraMoveObservable()
+                .doOnNext(o -> clusterManager.cluster());
 
         map.setOnCameraIdleListener(this);
         map.setOnMarkerClickListener(clusterManager);
@@ -72,15 +71,10 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
     public void addClusters(Set<LocationClusterItem> clusterItems) {
         clusterManager.addItems(clusterItems);
-        if (previousMapMode.equals(COUNTRY_MODE) && mapMode.equals(RADIUS_MODE)) {
+        if (needReCluster) clusterManager.cluster();
+        if (mapMode.equals(RADIUS_MODE)) {
             selectInsideRadius();
-        } else {
-            clusterManager.cluster();
         }
-    }
-
-    public Observable<SupportSQLiteQuery> getQueryObservable() {
-        return clusterLoader.getQueryObservable(cameraMoveObservable);
     }
 
     public Observable<CameraPosition> getRadiusChangeObservable() {
@@ -102,63 +96,60 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
 
     @Override
     public void onCameraIdle() {
-        if (onSaveStateListener != null) {
+        if (onSavePositionListener != null) {
             float zoom = map.getCameraPosition().zoom;
             LatLng target = map.getCameraPosition().target;
-            onSaveStateListener.onSaveMapState(new MapState(target, zoom));
+            onSavePositionListener.onSaveMapPosition(new MapPosition(target, zoom));
         }
     }
 
-    public void setOnSaveStateListener(OnSaveMapStateListener listener) {
-        onSaveStateListener = listener;
+    public void setOnSaveMapPositionListener(OnSaveMapPositionListener listener) {
+        onSavePositionListener = listener;
     }
 
-    public void restoreMapState(MapState state) {
+    public void restoreMapPosition(MapPosition state, boolean animate) {
         LatLng position = new LatLng(state.latitude, state.longitude);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, state.zoom);
-        map.moveCamera(cameraUpdate);
+        int zoom = mapMode.equals(COUNTRY_MODE) ? 5 : 7;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(position, zoom);
+        if (animate) map.animateCamera(cameraUpdate);
+        else map.moveCamera(cameraUpdate);
+
     }
 
     public void selectClusters(Set<LocationClusterItem> items) {
         clusterManager.selectClusters(items);
-        if (!mapMode.equals(COUNTRY_MODE)) clusterManager.cluster();
+        if (modeChanged) clusterManager.cluster();
     }
 
     public void setMapMode(String mode) {
-        previousMapMode = mapMode;
-        mapMode = mode;
-        clusterLoader.setIsCountry(mode.equals(COUNTRY_MODE));
+        needReCluster = mapMode.equals(COUNTRY_MODE) != mode.equals(COUNTRY_MODE);
+        modeChanged = mapMode.equals(mode);
+        if (needReCluster) clusterManager.clearItems();
 
         switch (mode) {
             case EXACT_MODE: {
                 selection.accept(emptyLocations);
-                map.setMinZoomPreference(6f);
+                map.animateCamera(CameraUpdateFactory.zoomTo(7));
+                map.setMinZoomPreference(7f);
                 map.setMaxZoomPreference(10f);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
-                map.animateCamera(cameraUpdate);
                 break;
             }
             case RADIUS_MODE: {
-                if (previousMapMode.equals(EXACT_MODE)) selectInsideRadius();
+                if (mapMode.equals(EXACT_MODE)) selectInsideRadius();
+                map.animateCamera(CameraUpdateFactory.zoomTo(7));
                 map.setMinZoomPreference(6f);
                 map.setMaxZoomPreference(9f);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(7);
-                map.animateCamera(cameraUpdate);
                 break;
             }
             case COUNTRY_MODE: {
                 selection.accept(emptyLocations);
+                map.animateCamera(CameraUpdateFactory.zoomTo(5));
                 map.setMinZoomPreference(2f);
                 map.setMaxZoomPreference(6f);
-                CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(5);
-                map.animateCamera(cameraUpdate);
                 break;
             }
         }
-    }
-
-    public String getMapMode() {
-        return mapMode;
+        mapMode = mode;
     }
 
     private void selectInsideRadius() {
@@ -192,8 +183,8 @@ public class MapWrapper implements GoogleMap.OnCameraIdleListener {
                 .share();
     }
 
-    public interface OnSaveMapStateListener {
+    public interface OnSaveMapPositionListener {
 
-        void onSaveMapState(MapState state);
+        void onSaveMapPosition(MapPosition position);
     }
 }

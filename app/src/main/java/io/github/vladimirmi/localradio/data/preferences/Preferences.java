@@ -14,16 +14,9 @@ import io.github.vladimirmi.localradio.presentation.stations.StationsPagerFragme
 
 public class Preferences {
 
-    private static final String KEY_AUTODETECT = "AUTODETECT";
-    public final Preference<Boolean> autodetect;
+    public final SharedPreferences prefs;
 
-    // TODO: 7/29/18 remove
-    private static final String KEY_COUNTRY_CODE = "COUNTRY_CODE";
-    public final Preference<String> countryCode;
-
-    // TODO: 7/29/18 remove
-    private static final String KEY_CITY = "CITY";
-    public final Preference<String> city;
+    public static final String NAME = "default";
 
     private static final String KEY_LOCATIONS = "LOCATIONS";
     public final Preference<Set<String>> locations;
@@ -52,16 +45,23 @@ public class Preferences {
     private static final String KEY_MAP_LONG = "MAP_LONG";
     public final Preference<Float> mapLong;
 
+    // TODO: 27.10.18 remove zoom
     private static final String KEY_MAP_ZOOM = "MAP_ZOOM";
     public final Preference<Float> mapZoom;
 
+    public static final String KEY_INITIAL_BUFFER_LENGTH = "INITIAL_BUFFER_LENGTH";
+    public final Preference<Integer> initialBufferLength;
+
+    public static final String KEY_BUFFER_LENGTH = "BUFFER_LENGTH";
+    public final Preference<Integer> bufferLength;
+
+    public static final String KEY_LOCATIONS_DB_VER = "LOCATIONS_DB_VER";
+    public final Preference<Integer> locationsDbVer;
+
     @Inject
     public Preferences(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("default", Context.MODE_PRIVATE);
+        prefs = context.getSharedPreferences(NAME, Context.MODE_PRIVATE);
 
-        autodetect = new Preference<>(prefs, KEY_AUTODETECT, false);
-        countryCode = new Preference<>(prefs, KEY_COUNTRY_CODE, "");
-        city = new Preference<>(prefs, KEY_CITY, "");
         locations = new Preference<>(prefs, KEY_LOCATIONS, Collections.emptySet());
         isSearchDone = new Preference<>(prefs, KEY_SEARCH_DONE, false);
         currentStationId = new Preference<>(prefs, KEY_CURRENT_STATION_ID, 0);
@@ -72,5 +72,8 @@ public class Preferences {
         mapLat = new Preference<>(prefs, KEY_MAP_LAT, 0f);
         mapLong = new Preference<>(prefs, KEY_MAP_LONG, 0f);
         mapZoom = new Preference<>(prefs, KEY_MAP_ZOOM, 0f);
+        initialBufferLength = new Preference<>(prefs, KEY_INITIAL_BUFFER_LENGTH, 3);
+        bufferLength = new Preference<>(prefs, KEY_BUFFER_LENGTH, 6);
+        locationsDbVer = new Preference<>(prefs, KEY_LOCATIONS_DB_VER, 0);
     }
 }

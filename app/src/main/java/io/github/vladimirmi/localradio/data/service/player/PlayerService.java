@@ -4,12 +4,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
-import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -20,6 +16,10 @@ import java.util.TimerTask;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.media.MediaBrowserServiceCompat;
+import androidx.media.session.MediaButtonReceiver;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.data.reciever.PlayerWidget;
 import io.github.vladimirmi.localradio.di.Scopes;
@@ -29,6 +29,7 @@ import io.github.vladimirmi.localradio.domain.interactors.SearchInteractor;
 import io.github.vladimirmi.localradio.domain.interactors.StationsInteractor;
 import io.github.vladimirmi.localradio.domain.models.SearchResult;
 import io.github.vladimirmi.localradio.domain.models.Station;
+import io.github.vladimirmi.localradio.utils.ExponentialBackoff;
 import io.github.vladimirmi.localradio.utils.ImageUtils;
 import io.github.vladimirmi.localradio.utils.MessageException;
 import io.github.vladimirmi.localradio.utils.RxUtils;
@@ -62,7 +63,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
     private int currentStationId;
     private int playingStationId;
     private CompositeDisposable subs = new CompositeDisposable();
-    private final Timer stopTimer = new Timer();
+    private ExponentialBackoff backoff = new ExponentialBackoff();
     private TimerTask stopTask;
 
 
@@ -113,7 +114,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
             waitSearch = searchInteractor.getSearchResultObs()
                     .map(SearchResult::isSearchDone)
                     .filter(aBoolean -> aBoolean)
-                    .firstOrError().toCompletable()
+                    .firstOrError().ignoreElement()
                     .subscribe(() -> handleIntent(intent));
         } else {
             handleIntent(intent);
@@ -199,6 +200,11 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     @Override
     public void onPlayCommand() {
+        Throwable throwable = searchInteractor.checkInternet().blockingGet();
+        if (throwable != null) {
+            UiUtils.handleError(this, throwable);
+            return;
+        }
         if (stopTask != null) stopTask.cancel();
         startService();
         if (isPaused() && currentStationId == playingStationId) {
@@ -242,8 +248,11 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
     private PlayerCallback playerCallback = new PlayerCallback() {
 
+        private boolean scheduledReconnect;
+
         @Override
         public void onPlayerStateChanged(int state) {
+            if (scheduledReconnect) return;
             playbackState = new PlaybackStateCompat.Builder(playbackState)
                     .setState(state, 0, 1f)
                     .build();
@@ -264,9 +273,13 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
 
         @Override
         public void onPlayerError(MessageException error) {
-            // TODO: 5/7/18 player internally stops. try to keep notification
-            onStopCommand();
-            UiUtils.handleError(PlayerService.this, error);
+            scheduledReconnect = error.getMessageId() == R.string.error_connection
+                    && backoff.schedule(PlayerService.this::onPlayCommand);
+
+            if (!scheduledReconnect) {
+                UiUtils.handleError(PlayerService.this, error);
+                onStopCommand();
+            }
         }
     };
 
@@ -294,7 +307,7 @@ public class PlayerService extends MediaBrowserServiceCompat implements SessionC
                 onStopCommand();
             }
         };
-        stopTimer.schedule(stopTask, stopDelay);
+        new Timer().schedule(stopTask, stopDelay);
     }
 
     private void handleIntent(Intent intent) {
