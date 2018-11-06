@@ -36,12 +36,16 @@ public class FragmentBaseViewDelegate implements BaseView {
 
     @Override
     public void showMessage(String message) {
-        Snackbar.make(fragment.getView(), message, Snackbar.LENGTH_SHORT).show();
+        fragment.getActivity().runOnUiThread(() -> {
+            Snackbar.make(fragment.getView(), message, Snackbar.LENGTH_SHORT).show();
+        });
     }
 
     @Override
     public void showMessage(int messageId) {
-        Snackbar.make(fragment.getView(), messageId, Snackbar.LENGTH_SHORT).show();
+        fragment.getActivity().runOnUiThread(() -> {
+            Snackbar.make(fragment.getView(), messageId, Snackbar.LENGTH_SHORT).show();
+        });
     }
 
     @Override

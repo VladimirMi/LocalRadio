@@ -89,12 +89,12 @@ public abstract class BaseActivity<P extends BasePresenter> extends AppCompatAct
 
     @Override
     public void showMessage(String message) {
-        Snackbar.make(contentView, message, Snackbar.LENGTH_SHORT).show();
+        runOnUiThread(() -> Snackbar.make(contentView, message, Snackbar.LENGTH_SHORT).show());
     }
 
     @Override
     public void showMessage(int messageId) {
-        Snackbar.make(contentView, messageId, Snackbar.LENGTH_SHORT).show();
+        runOnUiThread(() -> Snackbar.make(contentView, messageId, Snackbar.LENGTH_SHORT).show());
     }
 
     @Override

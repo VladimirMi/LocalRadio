@@ -1,9 +1,9 @@
 package io.github.vladimirmi.localradio.utils;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.IBinder;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -19,6 +19,8 @@ import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
 
 import java.net.SocketTimeoutException;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import io.github.vladimirmi.localradio.R;
 import io.github.vladimirmi.localradio.presentation.core.BaseView;
 import timber.log.Timber;
@@ -56,7 +58,10 @@ public class UiUtils {
             if (errorHandler instanceof BaseView) {
                 ((BaseView) errorHandler).showMessage(messageId);
             } else if (errorHandler instanceof Context) {
-                Toast.makeText((Context) errorHandler, messageId, Toast.LENGTH_SHORT).show();
+                int finalMessageId = messageId;
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    Toast.makeText((Context) errorHandler, finalMessageId, Toast.LENGTH_SHORT).show();
+                });
             }
         } else {
             Timber.e(e);
