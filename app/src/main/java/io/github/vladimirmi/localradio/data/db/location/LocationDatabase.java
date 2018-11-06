@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 
 import androidx.room.Database;
 import androidx.room.Room;
@@ -44,6 +45,7 @@ public abstract class LocationDatabase extends RoomDatabase {
                     if (assetsVersion > version) {
                         replaceDatabase(context);
                         preferences.locationsDbVer.put(assetsVersion);
+                        preferences.locations.put(Collections.emptySet());
                     }
                 }
             }
