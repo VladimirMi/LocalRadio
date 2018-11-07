@@ -13,7 +13,7 @@ ext {
 
 ext.versionMajor = 1
 ext.versionMinor = 3
-ext.versionPatch = 0
+ext.versionPatch = 1
 
 android {
     compileSdkVersion 28
