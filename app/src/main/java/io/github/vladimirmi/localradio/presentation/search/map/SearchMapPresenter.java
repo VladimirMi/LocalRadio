@@ -23,7 +23,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by Vladimir Mikhalev 02.07.2018.
@@ -59,14 +58,23 @@ public class SearchMapPresenter extends BasePresenter<SearchMapView> {
 
         viewSubs.add(locationInteractor.getMapLocations()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::selectClusters));
+                .subscribeWith(new RxUtils.ErrorSingleObserver<Set<LocationClusterItem>>(view) {
+                    @Override
+                    public void onSuccess(Set<LocationClusterItem> locationClusterItemSet) {
+                        view.selectClusters(locationClusterItemSet);
+                    }
+                }));
     }
 
     private void loadClusters() {
         viewSubs.add(locationInteractor.loadClusters()
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(view::addClusters));
+                .subscribeWith(new RxUtils.ErrorSingleObserver<Set<LocationClusterItem>>(view) {
+                    @Override
+                    public void onSuccess(Set<LocationClusterItem> locationClusterItemSet) {
+                        view.addClusters(locationClusterItemSet);
+                    }
+                }));
     }
 
     public void selectRadiusChange(Observable<CameraPosition> radiusZoomObservable) {

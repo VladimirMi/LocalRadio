@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Collections;
 
 import androidx.room.Database;
@@ -58,7 +59,8 @@ public abstract class LocationDatabase extends RoomDatabase {
     private static void replaceDatabase(Context context) throws IOException {
         try (InputStream iS = context.getAssets().open(DB_NAME)) {
             File dbFile = context.getDatabasePath(DB_NAME);
-            try (FileOutputStream oS = new FileOutputStream(dbFile, false)) {
+            if (dbFile.exists()) new PrintWriter(dbFile).close();
+            try (FileOutputStream oS = new FileOutputStream(dbFile)) {
                 byte[] buffer = new byte[1024];
                 int length;
                 while ((length = iS.read(buffer)) != -1) {
