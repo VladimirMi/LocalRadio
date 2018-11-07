@@ -129,7 +129,8 @@ public class LocationInteractor {
         }
         return locations.flattenAsObservable(locationEntities -> locationEntities)
                 .map(LocationClusterItem::new)
-                .collect(HashSet::new, Set::add);
+                .<Set<LocationClusterItem>>collect(HashSet::new, Set::add)
+                .subscribeOn(Schedulers.io());
     }
 
     public boolean isServicesAvailable() {

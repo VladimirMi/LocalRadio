@@ -13,7 +13,7 @@ ext {
 
 ext.versionMajor = 1
 ext.versionMinor = 3
-ext.versionPatch = 0
+ext.versionPatch = 1
 
 android {
     compileSdkVersion 28
@@ -56,7 +56,7 @@ private String generateVersionName() {
 
 ext {
     PLAY_SERVICES_VERSION = "16.0.0"
-    ROOM_VERSION = "2.1.0-alpha01"
+    ROOM_VERSION = "2.1.0-alpha02"
 }
 
 dependencies {
@@ -67,7 +67,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.1.0"
 
     //Support
-    implementation "androidx.appcompat:appcompat:1.0.0"
+    implementation "androidx.appcompat:appcompat:1.0.1"
     implementation "com.google.android.material:material:1.0.0"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.media:media:1.0.0"
